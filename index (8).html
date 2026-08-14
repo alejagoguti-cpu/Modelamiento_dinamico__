@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAPOT · La ciudad construida por relaciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <svg class="icon" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="17" cy="17" r="16" fill="none" stroke="rgba(47,212,200,0.55)" stroke-width="1.4"/>
+        <circle cx="17" cy="9"  r="3"></circle>
+        <circle cx="10" cy="21" r="3"></circle>
+        <circle cx="24" cy="21" r="3"></circle>
+      </svg>
+      <div class="text">
+        <h1>RAPOT</h1>
+      </div>
+    </div>
+    <ul class="menu">
+      <li class="active">INICIO</li>
+      <li>MÓDULOS</li>
+      <li>METODOLOGÍA</li>
+      <li>CASO HUMEDAL</li>
+      <li>EQUIPO</li>
+    </ul>
+    <a class="demo" href="./demo.html" target="_blank" rel="noopener noreferrer">VER DEMOSTRACIÓN <i class="fa-solid fa-arrow-right"></i></a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+
+    <!-- LEFT: copy -->
+    <div class="hero-copy">
+      <h1>
+        La ciudad no solo<br>
+        está formada por espacios;<br>
+        está construida por <span class="grad">relaciones</span>.
+      </h1>
+
+      <p class="lead">
+        RAPOT permite explorar esas relaciones para comprender cómo las decisiones territoriales configuran el modelo urbano de Bogotá.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature">
+          <div class="f-icon"><i class="fa-solid fa-link"></i></div>
+          <h3>Análisis relacional</h3>
+          <p>Comprende cómo se conectan los conceptos.</p>
+        </div>
+        <div class="feature">
+          <div class="f-icon"><i class="fa-solid fa-chart-column"></i></div>
+          <h3>Métricas avanzadas</h3>
+          <p>Centralidad, dependencia y patrones ocultos.</p>
+        </div>
+        <div class="feature">
+          <div class="f-icon"><i class="fa-solid fa-eye"></i></div>
+          <h3>Comparación crítica</h3>
+          <p>Discurso vs realidad, POT vs ODS y más.</p>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <a class="btn-primary" href="./dashboard.html">EXPLORAR PLATAFORMA <i class="fa-solid fa-arrow-right"></i></a>
+        <button class="btn-secondary">CONOCE LOS 8 MÓDULOS <i class="fa-solid fa-chevron-down"></i></button>
+      </div>
+    </div>
+
+    <!-- RIGHT: network diagram -->
+    <div class="hero-visual">
+     <div class="hero-visual-card">
+
+      <p class="visual-question">¿Cómo organiza, relaciona y prioriza el POT los diferentes componentes de Bogotá?</p>
+
+      <div class="legend">
+        <span class="legend-title">Convenciones</span>
+        <span class="legend-item">
+          <svg class="leg-svg" viewBox="0 0 50 12" width="50" height="12" aria-hidden="true">
+            <line x1="2" y1="6" x2="38" y2="6" stroke="rgba(16,21,26,0.4)" stroke-width="1.5" stroke-dasharray="3 3"></line>
+            <path d="M38,6 L31,2 L31,10 Z" fill="rgba(16,21,26,0.55)"></path>
+          </svg>
+          Redes dirigidas
+        </span>
+        <span class="legend-item">
+          <svg class="leg-svg" viewBox="0 0 56 12" width="56" height="12" aria-hidden="true">
+            <line x1="8" y1="6" x2="48" y2="6" stroke="rgba(16,21,26,0.4)" stroke-width="1.5" stroke-dasharray="3 3"></line>
+            <path d="M8,6 L15,2 L15,10 Z" fill="rgba(16,21,26,0.55)"></path>
+            <path d="M48,6 L41,2 L41,10 Z" fill="rgba(16,21,26,0.55)"></path>
+          </svg>
+          Redes bidireccionales
+        </span>
+      </div>
+
+      <svg viewBox="0 0 620 560" xmlns="http://www.w3.org/2000/svg" class="network-svg" id="network-svg">
+
+        <!-- relations: each is clickable. Curves fan out from the centre, arrowhead sits in the open gap -->
+        <g class="links">
+
+          <!-- EEP (verde) -> ESECI (amarillo) -->
+          <g class="link" data-relation="e1" tabindex="0" role="button" aria-label="Relación EEP a ESECI">
+            <path class="link-hit" d="M344.7,170.2 Q375,295 345.1,417.8"></path>
+            <path class="link-line" d="M344.7,170.2 Q375,295 345.1,417.8"></path>
+            <path class="link-arrow" d="M-15,-5 L0,0 L-15,5 Z" transform="translate(345.1,417.8) rotate(103.7)"></path>
+          </g>
+
+          <!-- EIP (morado) -> EEP (verde) -->
+          <g class="link" data-relation="e2" tabindex="0" role="button" aria-label="Relación EIP a EEP">
+            <path class="link-hit" d="M159.2,245.3 Q189.7,158.4 271.4,130.2"></path>
+            <path class="link-line" d="M159.2,245.3 Q189.7,158.4 271.4,130.2"></path>
+            <path class="link-arrow" d="M-15,-5 L0,0 L-15,5 Z" transform="translate(271.4,130.2) rotate(-19.0)"></path>
+          </g>
+
+          <!-- EFC (azul) -> EEP (verde) -->
+          <g class="link" data-relation="e3" tabindex="0" role="button" aria-label="Relación EFC a EEP">
+            <path class="link-hit" d="M484.3,244.2 Q460.3,158.4 388.1,131.6"></path>
+            <path class="link-line" d="M484.3,244.2 Q460.3,158.4 388.1,131.6"></path>
+            <path class="link-arrow" d="M-15,-5 L0,0 L-15,5 Z" transform="translate(388.1,131.6) rotate(-159.6)"></path>
+          </g>
+
+          <!-- EFC (azul) -> ESECI (amarillo) -->
+          <g class="link" data-relation="e4" tabindex="0" role="button" aria-label="Relación EFC a ESECI">
+            <path class="link-hit" d="M483.8,355.7 Q460.3,436.6 390.7,459.8"></path>
+            <path class="link-line" d="M483.8,355.7 Q460.3,436.6 390.7,459.8"></path>
+            <path class="link-arrow" d="M-15,-5 L0,0 L-15,5 Z" transform="translate(390.7,459.8) rotate(161.6)"></path>
+          </g>
+
+          <!-- EIP (morado) -> EFC (azul) -->
+          <g class="link" data-relation="e5" tabindex="0" role="button" aria-label="Relación EIP a EFC">
+            <path class="link-hit" d="M191.3,327.1 Q320,395 448.7,327.1"></path>
+            <path class="link-line" d="M191.3,327.1 Q320,395 448.7,327.1"></path>
+            <path class="link-arrow" d="M-15,-5 L0,0 L-15,5 Z" transform="translate(448.7,327.1) rotate(-27.8)"></path>
+          </g>
+
+          <!-- EIP (morado) -> ESECI (amarillo) -->
+          <g class="link" data-relation="e6" tabindex="0" role="button" aria-label="Relación EIP a ESECI">
+            <path class="link-hit" d="M159.8,354.5 Q189.7,436.6 268.9,461.1"></path>
+            <path class="link-line" d="M159.8,354.5 Q189.7,436.6 268.9,461.1"></path>
+            <path class="link-arrow" d="M-15,-5 L0,0 L-15,5 Z" transform="translate(268.9,461.1) rotate(17.2)"></path>
+          </g>
+
+        </g>
+
+        <!-- nodes (arrastrables) -->
+        <g class="node node-green" data-node="green" transform="translate(330,110)">
+          <circle r="62"></circle>
+          <text y="-14">Sistema<tspan x="0" dy="14">Ambiental y de</tspan><tspan x="0" dy="14">Estructura</tspan><tspan x="0" dy="14">Ecológica</tspan><tspan x="0" dy="14">Principal</tspan></text>
+        </g>
+
+        <g class="node node-purple" data-node="purple" transform="translate(140,300)">
+          <circle r="58"></circle>
+          <text y="-7">Estructura<tspan x="0" dy="14">Integradora de</tspan><tspan x="0" dy="14">Patrimonios</tspan></text>
+        </g>
+
+        <g class="node node-blue" data-node="blue" transform="translate(500,300)">
+          <circle r="58"></circle>
+          <text y="-7">Estructura<tspan x="0" dy="14">Funcional y</tspan><tspan x="0" dy="14">del Cuidado</tspan></text>
+        </g>
+
+        <g class="node node-yellow" data-node="yellow" transform="translate(330,480)">
+          <circle r="64"></circle>
+          <text y="-21">Estructura<tspan x="0" dy="14">Socioeconómica,</tspan><tspan x="0" dy="14">Creativa y de</tspan><tspan x="0" dy="14">Innovación</tspan></text>
+        </g>
+      </svg>
+     </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ POPUP: redes por estructura ============ -->
+<div id="redes-modal-overlay" class="redes-modal-overlay" hidden>
+  <div class="redes-modal" role="dialog" aria-modal="true" aria-labelledby="redes-modal-title">
+    <button class="redes-modal-close" type="button" aria-label="Cerrar">✕</button>
+
+    <div class="redes-modal-header">
+      <h2 id="redes-modal-title">Estructura</h2>
+      <p class="redes-modal-subtitle">Modo Analítico // Nodos = 0</p>
+    </div>
+
+    <div class="redes-modal-body">
+      <svg class="redes-network-svg" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+        <g class="redes-edges"></g>
+        <g class="redes-nodes"></g>
+      </svg>
+
+      <aside class="redes-side-panel">
+        <div class="redes-legend-card">
+          <span class="redes-legend-card-title">Leyenda de Capas</span>
+          <div class="redes-toggle-row">
+            <span>Nodos Principales</span>
+            <button class="redes-toggle is-on" type="button" data-toggle="nodes" role="switch" aria-checked="true"><span class="redes-toggle-knob"></span></button>
+          </div>
+          <div class="redes-toggle-row">
+            <span>Conexiones Activas</span>
+            <button class="redes-toggle is-on" type="button" data-toggle="edges" role="switch" aria-checked="true"><span class="redes-toggle-knob"></span></button>
+          </div>
+        </div>
+
+        <div class="redes-conventions-card">
+          <span class="redes-legend-card-title">Convenciones</span>
+          <div class="redes-convention-item"><span class="redes-swatch redes-swatch-directa"></span>Directa</div>
+          <div class="redes-convention-item"><span class="redes-swatch redes-swatch-indirecta"></span>Indirecta</div>
+          <div class="redes-convention-item"><span class="redes-swatch redes-swatch-soporte"></span>Soporte</div>
+          <div class="redes-convention-item"><span class="redes-swatch redes-swatch-resiliencia"></span>Resiliencia</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script src="./scripts.js" defer></script>
+</body>
+</html>
