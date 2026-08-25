@@ -160,7 +160,7 @@ const NETWORK_TO_EXPANDABLE_MAP = {
   'comercio': 'industria'
 };
 
-// Obtener elementos expandibles de los datos del POT
+// Obtener elementos expandibles de los datos del POT (SOLO elementos reales, sin inventar)
 function getExpandableElements(nodeKey) {
   if (!potData || !EXPANDABLE_NODES[nodeKey]) return [];
 
@@ -173,25 +173,31 @@ function getExpandableElements(nodeKey) {
     if (!data) return [];
   }
 
-  // Extraer elementos dependiendo de la estructura
+  // Extraer elementos REALES del JSON
+  let items = [];
+
   if (Array.isArray(data)) {
-    return data.slice(0, 50); // Limitar a 50 para no saturar la visualización
+    // Es un array directo de elementos
+    items = data;
   } else if (data?.elementos && Array.isArray(data.elementos)) {
-    return data.elementos.slice(0, 50);
-  } else if (data?.categorias) {
-    // Para categorías, extraer ejemplos o cantidad
-    const items = [];
+    // Tiene propiedad "elementos" con array
+    items = data.elementos;
+  } else if (data?.categorias && typeof data.categorias === 'object') {
+    // Para categorías, extraer SOLO elementos específicos listados
     for (const [key, cat] of Object.entries(data.categorias)) {
       if (cat.ejemplo && Array.isArray(cat.ejemplo)) {
-        items.push(...cat.ejemplo.slice(0, 10));
-      } else if (typeof cat === 'number' || cat.cantidad) {
-        items.push(`${key}: ${cat.cantidad || cat} items`);
+        // Solo usar ejemplos si están disponibles
+        items.push(...cat.ejemplo);
+      } else if (cat.elementos && Array.isArray(cat.elementos)) {
+        // Si hay elementos, usarlos
+        items.push(...cat.elementos);
       }
+      // NO inventar items basados en "cantidad"
     }
-    return items.slice(0, 50);
   }
 
-  return [];
+  // Retornar TODOS los elementos reales encontrados (sin límite artificial)
+  return items;
 }
 
 // ===================== FORCE-DIRECTED GRAPH LAYOUT =====================
