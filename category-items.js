@@ -31,6 +31,8 @@
   let zoom = 1;
   let panX = 0;
   let panY = 0;
+  let sceneWidth = 760;
+  let sceneHeight = 520;
   let dragState = null;
   let parentContext = null;
   let activeChildCategories = [];
@@ -148,8 +150,24 @@
     return String.fromCodePoint(ICON_CODE_BY_SHEET[item.source_sheet] || 0xf1b9);
   }
 
+  function applySceneSize(width, height){
+    sceneWidth = Math.max(760, Math.ceil(width));
+    sceneHeight = Math.max(520, Math.ceil(height));
+    networkSvg.setAttribute("viewBox", `0 0 ${sceneWidth} ${sceneHeight}`);
+    networkSvg.style.width = `${Math.ceil(sceneWidth * zoom)}px`;
+    networkSvg.style.height = `${Math.ceil(sceneHeight * zoom)}px`;
+  }
+
   function applyViewport(){
-    networkScene.setAttribute("transform", `translate(${panX.toFixed(1)} ${panY.toFixed(1)}) scale(${zoom.toFixed(2)})`);
+    // El zoom se aplica al tamaño físico del SVG: así la red crece de verdad,
+    // aparecen barras de desplazamiento y cada etiqueta se puede leer al acercar.
+    const maxPanX = Math.max(180, sceneWidth * 0.42);
+    const maxPanY = Math.max(130, sceneHeight * 0.42);
+    panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
+    panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
+    networkScene.setAttribute("transform", `translate(${panX.toFixed(1)} ${panY.toFixed(1)})`);
+    networkSvg.style.width = `${Math.ceil(sceneWidth * zoom)}px`;
+    networkSvg.style.height = `${Math.ceil(sceneHeight * zoom)}px`;
     zoomLevel.textContent = `${Math.round(zoom * 100)}%`;
   }
 
@@ -161,8 +179,16 @@
   }
 
   function changeZoom(delta){
-    zoom = Math.max(0.65, Math.min(2.8, Number((zoom + delta).toFixed(2))));
+    const previousZoom = zoom;
+    const centerX = networkCanvas.scrollLeft + networkCanvas.clientWidth / 2;
+    const centerY = networkCanvas.scrollTop + networkCanvas.clientHeight / 2;
+    zoom = Math.max(0.65, Math.min(6, Number((zoom + delta).toFixed(2))));
     applyViewport();
+    requestAnimationFrame(() => {
+      const ratio = zoom / previousZoom;
+      networkCanvas.scrollLeft = Math.max(0, centerX * ratio - networkCanvas.clientWidth / 2);
+      networkCanvas.scrollTop = Math.max(0, centerY * ratio - networkCanvas.clientHeight / 2);
+    });
   }
 
   function setView(view){
@@ -203,7 +229,10 @@
       networkNodes.appendChild(message);
       return;
     }
-    const positions = organicPositions(categories.length);
+    const categoryRadii = categories.map(category => category.item_count > 100 ? 38 : category.item_count > 70 ? 34 : 31);
+    const layout = organicLayout(categories.length, categoryRadii);
+    const positions = layout.positions;
+    applySceneSize(layout.width, layout.height);
     for (let index = 1; index < categories.length; index++){
       const edge = svgElement("line", {
         x1: positions[index - 1].x, y1: positions[index - 1].y,
@@ -213,7 +242,7 @@
       networkLinks.appendChild(edge);
     }
     categories.forEach((category, index) => {
-      const radius = category.item_count > 100 ? 34 : category.item_count > 70 ? 31 : 28;
+      const radius = categoryRadii[index];
       const position = positions[index];
       const node = svgElement("g", {
         class: "category-network-node category-network-node-subcategory",
@@ -226,7 +255,7 @@
       icon.textContent = String.fromCodePoint(ICON_CODE_BY_CATEGORY[category.icon] || 0xf1b9);
       if (category.color) icon.style.fill = category.color;
       const label = svgElement("text", { class: "category-network-label", x: "0", y: "7" });
-      wrapNodeLabel(category.name, categories.length > 6 ? 10 : 13, 3).forEach((line, lineIndex) => {
+        wrapFullNodeLabel(category.name, categories.length > 6 ? 12 : 15).forEach((line, lineIndex) => {
         const tspan = svgElement("tspan", { x: "0", dy: lineIndex === 0 ? "0" : "9" });
         tspan.textContent = line;
         label.appendChild(tspan);
@@ -244,6 +273,7 @@
       networkNodes.appendChild(node);
     });
     applyViewport();
+    centerCanvas();
   }
 
   function renderCategoryMenuTable(){
@@ -288,27 +318,41 @@
     `).join("");
   }
 
-  function organicPositions(total){
-    // Semilla determinista: la composición cambia con el número de elementos,
-    // pero nunca se convierte en una cuadrícula de filas y columnas.
+  function organicLayout(total, radii = []){
+    // Semilla determinista tipo phyllotaxis: nunca se convierte en una cuadrícula.
+    // El lienzo aumenta según el volumen para conservar un nodo visible por elemento.
+    const maxRadius = Math.max(24, ...(radii.length ? radii : [30]));
+    const gap = total > 500 ? 12 : total > 180 ? 16 : total > 72 ? 22 : 30;
+    const step = Math.max(maxRadius * 2 + gap, total > 500 ? 68 : total > 180 ? 74 : 86);
+    const radialExtent = Math.max(0, Math.sqrt(Math.max(total - 1, 0)) * step * 0.82);
+    const width = Math.max(900, Math.ceil(radialExtent * 2.2 + maxRadius * 2 + 90));
+    const height = Math.max(640, Math.ceil(radialExtent * 1.62 + maxRadius * 2 + 90));
+    const center = { x: width / 2, y: height / 2 };
     const positions = Array.from({ length: total }, (_, index) => {
       const angle = -Math.PI / 2 + index * 2.3999632297;
-      const spread = total <= 24 ? 62 + Math.sqrt(index + 1) * 69 : 80 + Math.sqrt(index + 1) * 42;
+      const ratio = total <= 1 ? 0 : Math.sqrt(index / (total - 1));
+      const spread = radialExtent * ratio;
       return {
-        x: 380 + Math.cos(angle) * spread * 1.23,
-        y: 260 + Math.sin(angle) * spread * 0.72
+        x: center.x + Math.cos(angle) * spread * 1.03,
+        y: center.y + Math.sin(angle) * spread * 0.75
       };
     });
-    const minDistance = total <= 24 ? 82 : total <= 72 ? 38 : 16;
-    const bounds = { left: 38, right: 722, top: 46, bottom: 474 };
-    for (let iteration = 0; iteration < 90; iteration++){
+    const bounds = {
+      left: maxRadius + 34,
+      right: width - maxRadius - 34,
+      top: maxRadius + 34,
+      bottom: height - maxRadius - 34
+    };
+    const iterations = total > 500 ? 6 : total > 180 ? 14 : total > 72 ? 32 : 72;
+    for (let iteration = 0; iteration < iterations; iteration++){
       for (let a = 0; a < positions.length; a++){
         for (let b = a + 1; b < positions.length; b++){
           const dx = positions[b].x - positions[a].x;
           const dy = positions[b].y - positions[a].y;
           const distance = Math.max(Math.hypot(dx, dy), 0.01);
-          if (distance >= minDistance) continue;
-          const push = (minDistance - distance) * 0.08;
+          const minimum = (radii[a] || maxRadius) + (radii[b] || maxRadius) + gap;
+          if (distance >= minimum) continue;
+          const push = (minimum - distance) * (total > 180 ? 0.12 : 0.10);
           const ux = dx / distance;
           const uy = dy / distance;
           positions[a].x -= ux * push;
@@ -317,12 +361,48 @@
           positions[b].y += uy * push;
         }
       }
-      positions.forEach(position => {
-        position.x = Math.max(bounds.left, Math.min(bounds.right, position.x));
-        position.y = Math.max(bounds.top, Math.min(bounds.bottom, position.y));
+      positions.forEach((position, index) => {
+        const radius = radii[index] || maxRadius;
+        position.x = Math.max(bounds.left + radius - maxRadius, Math.min(bounds.right - radius + maxRadius, position.x));
+        position.y = Math.max(bounds.top + radius - maxRadius, Math.min(bounds.bottom - radius + maxRadius, position.y));
       });
     }
-    return positions;
+    return { positions, width, height };
+  }
+
+  function wrapFullNodeLabel(value, maxChars = 13){
+    const words = String(value || "Elemento").split(/\s+/).filter(Boolean);
+    const lines = [];
+    let current = "";
+    const pushWord = word => {
+      if (word.length <= maxChars){
+        if (!current || `${current} ${word}`.length <= maxChars) current = current ? `${current} ${word}` : word;
+        else { lines.push(current); current = word; }
+        return;
+      }
+      if (current) { lines.push(current); current = ""; }
+      for (let offset = 0; offset < word.length; offset += maxChars) lines.push(word.slice(offset, offset + maxChars));
+    };
+    words.forEach(pushWord);
+    if (current) lines.push(current);
+    return lines.length ? lines : ["Elemento"];
+  }
+
+  function centerCanvas(){
+    requestAnimationFrame(() => {
+      networkCanvas.scrollLeft = Math.max(0, (networkCanvas.scrollWidth - networkCanvas.clientWidth) / 2);
+      networkCanvas.scrollTop = Math.max(0, (networkCanvas.scrollHeight - networkCanvas.clientHeight) / 2);
+    });
+  }
+
+  function itemNodeSpec(item, total){
+    const fontSize = total <= 24 ? 10 : total <= 72 ? 9.2 : total <= 180 ? 8.4 : total <= 400 ? 7.8 : 7.2;
+    const maxChars = total <= 24 ? 15 : total <= 72 ? 14 : total <= 180 ? 13 : total <= 400 ? 12 : 11;
+    const lines = wrapFullNodeLabel(item.name, maxChars);
+    const lineHeight = fontSize + 2.4;
+    const textHeight = lines.length * lineHeight;
+    const radius = Math.max(total <= 24 ? 31 : total <= 72 ? 25 : total <= 180 ? 23 : 21, Math.ceil((textHeight + fontSize + 18) / 2));
+    return { lines, radius, fontSize, iconSize: fontSize + 5 };
   }
 
   function networkEdges(items){
@@ -358,7 +438,10 @@
       return;
     }
 
-    const positions = organicPositions(total);
+    const specs = filtered.map(item => itemNodeSpec(item, total));
+    const layout = organicLayout(total, specs.map(spec => spec.radius));
+    const positions = layout.positions;
+    applySceneSize(layout.width, layout.height);
     networkEdges(filtered).forEach(({ from, to, kind }) => {
       const edge = svgElement("line", {
         x1: positions[from].x, y1: positions[from].y,
@@ -368,9 +451,9 @@
       networkLinks.appendChild(edge);
     });
 
-    const radius = total <= 24 ? 31 : total <= 72 ? 8 : 5.5;
     filtered.forEach((item, index) => {
       const position = positions[index];
+      const spec = specs[index];
       const sheetClass = String(item.source_sheet || "pot").toLocaleLowerCase("es").replace(/[^a-z0-9]+/g, "-");
       const node = svgElement("g", {
         class: `category-network-node category-network-node-${sheetClass}`,
@@ -379,26 +462,28 @@
         role: "img",
         "aria-label": itemLabel(item)
       });
-      const circle = svgElement("circle", { r: radius, class: "category-network-node-circle" });
+      const circle = svgElement("circle", { r: spec.radius, class: "category-network-node-circle" });
       const tooltip = svgElement("title");
       tooltip.textContent = itemLabel(item);
       node.appendChild(tooltip);
       node.appendChild(circle);
-      if (total <= 24){
-        const icon = svgElement("text", { class: "category-network-icon", x: "0", y: "-9" });
-        icon.textContent = iconForItem(item);
-        node.appendChild(icon);
-        const label = svgElement("text", { class: "category-network-label", x: "0", y: "5" });
-        wrapNodeLabel(item.name, total <= 18 ? 11 : 13, 3).forEach((line, lineIndex) => {
-          const tspan = svgElement("tspan", { x: "0", dy: lineIndex === 0 ? "0" : "9" });
-          tspan.textContent = line;
-          label.appendChild(tspan);
-        });
-        node.appendChild(label);
-      }
+
+      // Cada elemento mantiene su identidad aun en redes de 1.000 nodos.
+      // El zoom físico del SVG permite leer estas etiquetas sin descartarlas.
+      const icon = svgElement("text", { class: "category-network-icon", x: "0", y: `${-(spec.lines.length * (spec.fontSize + 2.4)) / 2 - 2}`, style: `font-size:${spec.iconSize}px` });
+      icon.textContent = iconForItem(item);
+      node.appendChild(icon);
+      const label = svgElement("text", { class: "category-network-label", x: "0", y: `${-(spec.lines.length * (spec.fontSize + 2.4)) / 2 + spec.fontSize + 4}`, style: `font-size:${spec.fontSize}px` });
+      spec.lines.forEach((line, lineIndex) => {
+        const tspan = svgElement("tspan", { x: "0", dy: lineIndex === 0 ? "0" : `${spec.fontSize + 2.4}` });
+        tspan.textContent = line;
+        label.appendChild(tspan);
+      });
+      node.appendChild(label);
       networkNodes.appendChild(node);
     });
     applyViewport();
+    centerCanvas();
   }
 
   function getFilteredItems(){
