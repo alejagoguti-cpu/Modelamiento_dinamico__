@@ -553,6 +553,26 @@ if (window.rapotData?.ready){
       };
     });
 
+    // Humedales es un concepto propio del sistema hídrico y debe poder abrirse
+    // directamente, sin obligar al usuario a entrar primero a toda la categoría.
+    if (colorKey === "green"){
+      const wetlandConcept = concepts.find(concept => concept.name.toLocaleLowerCase("es") === "humedales");
+      if (wetlandConcept){
+        nodes.push({
+          id: `db-concept-${wetlandConcept.id}`,
+          label: ["Humedales"],
+          icon: "fa-droplet",
+          x: 400,
+          y: 500,
+          r: 48,
+          groupId: wetlandConcept.group_id,
+          groupName: "Humedales",
+          itemCount: data.potItems.filter(item => item.source_sheet === "Humedales").length,
+          source: "supabase"
+        });
+      }
+    }
+
     const edges = [];
     for (let i = 1; i < nodes.length; i++){
       edges.push({

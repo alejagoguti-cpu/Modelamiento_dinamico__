@@ -276,11 +276,42 @@
       </div>
       <div id="items-modal-count" class="items-modal-count" aria-live="polite">0 elementos</div>
     </div>
-    <div class="items-modal-toolbar">
-      <label class="items-search-label" for="items-search">Buscar dentro de esta categoría</label>
-      <input id="items-search" class="items-search" type="search" placeholder="Escribe un nombre…" autocomplete="off">
+    <div class="items-modal-content">
+      <main class="items-modal-main">
+        <div class="items-modal-toolbar">
+          <label class="items-search-label" for="items-search">Buscar dentro de esta categoría</label>
+          <input id="items-search" class="items-search" type="search" placeholder="Escribe un nombre…" autocomplete="off">
+        </div>
+        <div id="category-network-view" class="category-view" aria-label="Vista en red">
+          <svg id="category-network-svg" class="category-network-svg" viewBox="0 0 760 520" role="img" aria-label="Red de elementos de la categoría">
+            <g id="category-network-links"></g>
+            <g id="category-network-nodes"></g>
+          </svg>
+        </div>
+        <div id="category-table-view" class="category-view category-table-view" hidden aria-label="Vista en tabla">
+          <div class="items-list-table-wrap">
+            <table class="items-data-table">
+              <thead>
+                <tr><th>#</th><th>Elemento</th><th>Hoja</th><th>Subcategoría</th></tr>
+              </thead>
+              <tbody id="items-list" aria-live="polite"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+      <aside class="items-side-panel" aria-label="Opciones de visualización">
+        <p class="items-side-kicker">Representación</p>
+        <button class="items-view-button is-active" type="button" data-category-view="network">
+          <span class="items-view-icon">⌘</span>
+          <span><strong>Vista en red</strong><small>Relaciones y nodos</small></span>
+        </button>
+        <button class="items-view-button" type="button" data-category-view="table">
+          <span class="items-view-icon">▦</span>
+          <span><strong>Vista en tabla</strong><small>Todos los registros</small></span>
+        </button>
+        <div class="items-side-note">Ambas vistas usan los mismos datos consultados en Supabase.</div>
+      </aside>
     </div>
-    <div id="items-list" class="items-list" aria-live="polite"></div>
   </section>
 </div>
 
