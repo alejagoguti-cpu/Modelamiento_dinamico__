@@ -31,6 +31,31 @@ const relations = {
     page: "p. 35"
   }
 };
+
+function installDynamicRelationData(data){
+  const structureNames = Object.fromEntries((data.structures || []).map(item => [item.id, item.name]));
+  const refsByRelationship = new Map();
+  (data.references || []).forEach(ref => {
+    if (!refsByRelationship.has(ref.relationship_id)) refsByRelationship.set(ref.relationship_id, []);
+    refsByRelationship.get(ref.relationship_id).push(ref.reference_text);
+  });
+  (data.relationships || []).slice(0, 6).forEach((relationship, index) => {
+    const key = `e${index + 1}`;
+    const source = structureNames[relationship.source_structure_id] || relationship.source_structure_id;
+    const target = structureNames[relationship.target_structure_id] || relationship.target_structure_id;
+    const references = refsByRelationship.get(relationship.id) || [];
+    relations[key] = {
+      label: `${source} → ${target}`,
+      quote: relationship.description || references[0] || "Relación cargada desde Supabase.",
+      page: references.length ? "Referencias POT cargadas desde Supabase" : "Relación cargada desde Supabase"
+    };
+  });
+}
+if (window.rapotData?.ready){
+  window.rapotData.ready.then(installDynamicRelationData).catch(() => {
+    /* Los textos originales del diagrama permanecen como respaldo */
+  });
+}
 // ===================== POPUP DE RELACIONES =====================
 (function initRelationPopups(){
   const links = document.querySelectorAll(".link[data-relation]");
@@ -460,7 +485,126 @@ const relations = {
           cita:"\"son el testimonio de complejas estrategias de cómo interpretamos y valoramos las huellas del territorio que hoy habitamos\"." } }
       ]
     }
+    };
+
+  // ===================== DATOS DINÁMICOS DESDE SUPABASE =====================
+  const STRUCTURE_BY_COLOR = { green: "EEP", blue: "EFC", purple: "EIP", yellow: "ESECI" };
+  const ICON_BY_GROUP = {
+    "Sistema Hídrico": "fa-water",
+    "Coberturas Vegetales": "fa-seedling",
+    "Áreas Protegidas": "fa-shield-halved",
+    "Conectividad Ecosistémica": "fa-leaf",
+    "Red Vial Completa": "fa-road",
+    "Transporte Sostenible": "fa-bus",
+    "Equipamientos y Servicios": "fa-building",
+    "Espacio Público": "fa-tree",
+    "Patrimonio Natural": "fa-tree",
+    "Patrimonio Cultural Material": "fa-landmark",
+    "Patrimonio Inmaterial": "fa-masks-theater",
+    "Sitios Sagrados": "fa-place-of-worship",
+    "Zonas Productivas": "fa-industry",
+    "Educación y Conocimiento": "fa-graduation-cap",
+    "Comercio y Servicios": "fa-store",
+    "Vivienda": "fa-house"
   };
+
+  function labelLines(value, maxLength = 18){
+    const words = String(value || "Concepto").split(/\s+/).filter(Boolean);
+    const lines = [];
+    let current = "";
+    words.forEach(word => {
+      if (!current) current = word;
+      else if ((current + " " + word).length <= maxLength) current += " " + word;
+      else { lines.push(current); current = word; }
+    });
+    if (current) lines.push(current);
+    return lines.slice(0, 3);
+  }
+
+  function buildDynamicNetwork(colorKey, data){
+    const structureId = STRUCTURE_BY_COLOR[colorKey];
+    const structure = data.structures.find(item => item.id === structureId);
+    const groups = data.groups
+      .filter(group => group.structure_id === structureId)
+      .sort((a, b) => a.name.localeCompare(b.name, "es"));
+    const groupIds = new Set(groups.map(group => group.id));
+    const concepts = data.concepts
+      .filter(concept => groupIds.has(concept.group_id))
+      .sort((a, b) => a.name.localeCompare(b.name, "es"));
+    if (!structure || !concepts.length) return null;
+
+    const groupById = new Map(groups.map(group => [group.id, group]));
+    const nodes = concepts.map((concept, index) => {
+      const angle = (index / concepts.length) * Math.PI * 2 - Math.PI / 2;
+      const radius = concepts.length > 12 ? 218 : 190;
+      const group = groupById.get(concept.group_id);
+      return {
+        id: `db-${concept.id}`,
+        label: labelLines(concept.name),
+        icon: ICON_BY_GROUP[group?.name] || "fa-circle-nodes",
+        x: 400 + radius * Math.cos(angle),
+        y: 300 + radius * Math.sin(angle),
+        r: 32,
+        groupId: concept.group_id,
+        groupName: group?.name || "Conceptos",
+        source: "supabase",
+        detail: concept.detail || {}
+      };
+    });
+
+    const edges = [];
+    const firstByGroup = new Map();
+    groups.forEach(group => {
+      const groupNodes = nodes.filter(node => node.groupId === group.id);
+      if (!groupNodes.length) return;
+      firstByGroup.set(group.id, groupNodes[0]);
+      for (let i = 1; i < groupNodes.length; i++){
+        edges.push({
+          from: groupNodes[i - 1].id,
+          to: groupNodes[i].id,
+          kind: "soporte",
+          directed: false,
+          dashed: true,
+          sustento: {
+            tipoLabel: group.name,
+            cita: `Conceptos agrupados dinámicamente desde Supabase: ${group.name}.`,
+            pagina: null
+          }
+        });
+      }
+    });
+    const groupRoots = groups.map(group => firstByGroup.get(group.id)).filter(Boolean);
+    for (let i = 1; i < groupRoots.length; i++){
+      edges.push({
+        from: groupRoots[i - 1].id,
+        to: groupRoots[i].id,
+        kind: "directa",
+        directed: false,
+        sustento: {
+          tipoLabel: "Relación de grupo",
+          cita: `Conexión entre grupos de conceptos de ${structure.name}, cargados desde Supabase.`,
+          pagina: null
+        }
+      });
+    }
+
+    return {
+      title: structure.name,
+      count: nodes.length,
+      groupCount: groups.length,
+      accent: colorKey,
+      nodes,
+      edges,
+      source: "supabase"
+    };
+  }
+
+  function installDynamicNetworks(data){
+    Object.keys(STRUCTURE_BY_COLOR).forEach(colorKey => {
+      const dynamicNetwork = buildDynamicNetwork(colorKey, data);
+      if (dynamicNetwork) NETWORKS[colorKey] = dynamicNetwork;
+    });
+  }
 
   const SVG_NS = "http://www.w3.org/2000/svg";
   const overlay   = document.getElementById("redes-modal-overlay");
@@ -528,7 +672,9 @@ const relations = {
 
     titleEl.textContent = net.title;
     titleEl.style.color = getComputedColor(net.accent);
-    subtitleEl.textContent = `Modo Analítico // Nodos = ${net.count}`;
+    subtitleEl.textContent = net.groupCount
+      ? `Datos de Supabase // ${net.groupCount} grupos · ${net.count} conceptos`
+      : `Modo Analítico // Nodos = ${net.count}`;
 
     edgesG.innerHTML = "";
     nodesG.innerHTML = "";
@@ -842,11 +988,29 @@ const relations = {
 
   async function loadCoarseGrainingData(){
     try {
+      if (window.rapotData){
+        const items = await window.rapotData.getPotItems();
+        const bySheet = {};
+        items.forEach(item => {
+          const sheet = item.source_sheet || "Otros";
+          if (!bySheet[sheet]) bySheet[sheet] = [];
+          if (item.name) bySheet[sheet].push(item.name);
+        });
+        const roads = ["Vías Arteriales", "Ciclorutas"].flatMap(sheet => bySheet[sheet] || []);
+        const parks = bySheet["Parques"] || [];
+        const equipmentSheets = ["Educación", "Salud", "Cultura", "Deporte", "Cuidado"];
+        const equipment = equipmentSheets.flatMap(sheet => bySheet[sheet] || []);
+        return {
+          red_vial: Object.fromEntries(Object.entries(bySheet).map(([sheet, names]) => [sheet, { vias: names }]))
+          ,coarse: { roads, parks, equipment }
+          ,source: "supabase"
+        };
+      }
       const response = await fetch('./data/vias_bogota.json');
       const data = await response.json();
-      return data;
+      return { ...data, source: "local" };
     } catch (err){
-      console.error("Error cargando vias_bogota.json:", err);
+      console.error("Error cargando datos POT desde Supabase/local:", err);
       return null;
     }
   }
@@ -892,19 +1056,18 @@ const relations = {
     let subElements = [];
 
     if (nodeId === "redvial" && viasData){
-      const todasLasVias = [];
-      if (viasData.red_vial){
+      const todasLasVias = viasData.coarse?.roads || [];
+      if (todasLasVias.length){
+        subElements = todasLasVias.slice(0, 120);
+      } else if (viasData.red_vial){
         Object.values(viasData.red_vial).forEach(categoria => {
-          if (categoria && categoria.vias && Array.isArray(categoria.vias)){
-            todasLasVias.push(...categoria.vias);
-          }
+          if (categoria && categoria.vias && Array.isArray(categoria.vias)) subElements.push(...categoria.vias);
         });
       }
-      subElements = todasLasVias;
     } else if (nodeId === "parques" && viasData){
-      subElements = Array(16).fill(0).map((_, i) => `Parque ${i + 1}`);
+      subElements = (viasData.coarse?.parks || []).slice(0, 60);
     } else if (nodeId === "equipamient" && viasData){
-      subElements = Array(25).fill(0).map((_, i) => `Equipamiento ${i + 1}`);
+      subElements = (viasData.coarse?.equipment || []).slice(0, 60);
     }
 
     if (subElements.length > 0){
@@ -933,5 +1096,11 @@ const relations = {
   loadCoarseGrainingData().then(data => {
     window.viasData = data;
   });
+
+  if (window.rapotData?.ready){
+    window.rapotData.ready
+      .then(data => installDynamicNetworks(data))
+      .catch(() => { /* se mantienen las redes locales como respaldo */ });
+  }
 
 })();
