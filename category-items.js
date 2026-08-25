@@ -22,6 +22,7 @@
   const zoomLevel = document.getElementById("category-zoom-level");
   const zoomButtons = [...overlay.querySelectorAll("[data-zoom-action]")];
   const viewButtons = [...overlay.querySelectorAll("[data-category-view]")];
+  const backButton = document.getElementById("items-modal-back");
 
   let activeItems = [];
   let activeTitle = "Elementos de la categoría";
@@ -31,6 +32,8 @@
   let panX = 0;
   let panY = 0;
   let dragState = null;
+  let parentContext = null;
+  let activeChildCategories = [];
 
   // Correspondencia exacta entre los grupos analíticos y las hojas del Excel en Supabase.
   const SHEETS_BY_CATEGORY = [
@@ -171,7 +174,103 @@
       button.classList.toggle("is-active", active);
       button.setAttribute("aria-pressed", active ? "true" : "false");
     });
-    if (currentView === "network") renderNetwork();
+    if (currentView === "network"){
+      if (activeChildCategories.length) renderCategoryMenuNetwork();
+      else renderNetwork();
+    }
+  }
+
+  function filteredChildCategories(){
+    const term = search.value.trim().toLocaleLowerCase("es");
+    if (!term) return activeChildCategories;
+    return activeChildCategories.filter(category => [category.name, ...(category.item_sheets || [])].join(" ").toLocaleLowerCase("es").includes(term));
+  }
+
+  const ICON_CODE_BY_CATEGORY = {
+    "fa-graduation-cap": 0xf19d, "fa-heart-pulse": 0xf21e, "fa-masks-theater": 0xf630,
+    "fa-futbol": 0xf1e3, "fa-hand-holding-heart": 0xf4be, "fa-tree": 0xf1bb,
+    "fa-road": 0xf018, "fa-bicycle": 0xf206, "fa-water": 0xf773, "fa-droplet": 0xf043,
+    "fa-landmark": 0xf66f, "fa-store": 0xf54e, "fa-location-dot": 0xf3c5
+  };
+
+  function renderCategoryMenuNetwork(){
+    networkLinks.innerHTML = "";
+    networkNodes.innerHTML = "";
+    const categories = filteredChildCategories();
+    if (!categories.length){
+      const message = svgElement("text", { x: "380", y: "260", class: "category-network-empty" });
+      message.textContent = "No se encontraron subcategorías";
+      networkNodes.appendChild(message);
+      return;
+    }
+    const positions = organicPositions(categories.length);
+    for (let index = 1; index < categories.length; index++){
+      const edge = svgElement("line", {
+        x1: positions[index - 1].x, y1: positions[index - 1].y,
+        x2: positions[index].x, y2: positions[index].y,
+        class: "category-network-edge category-network-edge-subcategory"
+      });
+      networkLinks.appendChild(edge);
+    }
+    categories.forEach((category, index) => {
+      const radius = category.item_count > 100 ? 34 : category.item_count > 70 ? 31 : 28;
+      const position = positions[index];
+      const node = svgElement("g", {
+        class: "category-network-node category-network-node-subcategory",
+        transform: `translate(${position.x.toFixed(1)},${position.y.toFixed(1)})`,
+        tabindex: "0", role: "button", "aria-label": `${category.name} · ${category.item_count} elementos`
+      });
+      const circle = svgElement("circle", { r: radius, class: "category-network-node-circle" });
+      if (category.color) circle.style.stroke = category.color;
+      const icon = svgElement("text", { class: "category-network-icon", x: "0", y: "-7" });
+      icon.textContent = String.fromCodePoint(ICON_CODE_BY_CATEGORY[category.icon] || 0xf1b9);
+      if (category.color) icon.style.fill = category.color;
+      const label = svgElement("text", { class: "category-network-label", x: "0", y: "7" });
+      wrapNodeLabel(category.name, categories.length > 6 ? 10 : 13, 3).forEach((line, lineIndex) => {
+        const tspan = svgElement("tspan", { x: "0", dy: lineIndex === 0 ? "0" : "9" });
+        tspan.textContent = line;
+        label.appendChild(tspan);
+      });
+      node.append(circle, icon, label);
+      const openChild = event => {
+        event.preventDefault();
+        event.stopPropagation();
+        open(category, parentContext?.network);
+      };
+      node.addEventListener("click", openChild);
+      node.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") openChild(event);
+      });
+      networkNodes.appendChild(node);
+    });
+    applyViewport();
+  }
+
+  function renderCategoryMenuTable(){
+    const categories = filteredChildCategories();
+    if (!categories.length){
+      list.innerHTML = `<tr><td class="items-list-empty-cell" colspan="4">No se encontraron subcategorías.</td></tr>`;
+      return;
+    }
+    list.innerHTML = categories.map((category, index) => `
+      <tr class="items-table-row items-category-row" data-child-index="${index}" tabindex="0">
+        <td class="items-table-index">${String(index + 1).padStart(2, "0")}</td>
+        <td class="items-table-name"><span class="items-category-color" style="--category-color:${escapeHtml(category.color || "#3fd0bf")}"></span>${escapeHtml(category.name)}</td>
+        <td>${escapeHtml((category.item_sheets || []).join(" + ") || "—")}</td>
+        <td>${Number(category.item_count || 0)} elementos</td>
+      </tr>
+    `).join("");
+    list.querySelectorAll("[data-child-index]").forEach((row, index) => {
+      const openChild = event => {
+        event.preventDefault();
+        event.stopPropagation();
+        open(categories[index], parentContext?.network);
+      };
+      row.addEventListener("click", openChild);
+      row.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") openChild(event);
+      });
+    });
   }
 
   function renderTable(filtered){
@@ -309,10 +408,36 @@
   }
 
   function renderDataViews(){
+    if (activeChildCategories.length){
+      const categories = filteredChildCategories();
+      count.textContent = `${categories.length} subcategoría${categories.length === 1 ? "" : "s"}`;
+      renderCategoryMenuTable();
+      renderCategoryMenuNetwork();
+      return;
+    }
     const filtered = getFilteredItems();
     count.textContent = `${filtered.length} elemento${filtered.length === 1 ? "" : "s"}`;
     renderTable(filtered);
     renderNetwork();
+  }
+
+  function openCategoryMenu(node, network){
+    parentContext = { node, network };
+    activeChildCategories = Array.isArray(node.categoryChildren) ? node.categoryChildren : [];
+    activeItems = [];
+    activeSheets = [];
+    activeTitle = node.groupName || node.label?.join(" ") || "Categorías";
+    title.textContent = activeTitle;
+    subtitle.textContent = "Selecciona una subcategoría para explorar sus datos exclusivos de Supabase.";
+    count.textContent = `${activeChildCategories.length} subcategorías`;
+    list.innerHTML = "";
+    search.value = "";
+    backButton.hidden = true;
+    overlay.hidden = false;
+    document.body.style.overflow = "hidden";
+    resetViewport();
+    setView("network");
+    search.focus({ preventScroll: true });
   }
 
   async function open(node, network){
@@ -321,6 +446,8 @@
     activeSheets = category.sheets;
     title.textContent = activeTitle;
     subtitle.textContent = "Cargando registros desde Supabase…";
+    activeChildCategories = [];
+    backButton.hidden = !parentContext;
     count.textContent = "…";
     list.innerHTML = `<tr><td class="items-list-empty-cell" colspan="4">Consultando los elementos de la categoría…</td></tr>`;
     networkLinks.innerHTML = "";
@@ -357,7 +484,14 @@
   function close(){
     overlay.hidden = true;
     document.body.style.overflow = "";
+    parentContext = null;
+    activeChildCategories = [];
   }
+
+  backButton?.addEventListener("click", event => {
+    event.preventDefault();
+    if (parentContext) openCategoryMenu(parentContext.node, parentContext.network);
+  });
 
   search.addEventListener("input", renderDataViews);
   viewButtons.forEach(button => button.addEventListener("click", () => setView(button.dataset.categoryView)));
@@ -402,5 +536,5 @@
   overlay.addEventListener("click", event => { if (event.target === overlay) close(); });
   document.addEventListener("keydown", event => { if (event.key === "Escape" && !overlay.hidden) close(); });
 
-  window.rapotItems = { open, close, setView };
+  window.rapotItems = { open, openCategoryMenu, close, setView };
 })();

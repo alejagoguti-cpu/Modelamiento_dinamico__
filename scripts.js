@@ -609,10 +609,79 @@ if (window.rapotData?.ready){
     };
   }
 
+  const CHILDREN_PARENT_NODES = {
+    green: {
+      "Sistema Hídrico": ["rios"]
+    },
+    blue: {
+      "Equipamientos y Servicios": ["equipamient"],
+      "Red Vial Completa": ["redvial"]
+    },
+    purple: {
+      "Patrimonio Cultural Material": ["material"]
+    },
+    yellow: {
+      "Comercio y Servicios": ["empresa"]
+    }
+  };
+
+  const DIRECT_CATEGORY_SHEETS = {
+    green: {
+      "corredores": ["Sistema Hídrico"], "cerros": ["Sistema Hídrico"], "protegidas": ["Parques"],
+      "rios": ["Sistema Hídrico"], "quebradas": ["Sistema Hídrico"], "humedales": ["Humedales"],
+      "parquesmnt": ["Parques"], "paramos": ["Parques"], "coberturas": ["Parques", "Humedales"],
+      "bosques": ["Parques"], "resiliencia": ["Humedales", "Parques"], "parquesborde": ["Parques"],
+      "reservas": ["Parques"], "paisajes": ["Parques", "Humedales"]
+    },
+    blue: {
+      "cuidado": ["Cuidado"], "equipamient": ["Educación", "Salud", "Cultura", "Deporte", "Cuidado"],
+      "servpub": ["Sistema Hídrico"], "ciclorrutas": ["Ciclorutas"], "servsoc": ["Cuidado"],
+      "vivienda": ["Localidades"], "transporte": ["Vías Arteriales", "Ciclorutas"],
+      "parques": ["Parques"], "redvial": ["Vías Arteriales", "Ciclorutas"], "manzanas": ["Localidades"],
+      "corredoresv": ["Ciclorutas"]
+    },
+    purple: {
+      "sagrados": ["Cultura"], "arqueologico": ["Cultura"], "inmaterial": ["Cultura"],
+      "material": ["Cultura"], "natural": ["Parques", "Humedales", "Sistema Hídrico"]
+    },
+    yellow: {
+      "distrito": ["Educación"], "abastec": ["Comercio"], "empresa": ["Comercio"],
+      "plazas": ["Comercio"], "industria": ["Comercio"], "educacion": ["Educación"],
+      "turismo": ["Comercio"], "financier": ["Comercio"], "artesanal": ["Comercio"]
+    }
+  };
+
   function installDynamicNetworks(data){
-    Object.keys(STRUCTURE_BY_COLOR).forEach(colorKey => {
-      const dynamicNetwork = buildDynamicNetwork(colorKey, data);
-      if (dynamicNetwork) NETWORKS[colorKey] = dynamicNetwork;
+    // Conserva las categorías originales de NETWORKS y solo añade las categorías
+    // hijas provenientes de Supabase a los nodos padres saturados.
+    const groupsById = new Map((data.groups || []).map(group => [group.id, group.name]));
+    const categoryNodes = (data.categoryNodes || []).filter(category => category.active !== false);
+    Object.entries(DIRECT_CATEGORY_SHEETS).forEach(([colorKey, nodeSheets]) => {
+      const network = NETWORKS[colorKey];
+      if (!network) return;
+      network.nodes.forEach(node => {
+        const sheets = nodeSheets[node.id];
+        if (!sheets) return;
+        node.itemSheets = sheets;
+        node.groupName = node.groupName || node.label?.join(" ") || node.id;
+      });
+    });
+    Object.entries(CHILDREN_PARENT_NODES).forEach(([colorKey, parents]) => {
+      const network = NETWORKS[colorKey];
+      if (!network) return;
+      Object.entries(parents).forEach(([parentGroupName, nodeIds]) => {
+        const children = categoryNodes
+          .filter(category => groupsById.get(category.parent_group_id) === parentGroupName)
+          .sort((a, b) => (a.sort_order - b.sort_order) || a.name.localeCompare(b.name, "es"));
+        if (!children.length) return;
+        nodeIds.forEach(nodeId => {
+          const node = network.nodes.find(candidate => candidate.id === nodeId);
+          if (node){
+            node.categoryChildren = children;
+            node.groupName = node.groupName || parentGroupName;
+          }
+        });
+      });
     });
   }
 
@@ -821,9 +890,10 @@ if (window.rapotData?.ready){
         ev.stopPropagation();
         // Cada categoría abre un segundo diálogo dedicado al listado completo.
         // El modal de la red permanece intacto detrás, evitando mezclar grafo y registros.
-        const hasCategoryData = Boolean(n.groupName) || isExpandable;
+        const hasCategoryData = Boolean(n.groupName) || isExpandable || (n.categoryChildren && n.categoryChildren.length);
         if (window.rapotItems && hasCategoryData){
-          window.rapotItems.open(n, net);
+          if (n.categoryChildren?.length) window.rapotItems.openCategoryMenu(n, net);
+          else window.rapotItems.open(n, net);
           return;
         }
         const dimmed = g.classList.toggle("is-dimmed");
