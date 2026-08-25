@@ -75,6 +75,13 @@
     "Vivienda": { title: "Vivienda y territorio", sheets: ["Localidades"] }
   };
 
+  function normalizeSheet(value){
+    return Array.from(String(value || "").trim().normalize("NFD")).filter(char => {
+      const code = char.charCodeAt(0);
+      return code < 768 || code > 879;
+    }).join("").toLocaleLowerCase("es");
+  }
+
   function resolveCategory(node, network){
     if (Array.isArray(node?.itemSheets) && node.itemSheets.length){
       return { title: node.groupName || "Elementos de la categoría", sheets: node.itemSheets };
@@ -327,8 +334,9 @@
 
     try {
       const items = await window.rapotData.getPotItems();
+      const allowedSheets = new Set(activeSheets.map(normalizeSheet));
       activeItems = activeSheets.length
-        ? items.filter(item => activeSheets.includes(item.source_sheet))
+        ? items.filter(item => allowedSheets.has(normalizeSheet(item.source_sheet)))
         : items.filter(item => {
             const haystack = [item.source_sheet, item.source_header, item.subcategory, item.name].filter(Boolean).join(" ").toLocaleLowerCase("es");
             return activeTitle.toLocaleLowerCase("es").split(/\s+/).some(token => token.length > 4 && haystack.includes(token));
