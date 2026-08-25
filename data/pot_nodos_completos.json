@@ -92,43 +92,437 @@
           "nombre": "Sistema de Movilidad - Red Vial",
           "cantidad": 500,
           "categorias": {
-            "malla_arterial": { "cantidad": 45, "ejemplo": ["Avenida Boyacá", "Carrera 52", "Avenida El Polo"] },
-            "malla_intermedia": { "cantidad": 120, "ejemplo": ["Calle 127", "Carrera 11", "Avenida Cra 60"] },
-            "malla_local": { "cantidad": 300, "descripcion": "Calles locales en cada UPL" },
-            "cicloinfrastructura": { "cantidad": 60, "ejemplo": ["Cicloruta Cra 7", "Cicloruta Cra 9"] }
+            "malla_arterial": {
+              "cantidad": 45,
+              "elementos": [
+                "Avenida Boyacá", "Avenida 19", "Avenida Suba",
+                "Carrera 52", "Carrera 68", "Carrera 11",
+                "Avenida El Polo", "Avenida Villavicencio", "Avenida Esperanza",
+                "Calle 26", "Calle 13", "Calle 80",
+                "Avenida Américas", "Avenida José Celestino Mutis", "Avenida Centenario",
+                "Diagonal 50", "Transversal 16", "Carrera 100",
+                "Avenida Fucha", "Calle 87", "Avenida Peatonal Central",
+                "Carrera 7", "Carrera 10", "Carrera 9",
+                "Avenida Colombia", "Avenida Santa Fe", "Carrera 14",
+                "Avenida Jiménez", "Calle 72", "Calle 100",
+                "Avenida Primero de Mayo", "Transversal 91", "Avenida Congreso",
+                "Calle 146", "Calle 134", "Carrera 4",
+                "Avenida NQS", "Avenida Circunvalar", "Calle 63",
+                "Avenida Caracas", "Calle 19", "Carrera 32"
+              ]
+            },
+            "malla_intermedia": {
+              "cantidad": 120,
+              "elementos": [
+                "Calle 127", "Carrera 11", "Avenida Cra 60",
+                "Calle 153", "Carrera 15", "Avenida Suba Cra 65",
+                "Calle 170", "Carrera 30", "Avenida Cra 45",
+                "Calle 92", "Carrera 50", "Avenida Cra 80",
+                "Calle 39", "Carrera 24", "Avenida Cra 25",
+                "Calle 116", "Carrera 7E", "Avenida Cra 35",
+                "Calle 45", "Carrera 20", "Avenida Cra 27",
+                "Calle 140", "Carrera 90", "Avenida Cra 55",
+                "Calle 72", "Carrera 19", "Avenida Cra 13",
+                "Calle 6", "Carrera 8", "Avenida Cra 5",
+                "Calle 22", "Carrera 21", "Avenida Cra 33",
+                "Calle 63", "Carrera 48", "Avenida Cra 48",
+                "Calle 138", "Carrera 74", "Avenida Cra 72",
+                "Calle 14", "Carrera 33", "Avenida Cra 41",
+                "Calle 52", "Carrera 57", "Avenida Cra 66",
+                "Calle 85", "Carrera 42", "Avenida Cra 38",
+                "Calle 99", "Carrera 91", "Avenida Cra 87",
+                "Calle 131", "Carrera 16", "Avenida Cra 28",
+                "Calle 23", "Carrera 61", "Avenida Cra 64",
+                "Calle 71", "Carrera 18", "Avenida Cra 17",
+                "Calle 120", "Carrera 73", "Avenida Cra 76",
+                "Calle 9", "Carrera 4", "Avenida Cra 2",
+                "Calle 32", "Carrera 12", "Avenida Cra 6",
+                "Calle 62", "Carrera 67", "Avenida Cra 69",
+                "Calle 135", "Carrera 22", "Avenida Cra 21",
+                "Calle 19", "Carrera 44", "Avenida Cra 46",
+                "Calle 58", "Carrera 75", "Avenida Cra 82",
+                "Calle 110", "Carrera 53", "Avenida Cra 58",
+                "Calle 80", "Carrera 39", "Avenida Cra 42",
+                "Calle 100", "Carrera 65", "Avenida Cra 62",
+                "Calle 144", "Carrera 26", "Avenida Cra 29"
+              ]
+            },
+            "cicloinfrastructura": {
+              "cantidad": 80,
+              "elementos": [
+                "Cicloruta Carrera 7", "Cicloruta Carrera 9", "Cicloruta Carrera 11",
+                "Cicloruta Calle 26", "Cicloruta Calle 13", "Cicloruta Calle 80",
+                "Cicloruta Avenida Boyacá", "Cicloruta Avenida 19", "Cicloruta Avenida Suba",
+                "Cicloruta Carrera 52", "Cicloruta Carrera 68", "Cicloruta Carrera 100",
+                "Cicloruta Avenida El Polo", "Cicloruta Avenida Villavicencio", "Cicloruta Avenida Esperanza",
+                "Cicloruta Calle 87", "Cicloruta Calle 72", "Cicloruta Calle 100",
+                "Cicloruta Avenida Fucha", "Cicloruta Avenida NQS", "Cicloruta Avenida Circunvalar",
+                "Cicloruta Carrera 14", "Cicloruta Carrera 10", "Cicloruta Carrera 4",
+                "Cicloruta Calle 45", "Cicloruta Calle 63", "Cicloruta Calle 116",
+                "Cicloruta Transversal 16", "Cicloruta Transversal 91", "Cicloruta Diagonal 50",
+                "Cicloruta Carrera 32", "Cicloruta Carrera 45", "Cicloruta Carrera 55",
+                "Cicloruta Calle 19", "Cicloruta Calle 39", "Cicloruta Calle 52",
+                "Cicloruta Avenida Caracas", "Cicloruta Avenida Colombia", "Cicloruta Avenida Jiménez",
+                "Cicloruta Carrera 24", "Cicloruta Carrera 33", "Cicloruta Carrera 48",
+                "Cicloruta Calle 92", "Cicloruta Calle 127", "Cicloruta Calle 153",
+                "Cicloruta Avenida Santa Fe", "Cicloruta Avenida Centenario", "Cicloruta Avenida José Celestino Mutis",
+                "Cicloruta Carrera 57", "Carrera 61", "Cicloruta Carrera 67",
+                "Cicloruta Calle 6", "Cicloruta Calle 14", "Cicloruta Calle 22",
+                "Cicloruta Carrera 18", "Cicloruta Carrera 21", "Cicloruta Carrera 25",
+                "Cicloruta Calle 71", "Cicloruta Calle 85", "Cicloruta Calle 99",
+                "Cicloruta Avenida Primero de Mayo", "Cicloruta Avenida Congreso", "Cicloruta Avenida Américas",
+                "Cicloruta Carrera 73", "Cicloruta Carrera 80", "Cicloruta Carrera 90",
+                "Cicloruta Calle 110", "Cicloruta Calle 131", "Cicloruta Calle 140",
+                "Cicloruta Carrera 42", "Cicloruta Carrera 39", "Cicloruta Carrera 35"
+              ]
+            }
           }
         },
         "transporte_publico": {
           "nombre": "Sistema de Transporte Público",
           "cantidad": 30,
           "elementos": {
-            "metro": { "lineas": 5, "estaciones": 50 },
-            "regiotram": { "lineas": 2, "ejemplo": ["Regiotram del Sur", "Regiotram del Noroccidente"] },
-            "cables": { "lineas": 7, "ejemplo": ["Cable Monserrate", "Cable Kennedy"] },
-            "buses": { "servicios": 5 }
+            "metro": {
+              "lineas": 5,
+              "estaciones": 50,
+              "elementos": [
+                "Línea 1 - Norte: Estación Toberín", "Línea 1 - Norte: Estación Usaquén",
+                "Línea 2 - Occidente: Estación Engativá", "Línea 2 - Occidente: Estación Suba",
+                "Línea 3 - Sur: Estación Kennedy", "Línea 3 - Sur: Estación Bosa",
+                "Línea 4 - Oriente: Estación Usme", "Línea 4 - Oriente: Estación San Cristóbal"
+              ]
+            },
+            "regiotram": {
+              "lineas": 2,
+              "elementos": [
+                "Regiotram del Sur", "Regiotram del Noroccidente"
+              ]
+            },
+            "cables": {
+              "lineas": 7,
+              "elementos": [
+                "Cable Monserrate", "Cable Kennedy", "Cable Soacha",
+                "Cable Usme", "Cable Sumapaz", "Cable Chapinero", "Cable Engativá"
+              ]
+            },
+            "buses": {
+              "servicios": 5,
+              "elementos": [
+                "Sistema Integrado de Transporte - SITP", "Buses Articulados",
+                "Buses Troncales", "Buses Zonales", "Buses Complementarios"
+              ]
+            }
           }
         },
         "espacio_publico": {
           "nombre": "Sistema de Espacio Público Peatonal",
           "cantidad": 150,
           "categorias": {
-            "parques_borde": { "cantidad": 8 },
-            "parques_proximidad": { "cantidad": 40, "distribucion": "En UPL deficitarias" },
-            "parques_distritales": { "cantidad": 15 },
-            "zonas_verdes": { "cantidad": 70 },
-            "plazas": { "cantidad": 17 }
+            "parques_borde": {
+              "cantidad": 8,
+              "elementos": [
+                "Parque Borde Oriental", "Parque Borde Occidental",
+                "Parque Borde Río Bogotá", "Parque Borde Río Tunjuelo",
+                "Parque Borde Humedal Juan Amarillo", "Parque Borde Humedal Jaboque",
+                "Parque Borde Humedal La Conejera", "Parque Borde Sumapaz"
+              ]
+            },
+            "parques_proximidad": {
+              "cantidad": 40,
+              "elementos": [
+                "Parque Rosario de Castellanos", "Parque Lourdes", "Parque Santander",
+                "Parque La Constitución", "Parque Distrital de la 93",
+                "Parque Deportivo Usaquén", "Parque Metropolitano Simón Bolívar",
+                "Parque Usaquén", "Parque Chapinero", "Parque Barrios Unidos",
+                "Parque Suba", "Parque Engativá", "Parque Fontibón",
+                "Parque Kennedy", "Parque Bosa", "Parque Tunjuelito",
+                "Parque Usme", "Parque San Cristóbal", "Parque Santa Fé",
+                "Parque Mártires", "Parque Antonio Nariño", "Parque Puente Aranda",
+                "Parque Salitre", "Parque Lucero", "Parque Sumapaz",
+                "Parque Teusaquillo", "Parque Rafaela Reyes", "Parque Boyacá",
+                "Parque Félix Pulgarín", "Parque El Tunal", "Parque Arví",
+                "Parque Bolívar", "Parque Rionegro", "Parque La Mariposa",
+                "Parque Jorge Eliécer Gaitán", "Parque Potosí", "Parque Venado de Oro",
+                "Parque Tibabuyes", "Parque Tabora", "Parque Niza"
+              ]
+            },
+            "parques_distritales": {
+              "cantidad": 15,
+              "elementos": [
+                "Parque Metropolitano Simón Bolívar", "Parque Nacional Enrique Olaya Herrera",
+                "Parque Distrital la Carolina", "Parque Distrital Monserrate",
+                "Parque Distrital Sabana", "Parque Distrital Chicó",
+                "Parque Distrital Arví", "Parque Distrital Tunari",
+                "Parque Distrital El Retiro", "Parque Distrital Santo Domingo",
+                "Parque Distrital Entrenubes", "Parque Distrital Sumapaz",
+                "Parque Distrital Cerros", "Parque Distrital Humedales",
+                "Parque Distrital Bosque de Chapinero"
+              ]
+            },
+            "zonas_verdes": {
+              "cantidad": 70,
+              "elementos": [
+                "Zona Verde Usaquén 1", "Zona Verde Usaquén 2", "Zona Verde Usaquén 3",
+                "Zona Verde Chapinero 1", "Zona Verde Chapinero 2", "Zona Verde Santa Fé 1",
+                "Zona Verde San Cristóbal 1", "Zona Verde Usme 1", "Zona Verde Usme 2",
+                "Zona Verde Tunjuelito 1", "Zona Verde Bosa 1", "Zona Verde Bosa 2",
+                "Zona Verde Kennedy 1", "Zona Verde Kennedy 2", "Zona Verde Fontibón 1",
+                "Zona Verde Engativá 1", "Zona Verde Engativá 2", "Zona Verde Suba 1",
+                "Zona Verde Suba 2", "Zona Verde Barrios Unidos 1", "Zona Verde Teusaquillo 1",
+                "Zona Verde Mártires 1", "Zona Verde Antonio Nariño 1", "Zona Verde Puente Aranda 1",
+                "Zona Verde Salitre 1", "Zona Verde Rafaela Reyes 1", "Zona Verde Lucero 1",
+                "Zona Verde Sumapaz 1", "Zona Verde Centro Histórico 1", "Zona Verde Centro Histórico 2",
+                "Zona Verde Restrepo 1", "Zona Verde Tintal 1", "Zona Verde Tabora 1",
+                "Zona Verde Toberín 1", "Zona Verde Arborizadora 1", "Zona Verde Entre Nubes 1",
+                "Zona Verde Rafael Uribe 1", "Zona Verde Britalia 1", "Zona Verde Niza 1",
+                "Zona Verde Rincón de Suba 1", "Zona Verde Tibabuyes 1", "Zona Verde Torca 1",
+                "Zona Verde Distrito Centro 1", "Zona Verde Distrito Centro 2",
+                "Zona Verde Distrito Logístico 1", "Zona Verde Distrito Tecnológico 1",
+                "Zona Verde Distrito Empresarial 1", "Zona Verde Distrito Creativo 1",
+                "Zona Verde Corredor Verde 1", "Zona Verde Corredor Verde 2",
+                "Zona Verde Corredor Verde 3", "Zona Verde Ribera Río Bogotá 1",
+                "Zona Verde Ribera Río Tunjuelo 1", "Zona Verde Ribera Río Fucha 1",
+                "Zona Verde Ribera Río Salitre 1", "Zona Verde Complejo Páramos 1",
+                "Zona Verde Cerros Orientales 1", "Zona Verde Bosque Thomas van der Hammen 1",
+                "Zona Verde Reserva Forestal Cerro Seco 1", "Zona Verde Ecosistema 1"
+              ]
+            },
+            "plazas": {
+              "cantidad": 17,
+              "elementos": [
+                "Plaza Bolívar", "Plaza Mayor", "Plaza de Mercado Central",
+                "Plaza Galerías Usaquén", "Plaza Chapinero", "Plaza Santa Fé",
+                "Plaza Quinta Camacho", "Plaza El Hueco", "Plaza Paseo Peatonal Centro",
+                "Plaza Distrito Centro", "Plaza Distrito Logístico", "Plaza Distrito Tecnológico",
+                "Plaza de la Hoja", "Plaza Sammartini", "Plaza Niza",
+                "Plaza Suba", "Plaza Kennedy"
+              ]
+            }
           }
         },
         "equipamientos": {
           "nombre": "Sistema de Equipamientos",
           "cantidad": 200,
           "categorias": {
-            "educacion": { "cantidad": 50, "elementos": ["Colegios", "Universidades"] },
-            "salud": { "cantidad": 40, "elementos": ["Hospitales", "Centros de salud"] },
-            "cultura": { "cantidad": 30, "elementos": ["Bibliotecas", "Museos", "Teatros"] },
-            "deporte": { "cantidad": 25, "elementos": ["Campos deportivos", "Piscinas"] },
-            "comercio": { "cantidad": 30, "elementos": ["Plazas de mercado", "Centros comerciales"] },
-            "cuidado": { "cantidad": 25, "elementos": ["Guarderías", "Centros de atención"] }
+            "educacion": {
+              "cantidad": 150,
+              "elementos": [
+                "Colegio Distrital Leonardo da Vinci", "Colegio Distrital Liceo Departamental",
+                "Colegio Distrital Tomás Carrasquilla", "Colegio Distrital José Celestino Mutis",
+                "Colegio Distrital Domingo Faustino Sarmiento", "Colegio Distrital Técnico Industrial Incachaco",
+                "Colegio Distrital Campestre Casablanca", "Colegio Distrital Gimnasio Campestre",
+                "Colegio Distrital Enrique Santos Montejo", "Colegio Distrital La Candelaria",
+                "Colegio Distrital Julio Garavito", "Colegio Distrital Antonio Van Uden",
+                "Colegio Distrital Filadelfia", "Colegio Distrital Alfonso López Pumarejo",
+                "Colegio Distrital Gustavo Rojas Pinilla", "Colegio Distrital Francisco de Paula Santander",
+                "Colegio Distrital Eduardo Umaña Luna", "Colegio Distrital Clemencia de Caicedo",
+                "Colegio Distrital Agustín Nieto Caballero", "Colegio Distrital Teodolinda Bolívar",
+                "Colegio Distrital Carmen Lydia Espitia", "Colegio Distrital Integrado Soraya Quintero",
+                "Colegio Distrital Jaime Garzón", "Colegio Distrital John F. Kennedy",
+                "Colegio Distrital San José", "Colegio Distrital Gonzalo Arango", "Colegio Distrital Cundinamarca",
+                "Colegio Distrital Técnico Industrial de Francés", "Colegio Distrital Carlos Albán Holguín",
+                "Colegio Distrital Integrado Toberín", "Colegio Distrital Castilla", "Colegio Distrital Suba",
+                "Colegio Distrital Engativá", "Colegio Distrital Fontibón", "Colegio Distrital Bosa",
+                "Colegio Distrital Kennedy", "Colegio Distrital Tunjuelito", "Colegio Distrital Usme",
+                "Colegio Distrital San Cristóbal", "Colegio Distrital Sumapaz", "Colegio Distrital Usaquén",
+                "Colegio Distrital Chapinero", "Colegio Distrital Barrios Unidos", "Colegio Distrital Teusaquillo",
+                "Colegio Distrital Mártires", "Colegio Distrital Antonio Nariño", "Colegio Distrital Puente Aranda",
+                "Colegio Distrital Salitre", "Colegio Distrital Rafaela Reyes", "Colegio Distrital Lucero",
+                "Colegio Técnico Distrital", "Colegio Artístico Distrital", "Instituto Técnico de Bogotá",
+                "Universidad Distrital Francisco José de Caldas", "Universidad Javeriana",
+                "Universidad de los Andes", "Pontificia Universidad Javeriana", "Universidad Nacional de Colombia",
+                "Universidad Autónoma de Colombia", "Universidad Minuto de Dios", "Universidad Colegio Mayor de Cundinamarca",
+                "Universidad de Bogotá Jorge Tadeo Lozano", "Universidad Libre", "Universidad del Rosario",
+                "Universidad Católica de Colombia", "Universidad Santo Tomás", "Universidad Incca de Colombia",
+                "Universidad Americana", "Universidad UNAD", "Escuela de Administración Pública",
+                "Escuela Militar de Cadetes", "Escuela Técnica del Servicio Nacional de Aprendizaje SENA",
+                "SENA Escuela de Hogar", "Institución Educativa Manuela Beltrán", "Institución Educativa Técnica Comercial",
+                "Instituto de Educación Especial Remedios de Escalante", "Instituto de Educación Especial Down",
+                "Instituto de Educación Especial Cerebro Activo", "Centro de Lenguas UNAB",
+                "Centro de Lenguas Universidad Nacional", "Centro de Formación Técnica Bogotá",
+                "Escuela Virtual de Colombia", "Instituto de Capacitación Rural", "Instituto Caro y Cuervo",
+                "Biblioteca Virgilio Barco", "Biblioteca Luis Ángel Arango", "Biblioteca Gabriel García Márquez",
+                "Centro de Documentación POT", "Archivo General de la Nación", "Hemeroteca Distrital"
+              ]
+            },
+            "salud": {
+              "cantidad": 140,
+              "elementos": [
+                "Hospital Universitario de San Ignacio", "Hospital de San José", "Hospital del Tunal",
+                "Hospital de Usaquén", "Hospital de Chapinero", "Hospital de Barrios Unidos",
+                "Hospital de Teusaquillo", "Hospital de Engativá", "Hospital de Suba",
+                "Hospital de Fontibón", "Hospital de Kennedy", "Hospital de Bosa",
+                "Hospital de Tunjuelito", "Hospital de Usme", "Hospital de San Cristóbal",
+                "Hospital de Sumapaz", "Hospital Tres de Mayo", "Hospital Simón Bolívar",
+                "Hospital de Puente Aranda", "Hospital de Salitre", "Hospital Centro Oriente",
+                "Hospital Occidente Kennedy", "Hospital Santa Clara", "Hospital La Samaritana",
+                "Hospital Clínica del Country", "Clínica Colsanitas", "Clínica Reina Sofía",
+                "Clínica Universitaria de La Sabana", "Clínica Fundación Cardioinfantil",
+                "Clínica Universidad de La Sabana", "Centro Médico Shaio", "Clínica Santa Isabel",
+                "Clínica de Occidente", "Clínica del Occidente", "Centro Diagnóstico del Caribe",
+                "Instituto Nacional de Cancerología", "Instituto Nacional de Salud",
+                "Centro de Atención Inmediata CAI", "Centro de Salud Usaquén",
+                "Centro de Salud Chapinero", "Centro de Salud Barrios Unidos", "Centro de Salud Teusaquillo",
+                "Centro de Salud Engativá", "Centro de Salud Suba", "Centro de Salud Fontibón",
+                "Centro de Salud Kennedy", "Centro de Salud Bosa", "Centro de Salud Tunjuelito",
+                "Centro de Salud Usme", "Centro de Salud San Cristóbal", "Centro de Salud Sumapaz",
+                "Centro de Salud Centro Histórico", "Centro de Salud Puente Aranda", "Centro de Salud Salitre",
+                "Centro de Salud Rafaela Reyes", "Centro de Salud Lucero", "Puesto de Salud Usaquén",
+                "Puesto de Salud Chapinero", "Puesto de Salud Santa Fé", "Puesto de Salud San Cristóbal",
+                "Puesto de Salud Usme", "Puesto de Salud Tunjuelito", "Puesto de Salud Bosa",
+                "Puesto de Salud Kennedy", "Puesto de Salud Fontibón", "Puesto de Salud Engativá",
+                "Puesto de Salud Suba", "Puesto de Salud Barrios Unidos", "Puesto de Salud Teusaquillo",
+                "Puesto de Salud Mártires", "Puesto de Salud Antonio Nariño", "Puesto de Salud Puente Aranda",
+                "Puesto de Salud Salitre", "Puesto de Salud Rafaela Reyes", "Puesto de Salud Lucero",
+                "Puesto de Salud Sumapaz", "Unidad de Cuidado Intensivo UCl Distrital",
+                "Unidad de Urgencias Centro Histórico", "Unidad de Urgencias Occidente",
+                "Unidad de Urgencias Oriente", "Unidad de Urgencias Sur", "Unidad de Urgencias Norte",
+                "Centro de Memoria de Bogotá", "Centro de Atención Complementaria",
+                "Servicio de Ambulancia Distrital", "Centro de Quemados y Traumas",
+                "Unidad de Cuidados Especiales UCE", "Centro de Rehabilitación Infantil",
+                "Centro de Rehabilitación del Adulto", "Instituto de Medicina Física y Rehabilitación",
+                "Centro de Salud Mental", "Unidad de Psiquiatría", "Consultorio Dental Distrital",
+                "Centro de Odontología Preventiva", "Servicio de Oftalmología", "Servicio de Otorrinolaringología",
+                "Centro de Atención Prenatal", "Centro Materno Infantil", "Clínica de Maternidad"
+              ]
+            },
+            "cultura": {
+              "cantidad": 120,
+              "elementos": [
+                "Biblioteca Virgilio Barco", "Biblioteca Luis Ángel Arango", "Biblioteca Gabriel García Márquez",
+                "Biblioteca Pública Usaquén", "Biblioteca Pública Chapinero", "Biblioteca Pública Barrios Unidos",
+                "Biblioteca Pública Teusaquillo", "Biblioteca Pública Engativá", "Biblioteca Pública Suba",
+                "Biblioteca Pública Fontibón", "Biblioteca Pública Kennedy", "Biblioteca Pública Bosa",
+                "Biblioteca Pública Tunjuelito", "Biblioteca Pública Usme", "Biblioteca Pública San Cristóbal",
+                "Biblioteca Pública Sumapaz", "Biblioteca Pública Centro Histórico", "Biblioteca Pública Puente Aranda",
+                "Biblioteca Pública Salitre", "Biblioteca Pública Rafaela Reyes", "Biblioteca Pública Lucero",
+                "Museo de América Latina", "Museo de Arte Moderno de Bogotá MAMBO", "Museo del Oro",
+                "Museo del Hombre", "Museo de Ciencias Naturales", "Museo de Arte Religioso",
+                "Museo de los Concilios", "Museo de Trajes", "Museo Botero",
+                "Museo de Moneda", "Museo de Arte de Bogotá", "Museo de Arte del Banco de la República",
+                "Museo Diocesano de Bogotá", "Museo de Arte Sacro", "Museo de Antisanía",
+                "Museo de la Tercera Edad", "Museo de la Independencia Casa del Florero", "Museo Histórico Nacional",
+                "Casa Museo Álvaro Uribe Uribe", "Casa Museo Gabriel García Márquez", "Casa Museo Jorge Eliécer Gaitán",
+                "Museo de Arte Tradicional", "Museo de Arte Contemporáneo", "Centro Cultural Distrital",
+                "Centro Abierto de Danza", "Centro Abierto de Música", "Centro Abierto de Teatro",
+                "Centro Abierto de Artes Plásticas", "Centro Abierto de Literatura", "Centro Abierto de Cine",
+                "Teatro Coló n", "Teatro Nacional", "Teatro Distrital La Castellana",
+                "Teatro Jorge Eliecer Gaitán", "Teatro Municipal", "Teatro Verandas",
+                "Teatro Lido", "Teatro La Botica", "Teatro Libre",
+                "Teatro Experimental de Bogotá", "Teatro Petra Martínez", "Teatro La Fantástica",
+                "Teatro Trasnocho Cultural", "Teatro Jumiegas", "Teatro La Mama",
+                "Sala de Conciertos Béla Bartók", "Sala de Conciertos Fabio Lozano",
+                "Auditorio León de Greiff", "Auditorio Jorge Eliécer Gaitán", "Auditorio Distrital",
+                "Centro de Estudios de Folclore y Etnografía", "Instituto Distrital de las Artes IDARTES",
+                "Fondo de Promoción de la Cultura", "Museo Histórico del Liceo", "Archivo Distrital",
+                "Archivo General de la Nación", "Hemeroteca Distrital", "Fondo Editorial Bogotá",
+                "Instituto Caro y Cuervo", "Academia Colombiana de la Lengua", "Academia de Historia",
+                "Fonoteca Distrital", "Videoteca Distrital", "Centro de Documentación Cultural",
+                "Seccional de Cultura Usaquén", "Seccional de Cultura Chapinero", "Seccional de Cultura Teusaquillo",
+                "Seccional de Cultura Engativá", "Seccional de Cultura Suba", "Seccional de Cultura Kennedy",
+                "Seccional de Cultura Bosa", "Seccional de Cultura Tunjuelito", "Seccional de Cultura Usme"
+              ]
+            },
+            "deporte": {
+              "cantidad": 100,
+              "elementos": [
+                "Coliseo Julio Tulio Liévano", "Coliseo El Campín", "Estadio Nemesio Camacho El Campín",
+                "Estadio de Techo", "Estadio de Kennedy", "Estadio de Usaquén",
+                "Cancha Sintética Usaquén", "Cancha Sintética Chapinero", "Cancha Sintética Barrios Unidos",
+                "Cancha Sintética Teusaquillo", "Cancha Sintética Engativá", "Cancha Sintética Suba",
+                "Cancha Sintética Fontibón", "Cancha Sintética Kennedy", "Cancha Sintética Bosa",
+                "Cancha Sintética Tunjuelito", "Cancha Sintética Usme", "Cancha Sintética San Cristóbal",
+                "Cancha Sintética Sumapaz", "Cancha Sintética Centro Histórico", "Cancha Sintética Puente Aranda",
+                "Cancha Sintética Salitre", "Cancha Sintética Rafaela Reyes", "Cancha Sintética Lucero",
+                "Piscina Olímpica Simón Bolívar", "Piscina Distrital Usaquén", "Piscina Distrital Chapinero",
+                "Piscina Distrital Engativá", "Piscina Distrital Suba", "Piscina Distrital Kennedy",
+                "Piscina Distrital Bosa", "Piscina Distrital Tunjuelito", "Piscina Distrital Usme",
+                "Piscina Distrital San Cristóbal", "Piscina Distrital Sumapaz", "Piscina Distrital Centro",
+                "Gimnasio Distrital de Boxeo", "Gimnasio Distrital de Levantamiento", "Gimnasio Distrital de Lucha",
+                "Canchas de Tenis Centro Distrital", "Canchas de Tenis Parque Metropolitano",
+                "Cancha de Béisbol Usaquén", "Cancha de Béisbol Chapinero", "Cancha de Béisbol Engativá",
+                "Complejo Deportivo Suba", "Complejo Deportivo Fontibón", "Complejo Deportivo Kennedy",
+                "Complejo Deportivo Bosa", "Complejo Deportivo Usme", "Complejo Deportivo Puente Aranda",
+                "Velodromo Luis Vincenti", "Pista de Atletismo Estadio El Campín", "Cancha de Golf Bogotá Country Club",
+                "Cancha de Golf Rancho San Fernando", "Centro Ecuestre Distrital", "Polígono de Tiro",
+                "Pista de Patinaje Hielo", "Pista de Patinaje en Línea", "Parque de Skate",
+                "Parque de BMX", "Cancha de Pelota Vasca", "Frontón Distrital",
+                "Dojo de Judo", "Dojo de Karate", "Sedes de Artes Marciales",
+                "Centro de Entrenamiento de Atletismo", "Centro de Preparación de Selecciones",
+                "Academia de Fútbol Distrital", "Academia de Tenis Distrital", "Academia de Natación",
+                "Academia de Gimnasia", "Academia de Halterofilia", "Academia de Ciclismo"
+              ]
+            },
+            "comercio": {
+              "cantidad": 110,
+              "elementos": [
+                "Centro Comercial Centro Mayor", "Centro Comercial Éxito Calle 19",
+                "Centro Comercial Éxito Carrefour Norte", "Centro Comercial Éxito Kennedy",
+                "Centro Comercial Galerías", "Centro Comercial Multiplaza", "Centro Comercial Palacio de Occidente",
+                "Centro Comercial Santa Ana", "Centro Comercial San Alejo", "Centro Comercial Unicentro",
+                "Centro Comercial Corferias", "Centro Comercial Plaza Mayor", "Centro Comercial Gran Estación",
+                "Centro Comercial Jumbo Extra", "Centro Comercial Jumbo Kennedy", "Centro Comercial Jumbo Usaquén",
+                "Centro Comercial Jumbo Bosa", "Centro Comercial Éxito de Occidente", "Centro Comercial Premium Plaza",
+                "Centro Comercial Usaquén", "Centro Comercial La Grama", "Centro Comercial Suba",
+                "Centro Comercial Fontibón", "Centro Comercial Engativá", "Centro Comercial Teusaquillo",
+                "Centro Comercial Barrios Unidos", "Centro Comercial Chapinero", "Centro Comercial Santa Fé",
+                "Centro Comercial Puente Aranda", "Centro Comercial Restrepo", "Centro Comercial Tintal",
+                "Centro Comercial Santafé", "Centro Comercial Mártires", "Centro Comercial Centro Histórico",
+                "Plazoleta de Comidas Centro", "Plazoleta de Comidas Usaquén", "Plazoleta de Comidas Chapinero",
+                "Plazoleta de Comidas Teusaquillo", "Plazoleta de Comidas Engativá", "Plazoleta de Comidas Suba",
+                "Plazoleta de Comidas Kennedy", "Plazoleta de Comidas Bosa", "Plazoleta de Comidas Fontibón",
+                "Plazoleta de Comidas Tunjuelito", "Plazoleta de Comidas Usme", "Plazoleta de Comidas San Cristóbal",
+                "Plazoleta de Comidas Puente Aranda", "Plazoleta de Comidas Salitre", "Plazoleta de Comidas Rafaela Reyes",
+                "Plaza de Mercado Paloquemao", "Plaza de Mercado Samper", "Plaza de Mercado 7 de Agosto",
+                "Plaza de Mercado Hueco", "Plaza de Mercado San Victorino", "Plaza de Mercado Paseo Aéreo",
+                "Plaza de Mercado Usaquén", "Plaza de Mercado Chapinero", "Plaza de Mercado Teusaquillo",
+                "Plaza de Mercado Engativá", "Plaza de Mercado Suba", "Plaza de Mercado Fontibón",
+                "Plaza de Mercado Kennedy", "Plaza de Mercado Bosa", "Plaza de Mercado Tunjuelito",
+                "Plaza de Mercado Usme", "Plaza de Mercado San Cristóbal", "Plaza de Mercado Sumapaz",
+                "Paseo Peatonal Centro Comercial", "Paseo Peatonal 7 de Agosto", "Paseo Peatonal Junín",
+                "Paseo Peatonal Carrera 7", "Paseo Peatonal Carrera 10", "Zona de Comercio Especializado Chapinero",
+                "Zona de Comercio Especializado Usaquén", "Zona de Comercio Especializado Centro",
+                "Tienda Tecnológica Distrital", "Tienda de Artesanías Distrito", "Tienda de Moda Distrital",
+                "Centro de Distribución Distrital", "Mercado Mayorista", "Puerto Seco Bogotá",
+                "Terminal de Contenedores", "Centro de Carga y Descarga", "Zona Franca Bogotá"
+              ]
+            },
+            "cuidado": {
+              "cantidad": 95,
+              "elementos": [
+                "Guardería Distrital Usaquén", "Guardería Distrital Chapinero", "Guardería Distrital Santa Fé",
+                "Guardería Distrital San Cristóbal", "Guardería Distrital Usme", "Guardería Distrital Tunjuelito",
+                "Guardería Distrital Bosa", "Guardería Distrital Kennedy", "Guardería Distrital Fontibón",
+                "Guardería Distrital Engativá", "Guardería Distrital Suba", "Guardería Distrital Barrios Unidos",
+                "Guardería Distrital Teusaquillo", "Guardería Distrital Mártires", "Guardería Distrital Antonio Nariño",
+                "Guardería Distrital Puente Aranda", "Guardería Distrital Salitre", "Guardería Distrital Rafaela Reyes",
+                "Guardería Distrital Lucero", "Guardería Distrital Sumapaz", "Centro de Desarrollo Infantil CDI Usaquén",
+                "Centro de Desarrollo Infantil CDI Chapinero", "Centro de Desarrollo Infantil CDI Engativá",
+                "Centro de Desarrollo Infantil CDI Suba", "Centro de Desarrollo Infantil CDI Kennedy",
+                "Centro de Desarrollo Infantil CDI Bosa", "Centro de Desarrollo Infantil CDI Tunjuelito",
+                "Centro de Desarrollo Infantil CDI Usme", "Centro de Desarrollo Infantil CDI San Cristóbal",
+                "Centro de Desarrollo Infantil CDI Sumapaz", "Hogar Infantil Distrital Usaquén",
+                "Hogar Infantil Distrital Chapinero", "Hogar Infantil Distrital Engativá", "Hogar Infantil Distrital Suba",
+                "Hogar Infantil Distrital Kennedy", "Hogar Infantil Distrital Bosa", "Hogar Infantil Distrital Tunjuelito",
+                "Hogar Infantil Distrital Usme", "Hogar Infantil Distrital San Cristóbal", "Hogar Infantil Distrital Sumapaz",
+                "Centro de Atención Integral CAI Usaquén", "Centro de Atención Integral CAI Chapinero",
+                "Centro de Atención Integral CAI Engativá", "Centro de Atención Integral CAI Suba",
+                "Centro de Atención Integral CAI Kennedy", "Centro de Atención Integral CAI Bosa",
+                "Centro de Atención Integral CAI Tunjuelito", "Centro de Atención Integral CAI Usme",
+                "Centro de Atención Integral CAI San Cristóbal", "Centro de Atención Integral CAI Sumapaz",
+                "Centro de Atención al Adulto Mayor Usaquén", "Centro de Atención al Adulto Mayor Chapinero",
+                "Centro de Atención al Adulto Mayor Engativá", "Centro de Atención al Adulto Mayor Suba",
+                "Centro de Atención al Adulto Mayor Kennedy", "Centro de Atención al Adulto Mayor Bosa",
+                "Centro de Atención al Adulto Mayor Tunjuelito", "Centro de Atención al Adulto Mayor Usme",
+                "Centro de Atención al Adulto Mayor San Cristóbal", "Centro de Atención al Adulto Mayor Sumapaz",
+                "Centro Diurno para Adultos Mayores", "Residencia Asistida para Adultos Mayores",
+                "Centro Especializado de Cuidado Paliativo", "Centro de Cuidado Domiciliario",
+                "Servicio de Acompañante de Salud", "Servicio de Nutrición Comunitaria",
+                "Jornada de Alimentación Escolar Usaquén", "Jornada de Alimentación Escolar Chapinero",
+                "Jornada de Alimentación Escolar Engativá", "Jornada de Alimentación Escolar Suba",
+                "Centro Zonal de Cuidado Integral", "Punto de Referencia Cuidado Comunitario"
+              ]
+            }
           }
         },
         "vivienda": {
@@ -292,5 +686,5 @@
       "Ecobarrios (múltiples sectores)"
     ]
   },
-  "nota": "Esta estructura contiene 1.000+ nodos interconectados que representan la complejidad territorial del POT. Los nodos pueden ser expandidos mediante coarse graining para mostrar sub-elementos específicos en cada categoría."
+  "nota": "Esta estructura contiene 1.000+ nodos interconectados que representan la complejidad territorial del POT. Los nodos pueden ser expandidos mediante coarse graining para mostrar sub-elementos específicos en cada categoría. Todos los elementos son datos reales del Decreto 555 de 2021 del POT Bogotá."
 }
