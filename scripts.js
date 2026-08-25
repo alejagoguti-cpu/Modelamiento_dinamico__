@@ -322,6 +322,11 @@ function isMobile() {
   return window.innerWidth < 768;
 }
 
+// Obtener máximo de nodos según dispositivo
+function getMaxNodes() {
+  return isMobile() ? 50 : 300;
+}
+
 // Renderizar red EN EL MISMO MODAL (para móvil)
 function renderNetworkInCurrentModal(elementName, elementIndex, allElements) {
   const overlay = document.getElementById('redes-modal-overlay');
@@ -706,9 +711,14 @@ function openElementsNetworkModal(categoryId, categoryLabel) {
     }
   ];
 
-  elements.forEach((el, i) => {
+  // Limitar nodos en mobile para rendimiento
+  const maxNodes = getMaxNodes();
+  const elementsToShow = elements.slice(0, maxNodes);
+  const totalElements = elements.length;
+
+  elementsToShow.forEach((el, i) => {
     const text = typeof el === 'object' ? (el.nombre || el.name || String(el)) : String(el);
-    const radiusBase = Math.max(18, 26 - (elements.length / 15));
+    const radiusBase = Math.max(18, 26 - (elementsToShow.length / 15));
     nodes.push({
       id: `elem-${i}`,
       label: text.substring(0, 20),
@@ -737,9 +747,20 @@ function openElementsNetworkModal(categoryId, categoryLabel) {
     }
   }
 
-  // Calcular layout con más iteraciones para mejor distribución
-  const iterations = Math.min(150, Math.max(80, nodes.length * 4));
+  // Calcular layout: menos iteraciones en mobile
+  let iterations;
+  if (isMobile()) {
+    iterations = Math.min(50, Math.max(30, elementsToShow.length * 2));
+  } else {
+    iterations = Math.min(150, Math.max(80, elementsToShow.length * 4));
+  }
   const nodePositions = forceDirectedLayout(nodes, edges, 900, 700, iterations);
+
+  // Mostrar indicador si hay más elementos
+  const subtitle = document.querySelector('.element-network-modal-subtitle');
+  if (subtitle && totalElements > elementsToShow.length) {
+    subtitle.textContent = `Red de relaciones (mostrando ${elementsToShow.length} de ${totalElements})`;
+  }
 
   // Limpiar SVG
   const edgesG = svgContainer.querySelector('.element-edges');

@@ -1407,3 +1407,61 @@ body{
   font-weight: 500;
   color: var(--text-faint);
 }
+
+/* ================= OPTIMIZACIONES MOBILE ================= */
+@media (max-width: 768px) {
+  /* Animaciones más rápidas y simples en mobile */
+  .element-node {
+    animation: element-node-pop-in-mobile 0.3s ease-out forwards;
+  }
+
+  @keyframes element-node-pop-in-mobile {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .element-node.is-primary {
+    animation: element-node-pop-in-mobile 0.3s ease-out forwards;
+  }
+
+  /* Desactivar pulsing glow en mobile */
+  .element-node-glow {
+    animation: none;
+    filter: none;
+  }
+
+  /* Labels aparecen sin delay en mobile */
+  .element-node-label {
+    animation: element-label-fade-in 0.2s ease-out 0s both;
+  }
+
+  /* Aristas más simples en mobile */
+  .element-edge {
+    animation: element-edge-fade-in 0.4s ease-out forwards;
+  }
+
+  @keyframes element-edge-fade-in-mobile {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Reducir drop shadows en mobile */
+  .element-node-circle {
+    filter: none;
+    transition: none;
+  }
+
+  .element-node:hover .element-node-circle {
+    filter: none;
+  }
+}
