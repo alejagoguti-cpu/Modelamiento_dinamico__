@@ -419,6 +419,7 @@
     // orgánica y conectada, pero no produce diagonales largas que crucen el mapa.
     const dense = items.length > 72;
     for (let index = 1; index < items.length; index++){
+      const item = items[index];
       const nearest = positions.slice(0, index)
         .map((position, candidateIndex) => ({ candidateIndex, distance: Math.hypot(position.x - positions[index].x, position.y - positions[index].y) }))
         .sort((a, b) => a.distance - b.distance);
