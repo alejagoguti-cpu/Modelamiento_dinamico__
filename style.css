@@ -682,10 +682,6 @@ body{
   stroke-width: 5;
   filter: drop-shadow(0 0 12px rgba(255,255,255,0.5)) drop-shadow(0 6px 12px rgba(0,0,0,0.4));
 }
-.redes-node.is-expandable.is-expanded circle{
-  stroke-width: 5;
-  filter: drop-shadow(0 0 14px rgba(255,255,255,0.6)) drop-shadow(0 8px 16px rgba(0,0,0,0.45));
-}
 .coarse-graining-badge{
   display: inline-block;
   position: absolute;
@@ -703,6 +699,60 @@ body{
   color: rgba(255,255,255,0.9);
   backdrop-filter: blur(4px);
   pointer-events: none;
+}
+
+/* ---- coarse graining list modal ---- */
+.coarse-graining-list{
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(15,15,25,0.5) 0%, rgba(25,20,35,0.3) 100%);
+  border-radius: 12px;
+}
+
+.coarse-graining-items{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.coarse-graining-item{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.coarse-graining-item:hover{
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.coarse-graining-item .item-number{
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  font-family: 'Monaco', 'Courier', monospace;
+  letter-spacing: 0.5px;
+}
+
+.coarse-graining-item .item-text{
+  flex: 1;
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+  word-break: break-word;
+  line-height: 1.4;
 }
 
 /* ---- conexiones ---- */

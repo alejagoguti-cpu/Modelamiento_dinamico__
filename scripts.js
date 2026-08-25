@@ -172,8 +172,8 @@ function getExpandableElements(nodeKey) {
   return [];
 }
 
-// Toggle coarse graining: expand/collapse nodos para mostrar sub-elementos
-function toggleCoarseGraining(nodeId, nodeEl, currentNetwork) {
+// Abrir coarse graining modal: mostrar elementos en popup limpio y legible
+function openCoarseGrainingModal(nodeId, nodeLabel) {
   if (!EXPANDABLE_NODES[nodeId]) return;
 
   const nodeDef = EXPANDABLE_NODES[nodeId];
@@ -184,31 +184,57 @@ function toggleCoarseGraining(nodeId, nodeEl, currentNetwork) {
     return;
   }
 
-  // Toggle estado
-  const isExpanded = coarseGrainingState[nodeId];
-  coarseGrainingState[nodeId] = !isExpanded;
+  // Obtener referencias al modal existente
+  const overlay = document.getElementById('redes-modal-overlay');
+  const modalBody = document.querySelector('.redes-modal-body');
+  const titleEl = document.getElementById('redes-modal-title');
+  const subtitleEl = document.querySelector('.redes-modal-subtitle');
 
-  if (!isExpanded) {
-    // Expandir: mostrar badge con cantidad
-    nodeEl.classList.add('is-expanded');
+  if (!overlay || !modalBody) return;
 
-    // Crear badge que muestra cantidad de elementos
-    const badge = nodeEl.querySelector('.coarse-graining-badge') || document.createElement('span');
-    badge.className = 'coarse-graining-badge';
-    badge.textContent = `+${Math.min(elements.length, 50)}`;
+  // Actualizar título y subtítulo
+  titleEl.textContent = nodeLabel;
+  subtitleEl.textContent = `Elementos // Total = ${Math.min(elements.length, 50)}`;
 
-    if (!nodeEl.querySelector('.coarse-graining-badge')) {
-      nodeEl.appendChild(badge);
-    }
-
-    console.log(`Expanded ${nodeId}: ${elements.length} elements`);
-  } else {
-    // Contraer
-    nodeEl.classList.remove('is-expanded');
-    const badge = nodeEl.querySelector('.coarse-graining-badge');
-    if (badge) badge.remove();
-    console.log(`Collapsed ${nodeId}`);
+  // Limpiar SVG y crear lista en su lugar
+  const svgContainer = modalBody.querySelector('.redes-network-svg');
+  if (svgContainer) {
+    svgContainer.style.display = 'none';
   }
+
+  // Crear o actualizar contenedor de lista
+  let listContainer = modalBody.querySelector('.coarse-graining-list');
+  if (!listContainer) {
+    listContainer = document.createElement('div');
+    listContainer.className = 'coarse-graining-list';
+    modalBody.insertBefore(listContainer, svgContainer);
+  }
+
+  // Llenar lista de elementos
+  listContainer.innerHTML = '';
+  const ul = document.createElement('ul');
+  ul.className = 'coarse-graining-items';
+
+  elements.forEach((item, idx) => {
+    const li = document.createElement('li');
+    li.className = 'coarse-graining-item';
+
+    // Si es un objeto, mostrar nombre; si es string, mostrar directamente
+    const text = typeof item === 'object' ? (item.nombre || item.name || JSON.stringify(item)) : item;
+    li.innerHTML = `
+      <span class="item-number">${String(idx + 1).padStart(3, '0')}</span>
+      <span class="item-text">${text}</span>
+    `;
+    ul.appendChild(li);
+  });
+
+  listContainer.appendChild(ul);
+
+  // Mostrar modal
+  overlay.hidden = false;
+  document.body.style.overflow = 'hidden';
+
+  console.log(`Opened coarse graining for ${nodeId}: ${elements.length} elements`);
 }
 
 // ===================== POPUP DE RELACIONES =====================
@@ -829,11 +855,11 @@ function toggleCoarseGraining(nodeId, nodeEl, currentNetwork) {
       });
       float.appendChild(text);
 
-      // click en el nodo -> si es expandable, toggle coarse graining; si no, atenuar
+      // click en el nodo -> si es expandable, abrir modal con elementos; si no, atenuar
       function handleNodeClick(ev){
         ev.stopPropagation();
         if (isExpandable) {
-          toggleCoarseGraining(n.id, g, net);
+          openCoarseGrainingModal(n.id, n.label.join(" "));
         } else {
           const dimmed = g.classList.toggle("is-dimmed");
           (edgesByNode[n.id] || []).forEach((edgeEl) => {
@@ -886,6 +912,18 @@ function toggleCoarseGraining(nodeId, nodeEl, currentNetwork) {
   function closeModal(){
     overlay.hidden = true;
     document.body.style.overflow = "";
+
+    // Restaurar SVG si estaba oculto por coarse graining
+    const svgContainer = document.querySelector('.redes-modal-body .redes-network-svg');
+    if (svgContainer) {
+      svgContainer.style.display = '';
+    }
+
+    // Limpiar lista de coarse graining
+    const listContainer = document.querySelector('.coarse-graining-list');
+    if (listContainer) {
+      listContainer.innerHTML = '';
+    }
   }
 
   // ---------- popup de sustento: se abre al hacer click en una línea de relación ----------
