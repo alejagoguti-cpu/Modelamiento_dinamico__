@@ -1,0 +1,173 @@
+{
+  "análisis_POT": {
+    "estructuras_principales": {
+      "EEP": {
+        "nombre": "Estructura Ecológica Principal",
+        "color": "green",
+        "conceptosPrincipales": [
+          {
+            "grupo": "Sistema Hídrico",
+            "nodos": ["Ríos", "Quebradas", "Humedales", "Sistemas de Drenaje", "Corredor Hídrico Bogotá-Torca"],
+            "menciones": 150
+          },
+          {
+            "grupo": "Coberturas Vegetales",
+            "nodos": ["Bosques Urbanos", "Bosques Protectores", "Arborizaciones", "Selvas Andinas", "Vegetación Riparia"],
+            "menciones": 120
+          },
+          {
+            "grupo": "Áreas Protegidas",
+            "nodos": ["Reserva Forestal Thomas van der Hammen", "Páramos (Sumapaz-Chingaza-Guerrero)", "Cerros Orientales", "Áreas de Conservación"],
+            "menciones": 95
+          },
+          {
+            "grupo": "Conectividad Ecosistémica",
+            "nodos": ["Corredores Verdes", "Conectores Montañosos", "Puentes Ecológicos", "Redes de Biodiversidad"],
+            "menciones": 85
+          }
+        ]
+      },
+      "EFC": {
+        "nombre": "Estructura Funcional y del Cuidado",
+        "color": "blue",
+        "conceptosPrincipales": [
+          {
+            "grupo": "Red Vial Completa",
+            "nodos": [
+              {"nivel": "arterial", "elementos": ["Avenida Boyacá", "Carrera 52", "Avenida El Polo", "Anillos de Integración", "Carrera 7", "Avenida 68"], "cantidad": 45},
+              {"nivel": "intermedia", "elementos": ["Calles de Media Capacidad", "Corredores Secundarios", "Conectores Zonales"], "cantidad": 120},
+              {"nivel": "local", "elementos": ["Calles Locales", "Vías de Proximidad", "Ciclorrutas Locales", "Aceras Completas"], "cantidad": 300}
+            ],
+            "menciones": 178
+          },
+          {
+            "grupo": "Transporte Sostenible",
+            "nodos": ["Metro (5 líneas)", "Regiotram (2 líneas)", "Cables Aéreos (7)", "Corredores Verdes", "Cicloinfrastructura", "Transporte Activo"],
+            "menciones": 142
+          },
+          {
+            "grupo": "Equipamientos y Servicios",
+            "nodos": ["Centros de Salud", "Equipamientos Educativos", "Centros Comunitarios", "Infraestructura Deportiva", "Guarderías", "Servicios de Cuidado"],
+            "menciones": 160
+          },
+          {
+            "grupo": "Espacio Público",
+            "nodos": ["Parques de Proximidad", "Parques de Borde", "Plazas", "Plazoletas", "Espacios de Permanencia", "Corredores Peatonales"],
+            "menciones": 135
+          }
+        ]
+      },
+      "EIP": {
+        "nombre": "Estructura Integradora de Patrimonios",
+        "color": "purple",
+        "conceptosPrincipales": [
+          {
+            "grupo": "Patrimonio Natural",
+            "nodos": ["Páramos", "Bosques Protectores", "Ciclos Biológicos", "Paisajes Naturales", "Ecosistemas Originarios"],
+            "menciones": 110
+          },
+          {
+            "grupo": "Patrimonio Cultural Material",
+            "nodos": ["Monumentos Históricos", "Arquitectura Colonial", "Sitios Arqueológicos", "Cascos Antiguos", "Infraestructura Patrimonial"],
+            "menciones": 75
+          },
+          {
+            "grupo": "Patrimonio Inmaterial",
+            "nodos": ["Prácticas Culturales", "Saberes Ancestrales", "Tradiciones Comunitarias", "Expresiones Artísticas", "Dinámicas Sociales"],
+            "menciones": 60
+          },
+          {
+            "grupo": "Sitios Sagrados",
+            "nodos": ["Cerro de Monserrate", "Lagunas Sagradas", "Espacios Ceremoniales", "Lugares de Significado Espiritual"],
+            "menciones": 45
+          }
+        ]
+      },
+      "ESECI": {
+        "nombre": "Estructura Socioeconómica, Creativa e Innovación",
+        "color": "yellow",
+        "conceptosPrincipales": [
+          {
+            "grupo": "Zonas Productivas",
+            "nodos": ["Industrias Tradicionales", "Zonas Industriales", "Parques Tecnológicos", "Clústeres de Innovación", "Economía Creativa"],
+            "menciones": 105
+          },
+          {
+            "grupo": "Educación y Conocimiento",
+            "nodos": ["Universidades", "Institutos Técnicos", "Centros de Investigación", "Ecosistema de Innovación", "Formación Laboral"],
+            "menciones": 92
+          },
+          {
+            "grupo": "Comercio y Servicios",
+            "nodos": ["Centros Comerciales", "Plazas de Mercado", "Servicios Financieros", "Comercio Minorista", "Turismo"],
+            "menciones": 88
+          },
+          {
+            "grupo": "Vivienda",
+            "nodos": ["VIS (Vivienda Interés Social)", "VIP (Vivienda Interés Prioritario)", "Vivienda de Mercado", "Renovación Urbana", "Mejoramiento de Asentamientos"],
+            "menciones": 97
+          }
+        ]
+      }
+    },
+    "relaciones_POT": [
+      {
+        "desde": "EEP",
+        "hacia": "EFC",
+        "tipo": "soporte",
+        "descripcion": "La Estructura Ecológica Principal proporciona servicios ecosistémicos que soportan la infraestructura funcional",
+        "referencias": ["Sistema hídrico asegura abastecimiento", "Bosques regulan clima", "Corredores verdes integran movilidad"]
+      },
+      {
+        "desde": "EFC",
+        "hacia": "ESECI",
+        "tipo": "directa",
+        "descripcion": "La infraestructura funcional habilita las actividades socioeconómicas",
+        "referencias": ["Transporte conecta zonas productivas", "Equipamientos soportan empleo", "Espacios públicos dinamizan economía"]
+      },
+      {
+        "desde": "EIP",
+        "hacia": "EEP",
+        "tipo": "resiliencia",
+        "descripcion": "El patrimonio natural es parte integral de la estructura ecológica",
+        "referencias": ["Áreas protegidas conservan biodiversidad", "Prácticas ancestrales guían manejo ambiental"]
+      },
+      {
+        "desde": "EIP",
+        "hacia": "EFC",
+        "tipo": "directa",
+        "descripcion": "El patrimonio cultural se integra en el espacio público y equipamientos",
+        "referencias": ["Sitios históricos estructuran espacio público", "Patrimonio genera actividad cultural y turismo"]
+      },
+      {
+        "desde": "ESECI",
+        "hacia": "EIP",
+        "tipo": "soporte",
+        "descripcion": "La economía creativa y cultural genera valor del patrimonio",
+        "referencias": ["Turismo cultural", "Industrias creativas", "Economía del conocimiento"]
+      }
+    ],
+    "coarse_graining": {
+      "niveles": {
+        "nivel_1": "Estructuras Principales (4 nodos)",
+        "nivel_2": "Grupos de Conceptos (16-20 nodos)",
+        "nivel_3": "Conceptos Detallados (60-80 nodos)",
+        "nivel_4": "Sub-elementos (300+ elementos)"
+      },
+      "ejemplo_redes_viales": {
+        "nivel_1": "Red Vial",
+        "nivel_2": ["Malla Arterial", "Malla Intermedia", "Malla Local", "Cicloinfrastructura"],
+        "nivel_3": {
+          "Malla Arterial": ["Avenida Boyacá", "Carrera 52", "Avenida El Polo", "Avenida 68", "Carrera 7"],
+          "Malla Intermedia": ["Corredores Secundarios", "Conectores Zonales"],
+          "Malla Local": ["Calles de Proximidad", "Vías Verdes", "Aceras Completas"],
+          "Cicloinfrastructura": ["Cicloparques", "Ciclorrutas Principales", "Ciclorrutas de Barrio"]
+        },
+        "nivel_4": {
+          "total_elementos": 300,
+          "distribucion": "Múltiples calles, avenidas y conectores específicos"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "red_vial": {
+    "malla_arterial": {
+      "nombre": "Malla Arterial Principal",
+      "descripcion": "Calles de conexión urbana (45 vías)",
+      "cantidad": 45,
+      "vias": [
+        "Avenida Boyacá", "Carrera 52", "Avenida El Polo",
+        "Carrera 7 (Avenida Séptima)", "Avenida 68", "Avenida Paseo Diag",
+        "Anillo Vial Intermedio", "Avenida 26", "Calle 72",
+        "Calle 19", "Avenida 9", "Calle 13",
+        "Avenida Suba", "Carrera 45", "Avenida Cali",
+        "Avenida Norte-Quito-Sur", "Avenida Autopista del Valle",
+        "Avenida Carrera 50", "Diagonal 85", "Carrera 100",
+        "Avenida Cra 68", "Calle 183", "Avenida 19 (Universidad)",
+        "Avenida Las Villas", "Avenida Santa Bárbara", "Cra 30",
+        "Avenida Circunvalar", "Carrera 23", "Avenida Boyacá Sur",
+        "Avenida Primero de Mayo", "Calle 100", "Avenida 19A",
+        "Carrera 36", "Avenida 0 (Sur)", "Avenida Jiménez",
+        "Cra 13", "Avenida Colombia", "Paseo Diag Sur",
+        "Avenida Esperanza", "Carrera 72", "Avenida 82"
+      ]
+    },
+    "malla_intermedia": {
+      "nombre": "Malla Intermedia de Media Capacidad",
+      "descripcion": "Corredores secundarios (120 vías)",
+      "cantidad": 120,
+      "vias": [
+        "Calle 127", "Calle 116", "Calle 106", "Calle 95", "Calle 85",
+        "Calle 76", "Calle 63", "Calle 53", "Calle 45", "Calle 40",
+        "Carrera 11", "Carrera 15", "Carrera 19", "Carrera 27", "Carrera 33",
+        "Carrera 39", "Carrera 44", "Carrera 51", "Carrera 57", "Carrera 63",
+        "Avenida Cra 60", "Avenida Cra 65", "Diagonal 109", "Diagonal 100", "Diagonal 91",
+        "Transversal 115", "Transversal 104", "Transversal 95", "Transversal 84", "Transversal 73",
+        "Calle 170", "Calle 155", "Calle 142", "Calle 138", "Calle 130",
+        "Carrera 8A", "Carrera 10A", "Carrera 14A", "Carrera 18A", "Carrera 24A",
+        "Autopista Medellín", "Avenida Monserrate", "Cra 4", "Cra 6", "Cra 9",
+        "Cra 12", "Cra 16", "Cra 20", "Cra 25", "Cra 28",
+        "Cra 31", "Cra 34", "Cra 37", "Cra 40", "Cra 43",
+        "Cra 46", "Cra 49", "Cra 53", "Cra 55", "Cra 58",
+        "Cra 61", "Cra 64", "Cra 66", "Cra 69", "Cra 71",
+        "Cra 74", "Cra 77", "Cra 80", "Cra 83", "Cra 86",
+        "Cra 89", "Cra 92", "Cra 95", "Cra 98", "Cra 101",
+        "Diagonal 102", "Diagonal 110", "Diagonal 115", "Diagonal 117", "Diagonal 120",
+        "Transversal 30", "Transversal 40", "Transversal 50", "Transversal 60", "Transversal 70",
+        "Transversal 80", "Transversal 90", "Transversal 100", "Transversal 110", "Transversal 120",
+        "Avenida Punto Sur", "Avenida San José", "Avenida Chapinero", "Avenida Usaquén",
+        "Corredor de la Séptima", "Calle 200", "Calle 195", "Calle 190", "Calle 185",
+        "Calle 180", "Calle 175", "Calle 165", "Calle 160", "Calle 150"
+      ]
+    },
+    "malla_local": {
+      "nombre": "Malla Local de Proximidad",
+      "descripcion": "Calles locales y de proximidad (300+ vías)",
+      "cantidad": 300,
+      "vias": [
+        "Calle 123A", "Calle 123B", "Calle 123C", "Calle 123D", "Calle 123E",
+        "Calle 122A", "Calle 122B", "Calle 122C", "Calle 121A", "Calle 121B",
+        "Calle 120A", "Calle 120B", "Calle 119A", "Calle 119B", "Calle 118A",
+        "Carrera 11A", "Carrera 11B", "Carrera 11C", "Carrera 12A", "Carrera 12B",
+        "Carrera 13A", "Carrera 13B", "Carrera 14A", "Carrera 14B", "Carrera 15A",
+        "Calle 89A", "Calle 89B", "Calle 88A", "Calle 88B", "Calle 87A",
+        "Calle 86A", "Calle 86B", "Calle 85A", "Calle 85B", "Calle 84A",
+        "Carrera 32A", "Carrera 32B", "Carrera 32C", "Carrera 33A", "Carrera 33B",
+        "Carrera 34A", "Carrera 34B", "Carrera 35A", "Carrera 35B", "Carrera 36A",
+        "Diagonal 36A", "Diagonal 36B", "Diagonal 37A", "Diagonal 37B", "Diagonal 38A",
+        "[+ 250 calles locales más organizadas por UPL]"
+      ]
+    },
+    "cicloinfrastructura": {
+      "nombre": "Red de Cicloinfrastructura",
+      "descripcion": "Ciclorrutas y cicloparques (60 nodos)",
+      "cantidad": 60,
+      "vias": [
+        "Cicloruta Avenida Séptima", "Cicloruta Avenida 19", "Cicloruta Avenida 26",
+        "Cicloruta Calle 72", "Cicloruta Calle 100", "Cicloruta Carrera 52",
+        "Cicloruta Avenida El Polo", "Cicloruta Anillo Vial", "Cicloruta Parque Metropolitano",
+        "Cicloruta Quebrada Tunjuelito", "Cicloruta Arroyo Córdoba", "Cicloruta Humedal Torca",
+        "Cicloparque Centro", "Cicloparque Chapinero", "Cicloparque Usaquén",
+        "[+ 45 ciclorrutas y cicloparques más]"
+      ]
+    },
+    "transporte_publico": {
+      "nombre": "Líneas de Transporte Público",
+      "descripcion": "Metro, Regiotram, Cables (14 líneas)",
+      "cantidad": 14,
+      "lineas": [
+        {"tipo": "Metro", "cantidad": 5, "ejemplos": ["Línea 1 (Centro-Suba)", "Línea 2 (Usaquén-La Carrera)", "Línea 3 (San Cristóbal)", "Línea 4 (Occidente)", "Línea 5 (Conexión Regional)"]},
+        {"tipo": "Regiotram", "cantidad": 2, "ejemplos": ["Regiotram del Sur", "Regiotram Occidente"]},
+        {"tipo": "Cables Aéreos", "cantidad": 7, "ejemplos": ["Cable Monserrate", "Cable Ciudad Bolívar", "Cable Sumapaz", "Cable Kennedy", "Cable Usme", "Cable Soacha", "Cable Conexión Metropolitana"]}
+      ]
+    }
+  }
+}
