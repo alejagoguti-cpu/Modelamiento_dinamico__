@@ -224,7 +224,17 @@
     <button class="redes-modal-close" type="button" aria-label="Cerrar">✕</button>
 
     <div class="redes-modal-header">
-      <h2 id="redes-modal-title">Estructura</h2>
+      <div class="redes-modal-header-top">
+        <h2 id="redes-modal-title">Estructura</h2>
+        <div class="redes-view-toggle" id="coarse-view-toggle" hidden>
+          <button class="toggle-btn toggle-list is-active" data-view="list" aria-label="Vista de lista" title="Lista">
+            <i class="fa-solid fa-list"></i> Lista
+          </button>
+          <button class="toggle-btn toggle-network" data-view="network" aria-label="Vista de red" title="Red">
+            <i class="fa-solid fa-diagram-project"></i> Red
+          </button>
+        </div>
+      </div>
       <p class="redes-modal-subtitle">Modo Analítico // Nodos = 0</p>
     </div>
 

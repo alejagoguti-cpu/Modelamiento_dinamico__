@@ -557,12 +557,60 @@ body{
   padding-right: 40px;
 }
 
+.redes-modal-header-top{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
 .redes-modal-header h2{
   font-family: 'Space Grotesk', sans-serif;
   font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.2px;
   color: var(--redes-accent, #2fbfae);
+  flex: 1;
+}
+
+.redes-view-toggle{
+  display: flex;
+  gap: 8px;
+  background: rgba(255,255,255,0.05);
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.redes-view-toggle .toggle-btn{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.redes-view-toggle .toggle-btn:hover{
+  color: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.08);
+}
+
+.redes-view-toggle .toggle-btn.is-active{
+  color: rgba(255,255,255,0.95);
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.2);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.redes-view-toggle .toggle-btn i{
+  font-size: 12px;
 }
 
 .redes-modal-subtitle{

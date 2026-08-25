@@ -172,6 +172,100 @@ function getExpandableElements(nodeKey) {
   return [];
 }
 
+// Renderizar red visual de los elementos expandibles
+function renderCoarseGrainingNetwork(nodeId, nodeLabel, elements, svgContainer) {
+  const svg = svgContainer.querySelector('svg') || svgContainer;
+  const viewWidth = 800, viewHeight = 600;
+  const centerX = viewWidth / 2, centerY = viewHeight / 2;
+  const radius = Math.min(viewWidth, viewHeight) / 3;
+
+  // Limpiar SVG
+  const edgesG = svg.querySelector('.redes-edges');
+  const nodesG = svg.querySelector('.redes-nodes');
+  if (edgesG) edgesG.innerHTML = '';
+  if (nodesG) nodesG.innerHTML = '';
+
+  // Limitar elementos a mostrar para no saturar
+  const displayElements = elements.slice(0, 30);
+
+  // Crear nodo central
+  const angle = Math.PI * 2 / displayElements.length;
+  const nodeRadius = 32;
+
+  // Crear nodos periféricos
+  displayElements.forEach((item, idx) => {
+    const itemAngle = angle * idx;
+    const x = centerX + radius * Math.cos(itemAngle);
+    const y = centerY + radius * Math.sin(itemAngle);
+
+    // Línea de conexión
+    if (edgesG) {
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', centerX);
+      line.setAttribute('y1', centerY);
+      line.setAttribute('x2', x);
+      line.setAttribute('y2', y);
+      line.setAttribute('stroke', 'rgba(255,255,255,0.15)');
+      line.setAttribute('stroke-width', '1.5');
+      line.setAttribute('class', 'redes-edge');
+      edgesG.appendChild(line);
+    }
+
+    // Nodo
+    if (nodesG) {
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('transform', `translate(${x},${y})`);
+      g.setAttribute('class', 'redes-node');
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('r', nodeRadius);
+      circle.setAttribute('fill', 'rgba(47, 212, 200, 0.1)');
+      circle.setAttribute('stroke', 'rgba(47, 212, 200, 0.6)');
+      circle.setAttribute('stroke-width', '2');
+      g.appendChild(circle);
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('dy', '0.3em');
+      text.setAttribute('font-size', '10');
+      text.setAttribute('fill', 'rgba(255,255,255,0.7)');
+      text.setAttribute('class', 'redes-node-label');
+
+      const itemText = typeof item === 'object' ? (item.nombre || item.name || '?') : item;
+      const truncated = itemText.substring(0, 12) + (itemText.length > 12 ? '...' : '');
+      text.textContent = truncated;
+      g.appendChild(text);
+
+      nodesG.appendChild(g);
+    }
+  });
+
+  // Crear nodo central
+  if (nodesG) {
+    const centerG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    centerG.setAttribute('transform', `translate(${centerX},${centerY})`);
+    centerG.setAttribute('class', 'redes-node is-primary');
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('r', 48);
+    circle.setAttribute('fill', 'rgba(47, 212, 200, 0.15)');
+    circle.setAttribute('stroke', 'url(#grad-green)');
+    circle.setAttribute('stroke-width', '3');
+    centerG.appendChild(circle);
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dy', '0.3em');
+    text.setAttribute('font-size', '12');
+    text.setAttribute('font-weight', 'bold');
+    text.setAttribute('fill', 'rgba(255,255,255,0.9)');
+    text.textContent = nodeLabel.substring(0, 16);
+    centerG.appendChild(text);
+
+    nodesG.appendChild(centerG);
+  }
+}
+
 // Abrir coarse graining modal: mostrar elementos en popup limpio y legible
 function openCoarseGrainingModal(nodeId, nodeLabel) {
   if (!EXPANDABLE_NODES[nodeId]) return;
@@ -235,6 +329,43 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
   });
 
   listContainer.appendChild(ul);
+
+  // Mostrar toggle de vista y configurar handlers
+  const toggleDiv = document.getElementById('coarse-view-toggle');
+  if (toggleDiv) {
+    toggleDiv.hidden = false;
+
+    // Guardar contexto actual para el toggle
+    toggleDiv.dataset.nodeId = nodeId;
+    toggleDiv.dataset.nodeLabel = nodeLabel;
+    toggleDiv.dataset.elementCount = elements.length;
+
+    // Configurar botones de toggle
+    const listBtn = toggleDiv.querySelector('.toggle-list');
+    const networkBtn = toggleDiv.querySelector('.toggle-network');
+
+    if (listBtn && networkBtn) {
+      listBtn.classList.add('is-active');
+      networkBtn.classList.remove('is-active');
+
+      listBtn.onclick = (e) => {
+        e.preventDefault();
+        listBtn.classList.add('is-active');
+        networkBtn.classList.remove('is-active');
+        listContainer.style.display = '';
+        svgContainer.style.display = 'none';
+      };
+
+      networkBtn.onclick = (e) => {
+        e.preventDefault();
+        networkBtn.classList.add('is-active');
+        listBtn.classList.remove('is-active');
+        listContainer.style.display = 'none';
+        svgContainer.style.display = '';
+        renderCoarseGrainingNetwork(nodeId, nodeLabel, elements, svgContainer);
+      };
+    }
+  }
 
   // Mostrar modal
   overlay.hidden = false;
@@ -935,6 +1066,12 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
     const listContainer = document.querySelector('.coarse-graining-list');
     if (listContainer) {
       listContainer.innerHTML = '';
+    }
+
+    // Ocultar toggle de vista
+    const toggleDiv = document.getElementById('coarse-view-toggle');
+    if (toggleDiv) {
+      toggleDiv.hidden = true;
     }
   }
 
