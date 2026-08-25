@@ -269,8 +269,187 @@ function forceDirectedLayout(nodes, edges, width = 800, height = 600, iterations
   return nodeMap;
 }
 
-// Renderizar red de un elemento específico en el modal separado
+// Detectar si es dispositivo móvil
+function isMobile() {
+  return window.innerWidth < 768;
+}
+
+// Renderizar red EN EL MISMO MODAL (para móvil)
+function renderNetworkInCurrentModal(elementName, elementIndex, allElements) {
+  const overlay = document.getElementById('redes-modal-overlay');
+  const modalBody = document.querySelector('.redes-modal-body');
+  const svgContainer = modalBody?.querySelector('.redes-network-svg');
+  const listContainer = modalBody?.querySelector('.coarse-graining-list');
+  const titleEl = document.getElementById('redes-modal-title');
+
+  if (!overlay || !modalBody || !svgContainer) return;
+
+  // Actualizar título
+  if (titleEl) titleEl.textContent = elementName;
+
+  // Ocultar lista, mostrar SVG
+  if (listContainer) listContainer.style.display = 'none';
+  if (svgContainer) svgContainer.style.display = '';
+
+  // Crear nodos: elemento central + elementos relacionados de la misma categoría
+  const nodes = [
+    { id: 'center', label: elementName, radius: 28, primary: true }
+  ];
+
+  const allElementsList = allElements || [];
+  const relatedElements = allElementsList
+    .filter((el, idx) => idx !== elementIndex)
+    .slice(0, 6); // Menos elementos en móvil
+
+  relatedElements.forEach((el, i) => {
+    const text = typeof el === 'object' ? (el.nombre || el.name || String(el)) : String(el);
+    nodes.push({
+      id: `node-${i}`,
+      label: text.substring(0, 16),
+      radius: 18 + Math.random() * 8
+    });
+  });
+
+  // Crear aristas
+  const edges = [];
+  for (let i = 1; i < nodes.length; i++) {
+    edges.push({ from: 'center', to: `node-${i - 1}` });
+    if (i < nodes.length - 1 && Math.random() > 0.5) {
+      edges.push({ from: `node-${i - 1}`, to: `node-${i}` });
+    }
+  }
+
+  // Calcular layout
+  const nodePositions = forceDirectedLayout(nodes, edges, 800, 400);
+
+  // Limpiar SVG
+  const edgesG = svgContainer.querySelector('.redes-edges');
+  const nodesG = svgContainer.querySelector('.redes-nodes');
+  if (edgesG) edgesG.innerHTML = '';
+  if (nodesG) nodesG.innerHTML = '';
+
+  // Dibujar aristas
+  if (edgesG) {
+    edges.forEach(edge => {
+      const fromNode = nodePositions[edge.from];
+      const toNode = nodePositions[edge.to];
+      if (!fromNode || !toNode) return;
+
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', fromNode.x.toFixed(1));
+      line.setAttribute('y1', fromNode.y.toFixed(1));
+      line.setAttribute('x2', toNode.x.toFixed(1));
+      line.setAttribute('y2', toNode.y.toFixed(1));
+      line.setAttribute('stroke', 'rgba(47, 212, 200, 0.3)');
+      line.setAttribute('stroke-width', '1.5');
+      line.setAttribute('class', 'redes-edge');
+      line.setAttribute('data-from', edge.from);
+      line.setAttribute('data-to', edge.to);
+      edgesG.appendChild(line);
+    });
+  }
+
+  // Dibujar nodos
+  if (nodesG) {
+    Object.entries(nodePositions).forEach(([nodeId, node]) => {
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('transform', `translate(${node.x.toFixed(1)},${node.y.toFixed(1)})`);
+      g.setAttribute('class', 'redes-node' + (node.primary ? ' is-primary' : ''));
+      g.setAttribute('data-node', nodeId);
+      g.style.cursor = 'pointer';
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('r', node.radius.toFixed(1));
+      circle.setAttribute('fill', node.primary ? 'rgba(47, 212, 200, 0.15)' : 'rgba(47, 212, 200, 0.08)');
+      circle.setAttribute('stroke', 'rgba(47, 212, 200, 0.6)');
+      circle.setAttribute('stroke-width', node.primary ? '3' : '2');
+      g.appendChild(circle);
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('dy', '0.3em');
+      text.setAttribute('font-size', node.primary ? '11' : '10');
+      text.setAttribute('fill', 'rgba(255,255,255,0.85)');
+      text.setAttribute('font-weight', node.primary ? 'bold' : '500');
+      text.setAttribute('class', 'redes-node-label');
+
+      const truncated = node.label.substring(0, 14) + (node.label.length > 14 ? '...' : '');
+      text.textContent = truncated;
+      g.appendChild(text);
+
+      // Interactividad simple
+      let clickCount = 0;
+      let clickTimeout;
+      g.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clickCount++;
+        if (clickCount === 1) {
+          clickTimeout = setTimeout(() => clickCount = 0, 300);
+        } else if (clickCount === 2) {
+          clearTimeout(clickTimeout);
+          document.querySelectorAll('.redes-node, .redes-edge').forEach(el => {
+            el.style.opacity = '0.3';
+          });
+          g.style.opacity = '1';
+          document.querySelectorAll(`.redes-edge[data-from="${nodeId}"], .redes-edge[data-to="${nodeId}"]`).forEach(edge => {
+            edge.style.opacity = '1';
+          });
+          clickCount = 0;
+        }
+      });
+
+      nodesG.appendChild(g);
+    });
+  }
+
+  // Agregar botón "Volver" en móvil
+  let backBtn = modalBody.querySelector('.mobile-back-btn');
+  if (!backBtn) {
+    backBtn = document.createElement('button');
+    backBtn.className = 'mobile-back-btn';
+    backBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Volver';
+    backBtn.style.position = 'absolute';
+    backBtn.style.top = '60px';
+    backBtn.style.left = '16px';
+    backBtn.style.zIndex = '1000';
+    backBtn.style.padding = '8px 12px';
+    backBtn.style.background = 'rgba(0,0,0,0.5)';
+    backBtn.style.border = '1px solid rgba(47,212,200,0.3)';
+    backBtn.style.borderRadius = '6px';
+    backBtn.style.color = 'var(--green)';
+    backBtn.style.fontSize = '12px';
+    backBtn.style.cursor = 'pointer';
+    backBtn.style.display = 'flex';
+    backBtn.style.gap = '6px';
+    backBtn.style.alignItems = 'center';
+
+    backBtn.addEventListener('click', () => {
+      if (listContainer) listContainer.style.display = '';
+      if (svgContainer) svgContainer.style.display = 'none';
+      if (backBtn) backBtn.style.display = 'none';
+      if (titleEl) titleEl.textContent = titleEl.dataset.originalTitle || 'Estructura';
+    });
+
+    modalBody.style.position = 'relative';
+    modalBody.appendChild(backBtn);
+  }
+
+  // Guardar título original
+  if (titleEl && !titleEl.dataset.originalTitle) {
+    titleEl.dataset.originalTitle = titleEl.textContent;
+  }
+  backBtn.style.display = 'flex';
+}
+
+// Renderizar red de un elemento específico (en modal separado en desktop, en el mismo modal en móvil)
 function renderElementNetworkModal(elementName, elementIndex, allElements) {
+  // En móvil: mostrar red EN EL MODAL ACTUAL
+  if (isMobile()) {
+    renderNetworkInCurrentModal(elementName, elementIndex, allElements);
+    return;
+  }
+
+  // En desktop: abrir modal separado
   const overlay = document.getElementById('element-network-modal-overlay');
   const svg = overlay?.querySelector('.element-network-svg');
   if (!overlay || !svg) return;
