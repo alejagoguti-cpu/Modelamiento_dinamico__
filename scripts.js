@@ -160,6 +160,48 @@ const NETWORK_TO_EXPANDABLE_MAP = {
   'comercio': 'industria'
 };
 
+// ===================== ESTRUCTURA JERÁRQUICA: CATEGORÍAS PRINCIPALES (Nivel 2) =====================
+// Mapeo de estructura principal → categorías subordinadas
+const STRUCTURE_CATEGORIES = {
+  'EEP': {
+    label: 'Estructura Ecológica Principal',
+    color: 'verde',
+    icon: '🌿',
+    categories: [
+      { id: 'rios', label: 'Sistema Hídrico', icon: '💧', count: 13 },
+      { id: 'humedales', label: 'Humedales', icon: '🏞️', count: 17 },
+      { id: 'cerros', label: 'Cerros Orientales', icon: '⛰️', count: 3 },
+    ]
+  },
+  'EIP': {
+    label: 'Estructura Integradora de Patrimonios',
+    color: 'purpura',
+    icon: '🏛️',
+    categories: [
+      { id: 'material', label: 'Patrimonio Material', icon: '🏛️', count: 50 },
+    ]
+  },
+  'EFC': {
+    label: 'Estructura Funcional y del Cuidado',
+    color: 'azul',
+    icon: '🏗️',
+    categories: [
+      { id: 'redvial', label: 'Red Vial', icon: '🛣️', count: 245 },
+      { id: 'transporte', label: 'Transporte Público', icon: '🚌', count: 30 },
+      { id: 'parques', label: 'Espacio Público y Parques', icon: '🌳', count: 147 },
+      { id: 'equipamient', label: 'Equipamientos', icon: '🏢', count: 745 },
+    ]
+  },
+  'ESECI': {
+    label: 'Estructura Socioeconómica, Creativa e Innovación',
+    color: 'amarillo',
+    icon: '💼',
+    categories: [
+      { id: 'industria', label: 'Zonas Productivas', icon: '🏭', count: 80 },
+    ]
+  }
+};
+
 // Obtener elementos expandibles de los datos del POT (SOLO elementos reales, sin inventar)
 function getExpandableElements(nodeKey) {
   if (!potData || !EXPANDABLE_NODES[nodeKey]) return [];
@@ -587,6 +629,49 @@ function renderElementNetworkModal(elementName, elementIndex, allElements) {
   document.body.style.overflow = 'hidden';
 }
 
+// ===================== NIVEL 2: MOSTRAR CATEGORÍAS (popup de categorías) =====================
+// Abrir modal para seleccionar una categoría dentro de una estructura principal
+function openCategoriesModal(structureId) {
+  const overlay = document.getElementById('categories-modal-overlay');
+  const titleEl = document.getElementById('categories-modal-title');
+  const gridContainer = document.querySelector('.categories-grid');
+
+  if (!overlay || !gridContainer || !STRUCTURE_CATEGORIES[structureId]) return;
+
+  const structure = STRUCTURE_CATEGORIES[structureId];
+
+  // Actualizar título
+  titleEl.textContent = structure.label;
+
+  // Limpiar grid
+  gridContainer.innerHTML = '';
+
+  // Crear tarjetas de categorías
+  structure.categories.forEach(category => {
+    const card = document.createElement('div');
+    card.className = 'category-card';
+    card.innerHTML = `
+      <div class="category-card-icon">${category.icon}</div>
+      <div class="category-card-title">${category.label}</div>
+      <div class="category-card-count">${category.count} elementos</div>
+    `;
+
+    card.addEventListener('click', () => {
+      // Cerrar modal de categorías y abrir el de elementos
+      overlay.hidden = true;
+      openCoarseGrainingModal(category.id, category.label);
+    });
+
+    gridContainer.appendChild(card);
+  });
+
+  // Mostrar modal
+  overlay.hidden = false;
+  document.body.style.overflow = 'hidden';
+
+  console.log(`Opened categories for structure: ${structureId}`);
+}
+
 // Abrir coarse graining modal: mostrar elementos en popup limpio y legible
 function openCoarseGrainingModal(nodeId, nodeLabel) {
   if (!EXPANDABLE_NODES[nodeId]) return;
@@ -670,6 +755,34 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
 
 // ===================== MODAL CLOSE HANDLERS =====================
 (function initModalHandlers(){
+  // Cerrar modal de categorías
+  const categoriesOverlay = document.getElementById('categories-modal-overlay');
+  const categoriesCloseBtn = categoriesOverlay?.querySelector('.categories-modal-close');
+  const categoriesBackBtn = categoriesOverlay?.querySelector('.categories-modal-back');
+
+  if (categoriesCloseBtn) {
+    categoriesCloseBtn.addEventListener('click', () => {
+      categoriesOverlay.hidden = true;
+      document.body.style.overflow = '';
+    });
+  }
+
+  if (categoriesBackBtn) {
+    categoriesBackBtn.addEventListener('click', () => {
+      categoriesOverlay.hidden = true;
+      document.body.style.overflow = '';
+    });
+  }
+
+  if (categoriesOverlay) {
+    categoriesOverlay.addEventListener('click', (e) => {
+      if (e.target === categoriesOverlay) {
+        categoriesOverlay.hidden = true;
+        document.body.style.overflow = '';
+      }
+    });
+  }
+
   // Cerrar modal de elementos
   const redesOverlay = document.getElementById('redes-modal-overlay');
   const redesCloseBtn = redesOverlay?.querySelector('.redes-modal-close');
@@ -709,6 +822,10 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
   // Cerrar con ESC
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+      if (categoriesOverlay && !categoriesOverlay.hidden) {
+        categoriesOverlay.hidden = true;
+        document.body.style.overflow = '';
+      }
       if (redesOverlay && !redesOverlay.hidden) {
         redesOverlay.hidden = true;
         document.body.style.overflow = '';
@@ -1341,11 +1458,21 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
       });
       float.appendChild(text);
 
-      // click en el nodo -> si es expandable, abrir modal con elementos; si no, atenuar
+      // click en el nodo -> si es expandable, abrir modal de categorías; si no, atenuar
       function handleNodeClick(ev){
         ev.stopPropagation();
         if (isExpandable) {
-          openCoarseGrainingModal(expandableNodeId, n.label.join(" "));
+          // Mapear accent a estructura principal (Nivel 2: Categorías)
+          const accentToStructure = {
+            'green': 'EEP',
+            'blue': 'EFC',
+            'yellow': 'ESECI',
+            'purple': 'EIP'
+          };
+          const structureId = accentToStructure[net.accent];
+          if (structureId) {
+            openCategoriesModal(structureId);
+          }
         } else {
           const dimmed = g.classList.toggle("is-dimmed");
           (edgesByNode[n.id] || []).forEach((edgeEl) => {
