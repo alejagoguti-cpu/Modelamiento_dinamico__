@@ -25,6 +25,7 @@ class State:
     flowers: int = 100
     birds: int = 0
     invasive_species: int = 0
+    aquatic_plants: int = 0
     water_quality: float = 100.0
     air_quality: float = 100.0
     chlorophyll: float = 100.0
@@ -131,6 +132,39 @@ class InvasiveSpecies:
             pygame.draw.circle(screen, RED, (int(self.x), int(self.y)), 4)
             pygame.draw.circle(screen, BLACK, (int(self.x), int(self.y)), 4, 1)
 
+class AquaticPlant:
+    def __init__(self, x: float, y: float):
+        self.x = x
+        self.y = y
+        self.age = 0
+        self.alive = True
+        self.size = 3
+
+    def update(self, water_quality: float, soil_nutrients: float):
+        self.age += 1
+        self.size = 3 + (self.age / 100)
+        self.size = min(8, self.size)
+
+        if water_quality > 70:
+            if random.random() < 0.3:
+                self.alive = False
+                return True
+        else:
+            if random.random() < 0.8 and self.age > 100:
+                self.alive = False
+                return True
+
+        if soil_nutrients < 30 and random.random() < 0.05:
+            self.alive = False
+
+        return False
+
+    def draw(self, screen):
+        if self.alive:
+            TURQUOISE = (64, 224, 208)
+            pygame.draw.circle(screen, TURQUOISE, (int(self.x), int(self.y)), int(self.size))
+            pygame.draw.circle(screen, (0, 150, 150), (int(self.x), int(self.y)), int(self.size), 1)
+
 class Bird:
     def __init__(self, x: float, y: float):
         self.x = x
@@ -198,6 +232,7 @@ class WetlandGame:
         self.bees: List[Bee] = [Bee(random.randint(100, WIDTH-100), random.randint(100, HEIGHT-200)) for _ in range(self.state.bees)]
         self.flowers: List[Flower] = [Flower(random.randint(100, WIDTH-100), random.randint(100, HEIGHT-200)) for _ in range(self.state.flowers)]
         self.invasive_species: List[InvasiveSpecies] = []
+        self.aquatic_plants: List[AquaticPlant] = []
         self.birds: List[Bird] = [Bird(random.randint(100, WIDTH-100), random.randint(100, HEIGHT-200)) for _ in range(3)]
 
         self.season_names = ["Primavera", "Verano", "Otoño", "Invierno"]
@@ -291,6 +326,23 @@ class WetlandGame:
                 idx = random.randint(0, len(self.flowers) - 1)
                 self.flowers[idx].alive = False
 
+        self.aquatic_plants = [p for p in self.aquatic_plants if p.alive]
+        for plant in self.aquatic_plants:
+            if plant.update(self.state.water_quality, self.state.soil_nutrients):
+                self.state.aquatic_plants -= 1
+
+        aquatic_spawn_rate = 0.008 * (1 + (100 - self.state.water_quality) / 150)
+        if random.random() < aquatic_spawn_rate and len(self.aquatic_plants) < 100:
+            self.aquatic_plants.append(AquaticPlant(random.randint(100, WIDTH-100), random.randint(100, HEIGHT-200)))
+            self.state.aquatic_plants += 1
+
+        if len(self.aquatic_plants) > 30:
+            nutrient_consumption = len(self.aquatic_plants) * 0.5
+            self.state.soil_nutrients -= nutrient_consumption
+            if len(self.flowers) > 0 and random.random() < 0.02:
+                idx = random.randint(0, len(self.flowers) - 1)
+                self.flowers[idx].alive = False
+
         pollinated_flowers = sum(1 for f in self.flowers if f.pollinated)
         if pollinated_flowers > 0:
             self.state.food += pollinated_flowers * 2
@@ -345,6 +397,9 @@ class WetlandGame:
         for flower in self.flowers:
             flower.draw(self.screen)
 
+        for plant in self.aquatic_plants:
+            plant.draw(self.screen)
+
         for species in self.invasive_species:
             species.draw(self.screen)
 
@@ -368,6 +423,7 @@ class WetlandGame:
                 return RED
 
         invasive_color = RED if self.state.invasive_species > 30 else (ORANGE if self.state.invasive_species > 10 else BLACK)
+        aquatic_color = RED if self.state.aquatic_plants > 40 else (ORANGE if self.state.aquatic_plants > 20 else BLACK)
 
         months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
         month_name = months[self.state.month - 1] if 1 <= self.state.month <= 12 else "???"
@@ -379,12 +435,12 @@ class WetlandGame:
             (f"Aves: {self.state.birds}", (100, 100, 200)),
             (f"Flores: {self.state.flowers}", BLACK),
             (f"Invasoras: {self.state.invasive_species}", invasive_color),
+            (f"Plantas Acuáticas: {self.state.aquatic_plants}", aquatic_color),
             (f"Clorofila: {self.state.chlorophyll:.1f}%", get_color(self.state.chlorophyll)),
             (f"Agua: {self.state.water_quality:.1f}%", get_color(self.state.water_quality)),
             (f"Aire: {self.state.air_quality:.1f}%", get_color(self.state.air_quality)),
             (f"Microorganismos: {self.state.soil_microorganisms:.1f}%", get_color(self.state.soil_microorganisms)),
             (f"Nutrientes: {self.state.soil_nutrients:.1f}%", get_color(self.state.soil_nutrients)),
-            (f"Ocupación: {self.state.habitat_occupation:.1f}%", get_color(self.state.habitat_occupation)),
         ]
 
         for i, (text, color) in enumerate(info_data):
