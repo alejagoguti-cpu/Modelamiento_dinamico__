@@ -165,7 +165,7 @@ function getExpandableElements(nodeKey) {
   return [];
 }
 
-// Renderizar red visual de los elementos expandibles
+// Renderizar red visual de los elementos expandibles CON INTERACTIVIDAD
 function renderCoarseGrainingNetwork(nodeId, nodeLabel, elements, svgContainer) {
   const svg = svgContainer.querySelector('svg') || svgContainer;
   const viewWidth = 800, viewHeight = 600;
@@ -180,35 +180,84 @@ function renderCoarseGrainingNetwork(nodeId, nodeLabel, elements, svgContainer) 
 
   // Limitar elementos a mostrar para no saturar
   const displayElements = elements.slice(0, 30);
-
-  // Crear nodo central
   const angle = Math.PI * 2 / displayElements.length;
-  const nodeRadius = 32;
+  const MIN_NODE_R = 24, MAX_NODE_R = 48;
 
-  // Crear nodos periféricos
+  // Contar conexiones por nodo (todos conectan al centro, pero algunos pueden conectarse entre sí)
+  const nodeDegree = {};
+  displayElements.forEach((_, idx) => {
+    nodeDegree[idx] = 1; // Al menos conexión al centro
+  });
+
+  // Agregar conexiones dinámicas (ej: cada nodo se conecta con sus 2-3 vecinos más cercanos)
+  displayElements.forEach((_, idx) => {
+    const nextIdx = (idx + 1) % displayElements.length;
+    const prevIdx = (idx - 1 + displayElements.length) % displayElements.length;
+    nodeDegree[idx]++;
+    nodeDegree[nextIdx]++;
+    nodeDegree[prevIdx]++;
+  });
+
+  // Crear nodos periféricos CON TAMAÑO DINÁMICO
+  const nodeElements = [];
   displayElements.forEach((item, idx) => {
     const itemAngle = angle * idx;
     const x = centerX + radius * Math.cos(itemAngle);
     const y = centerY + radius * Math.sin(itemAngle);
 
-    // Línea de conexión
-    if (edgesG) {
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', centerX);
-      line.setAttribute('y1', centerY);
-      line.setAttribute('x2', x);
-      line.setAttribute('y2', y);
-      line.setAttribute('stroke', 'rgba(255,255,255,0.15)');
-      line.setAttribute('stroke-width', '1.5');
-      line.setAttribute('class', 'redes-edge');
-      edgesG.appendChild(line);
-    }
+    // Tamaño basado en grado (hub si tiene muchas conexiones)
+    const degree = nodeDegree[idx] || 1;
+    const nodeRadius = MIN_NODE_R + (degree / 4) * (MAX_NODE_R - MIN_NODE_R);
 
-    // Nodo
-    if (nodesG) {
+    // Nodos vecinos para conectar
+    const neighbors = [(idx - 1 + displayElements.length) % displayElements.length, (idx + 1) % displayElements.length];
+    const connections = [{ from: idx, to: 'center' }, ...neighbors.map(n => ({ from: idx, to: n }))];
+
+    // Guardar info del nodo
+    nodeElements.push({ idx, x, y, nodeRadius, item, connections, degree });
+  });
+
+  // Dibujar conexiones
+  if (edgesG) {
+    nodeElements.forEach(({ idx, x, y, connections }) => {
+      connections.forEach(conn => {
+        if (conn.to === 'center') {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', centerX);
+          line.setAttribute('y1', centerY);
+          line.setAttribute('x2', x);
+          line.setAttribute('y2', y);
+          line.setAttribute('stroke', 'rgba(255,255,255,0.15)');
+          line.setAttribute('stroke-width', '1.5');
+          line.setAttribute('class', 'redes-edge');
+          line.setAttribute('data-node', idx);
+          edgesG.appendChild(line);
+        } else if (conn.to > idx) {
+          // Evitar duplicar líneas
+          const neighbor = nodeElements[conn.to];
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', x);
+          line.setAttribute('y1', y);
+          line.setAttribute('x2', neighbor.x);
+          line.setAttribute('y2', neighbor.y);
+          line.setAttribute('stroke', 'rgba(255,255,255,0.08)');
+          line.setAttribute('stroke-width', '1');
+          line.setAttribute('class', 'redes-edge');
+          line.setAttribute('data-node', `${idx},${conn.to}`);
+          edgesG.appendChild(line);
+        }
+      });
+    });
+  }
+
+  // Dibujar nodos con interactividad
+  if (nodesG) {
+    nodeElements.forEach(({ idx, x, y, nodeRadius, item }) => {
       const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       g.setAttribute('transform', `translate(${x},${y})`);
-      g.setAttribute('class', 'redes-node');
+      g.setAttribute('class', 'redes-node cg-animated');
+      g.setAttribute('data-idx', idx);
+      g.style.cursor = 'pointer';
 
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       circle.setAttribute('r', nodeRadius);
@@ -229,15 +278,43 @@ function renderCoarseGrainingNetwork(nodeId, nodeLabel, elements, svgContainer) 
       text.textContent = truncated;
       g.appendChild(text);
 
-      nodesG.appendChild(g);
-    }
-  });
+      // Interactividad: doble click = highlight, triple click = hide
+      let clickCount = 0;
+      let clickTimeout;
 
-  // Crear nodo central
-  if (nodesG) {
+      g.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clickCount++;
+
+        if (clickCount === 1) {
+          clickTimeout = setTimeout(() => {
+            clickCount = 0;
+          }, 300);
+        } else if (clickCount === 2) {
+          clearTimeout(clickTimeout);
+          // DOBLE CLICK: Iluminar conexiones
+          highlightNodeConnections(idx, edgesG, nodesG);
+          clickCount = 0;
+        } else if (clickCount === 3) {
+          clearTimeout(clickTimeout);
+          // TRIPLE CLICK: Desaparecer nodo
+          g.classList.add('cg-hidden');
+          // Ocultar conexiones asociadas
+          document.querySelectorAll(`[data-node*="${idx}"]`).forEach(edge => {
+            edge.style.opacity = '0';
+          });
+          clickCount = 0;
+        }
+      });
+
+      nodesG.appendChild(g);
+    });
+
+    // Crear nodo central
     const centerG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     centerG.setAttribute('transform', `translate(${centerX},${centerY})`);
-    centerG.setAttribute('class', 'redes-node is-primary');
+    centerG.setAttribute('class', 'redes-node is-primary cg-animated');
+    centerG.style.cursor = 'pointer';
 
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle.setAttribute('r', 48);
@@ -255,8 +332,35 @@ function renderCoarseGrainingNetwork(nodeId, nodeLabel, elements, svgContainer) 
     text.textContent = nodeLabel.substring(0, 16);
     centerG.appendChild(text);
 
+    centerG.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Limpiar highlights al hacer click en centro
+      document.querySelectorAll('.redes-node.cg-highlighted, .redes-edge.cg-highlighted').forEach(el => {
+        el.classList.remove('cg-highlighted');
+      });
+    });
+
     nodesG.appendChild(centerG);
   }
+}
+
+// Resaltar conexiones de un nodo
+function highlightNodeConnections(nodeIdx, edgesG, nodesG) {
+  // Limpiar highlights anteriores
+  document.querySelectorAll('.redes-node.cg-highlighted, .redes-edge.cg-highlighted').forEach(el => {
+    el.classList.remove('cg-highlighted');
+  });
+
+  // Resaltar nodo actual
+  const nodeEl = nodesG.querySelector(`[data-idx="${nodeIdx}"]`);
+  if (nodeEl) {
+    nodeEl.classList.add('cg-highlighted');
+  }
+
+  // Resaltar conexiones
+  document.querySelectorAll(`.redes-edge[data-node*="${nodeIdx}"]`).forEach(edge => {
+    edge.classList.add('cg-highlighted');
+  });
 }
 
 // Abrir coarse graining modal: mostrar elementos en popup limpio y legible
