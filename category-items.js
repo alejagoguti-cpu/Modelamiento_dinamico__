@@ -234,9 +234,9 @@
     const positions = layout.positions;
     applySceneSize(layout.width, layout.height);
     for (let index = 1; index < categories.length; index++){
-      const edge = svgElement("line", {
-        x1: positions[index - 1].x, y1: positions[index - 1].y,
-        x2: positions[index].x, y2: positions[index].y,
+      const geometry = edgeGeometry(positions[index - 1], positions[index], categoryRadii[index - 1], categoryRadii[index], "subcategory", index, positions.map((position, nodeIndex) => ({ ...position, radius: categoryRadii[nodeIndex] })).filter((_, nodeIndex) => nodeIndex !== index - 1 && nodeIndex !== index));
+      const edge = svgElement(geometry.type === "path" ? "path" : "line", {
+        ...(geometry.type === "path" ? { d: geometry.d } : { x1: geometry.x1, y1: geometry.y1, x2: geometry.x2, y2: geometry.y2 }),
         class: "category-network-edge category-network-edge-subcategory"
       });
       networkLinks.appendChild(edge);
@@ -405,7 +405,7 @@
     return { lines, radius, fontSize, iconSize: fontSize + 5 };
   }
 
-  function networkEdges(items){
+  function networkEdges(items, positions = []){
     const edges = [];
     const seen = new Set();
     const add = (from, to, kind = "related") => {
@@ -415,15 +415,74 @@
       seen.add(key);
       edges.push({ from, to, kind });
     };
-    // Conexiones locales basadas en el orden de fila de la hoja y la subcategoría.
-    items.forEach((item, index) => {
-      if (index + 1 < items.length) add(index, index + 1, "sequence");
-      if (index + 2 < items.length && (index % 2 === 0 || item.subcategory === items[index + 2].subcategory)) add(index, index + 2, "related");
-      const nextSameSubcategory = items.findIndex((candidate, candidateIndex) => candidateIndex > index && candidate.subcategory && candidate.subcategory === item.subcategory);
-      if (nextSameSubcategory >= 0 && nextSameSubcategory - index > 2) add(index, nextSameSubcategory, "subcategory");
-    });
-    if (items.length > 3) add(items.length - 1, 0, "sequence");
+    // Cada nodo se une al vecino anterior más cercano. Así la red sigue siendo
+    // orgánica y conectada, pero no produce diagonales largas que crucen el mapa.
+    const dense = items.length > 72;
+    for (let index = 1; index < items.length; index++){
+      const nearest = positions.slice(0, index)
+        .map((position, candidateIndex) => ({ candidateIndex, distance: Math.hypot(position.x - positions[index].x, position.y - positions[index].y) }))
+        .sort((a, b) => a.distance - b.distance);
+      if (nearest[0]) add(index, nearest[0].candidateIndex, "sequence");
+      if (!dense && index % 3 === 0 && nearest[1]) add(index, nearest[1].candidateIndex, "related");
+      if (item.subcategory && index % (dense ? 9 : 4) === 0){
+        const sameSubcategory = nearest.find(candidate => items[candidate.candidateIndex].subcategory && items[candidate.candidateIndex].subcategory === item.subcategory);
+        if (sameSubcategory) add(index, sameSubcategory.candidateIndex, "subcategory");
+      }
+    }
     return edges;
+  }
+
+  function lineSamples(start, end, count = 24){
+    return Array.from({ length: count + 1 }, (_, sampleIndex) => {
+      const t = sampleIndex / count;
+      return { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t };
+    });
+  }
+
+  function curveSamples(start, control, end, count = 28){
+    return Array.from({ length: count + 1 }, (_, sampleIndex) => {
+      const t = sampleIndex / count;
+      const inverse = 1 - t;
+      return {
+        x: inverse * inverse * start.x + 2 * inverse * t * control.x + t * t * end.x,
+        y: inverse * inverse * start.y + 2 * inverse * t * control.y + t * t * end.y
+      };
+    });
+  }
+
+  function routeHitsNode(samples, obstacles, clearance = 3){
+    return obstacles.some(obstacle => samples.some(point => Math.hypot(point.x - obstacle.x, point.y - obstacle.y) < obstacle.radius + clearance));
+  }
+
+  function edgeGeometry(from, to, fromRadius, toRadius, kind, index, obstacles = []){
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const distance = Math.max(Math.hypot(dx, dy), 0.01);
+    const ux = dx / distance;
+    const uy = dy / distance;
+    const inset = 6;
+    const start = { x: from.x + ux * (fromRadius + inset), y: from.y + uy * (fromRadius + inset) };
+    const end = { x: to.x - ux * (toRadius + inset), y: to.y - uy * (toRadius + inset) };
+    const candidates = [0, 1, -1, 2, -2, 3, -3, 4, -4];
+    const bendBase = Math.min(150, Math.max(28, distance * (kind === "subcategory" ? 0.20 : 0.14)));
+    const orderedCandidates = candidates.sort((a, b) => {
+      const aScore = Math.abs(a - (index % 2 === 0 ? 1 : -1));
+      const bScore = Math.abs(b - (index % 2 === 0 ? 1 : -1));
+      return aScore - bScore;
+    });
+    let best = null;
+    orderedCandidates.forEach(multiplier => {
+      const midpoint = { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 };
+      const bend = multiplier * bendBase;
+      const control = { x: midpoint.x - uy * bend, y: midpoint.y + ux * bend };
+      const samples = multiplier === 0 ? lineSamples(start, end) : curveSamples(start, control, end);
+      const hitCount = obstacles.reduce((count, obstacle) => count + (samples.some(point => Math.hypot(point.x - obstacle.x, point.y - obstacle.y) < obstacle.radius + 3) ? 1 : 0), 0);
+      const score = hitCount * 1000 + Math.abs(multiplier) * 0.8 + (multiplier === 0 ? 0 : 1);
+      if (!best || score < best.score) best = { multiplier, control, hitCount, score };
+    });
+    if (best?.multiplier === 0 && best.hitCount === 0) return { type: "line", x1: start.x, y1: start.y, x2: end.x, y2: end.y };
+    const control = best?.control || { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 };
+    return { type: "path", d: `M ${start.x.toFixed(1)} ${start.y.toFixed(1)} Q ${control.x.toFixed(1)} ${control.y.toFixed(1)} ${end.x.toFixed(1)} ${end.y.toFixed(1)}` };
   }
 
   function renderNetwork(){
@@ -442,10 +501,10 @@
     const layout = organicLayout(total, specs.map(spec => spec.radius));
     const positions = layout.positions;
     applySceneSize(layout.width, layout.height);
-    networkEdges(filtered).forEach(({ from, to, kind }) => {
-      const edge = svgElement("line", {
-        x1: positions[from].x, y1: positions[from].y,
-        x2: positions[to].x, y2: positions[to].y,
+    networkEdges(filtered, positions).forEach(({ from, to, kind }, edgeIndex) => {
+      const geometry = edgeGeometry(positions[from], positions[to], specs[from].radius, specs[to].radius, kind, edgeIndex, positions.map((position, nodeIndex) => ({ ...position, radius: specs[nodeIndex].radius })).filter((_, nodeIndex) => nodeIndex !== from && nodeIndex !== to));
+      const edge = svgElement(geometry.type === "path" ? "path" : "line", {
+        ...(geometry.type === "path" ? { d: geometry.d } : { x1: geometry.x1, y1: geometry.y1, x2: geometry.x2, y2: geometry.y2 }),
         class: `category-network-edge category-network-edge-${kind}`
       });
       networkLinks.appendChild(edge);
