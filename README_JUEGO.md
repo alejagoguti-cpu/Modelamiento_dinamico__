@@ -13,11 +13,26 @@ El juego modela la relación compleja entre las abejas polinizadoras y el ecosis
 
 ## 🎯 Cómo Jugar
 
-### Instalación
+### Instalación y Ejecución
+
+**Requisitos previos:**
+- Python 3.7 o superior
+- pip (gestor de paquetes)
+
+**Paso 1: Instalar dependencias**
 ```bash
 pip install -r requirements.txt
+```
+
+**Paso 2: Ejecutar el juego**
+```bash
 python bees_wetland_game.py
 ```
+
+**¡Listo!** La ventana del juego debería aparecer. Si tienes problemas:
+- En Linux: puede que necesites instalar librerías de desarrollo: `sudo apt-get install python3-dev libsdl2-dev`
+- En Mac: usa `pip3` en lugar de `pip`
+- En Windows: asegúrate de tener Python agregado al PATH
 
 ### Controles Básicos
 - **ESPACIO**: Pausar/Reanudar la simulación
