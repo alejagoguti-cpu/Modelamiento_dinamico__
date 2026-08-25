@@ -19,10 +19,26 @@ pip install -r requirements.txt
 python bees_wetland_game.py
 ```
 
-### Controles
-- **ESPACIO**: Pausar/Reanudar
-- **R**: Reiniciar el juego
-- **Q**: Salir
+### Controles Básicos
+- **ESPACIO**: Pausar/Reanudar la simulación
+- **R**: Reiniciar el juego completamente
+- **Q**: Salir del juego
+
+### Controles Interactivos (Experimentar con Variables)
+Estos controles te permiten inyectar eventos e investigar cómo el ecosistema responde:
+
+- **↑ Flecha Arriba**: Agregar 5 abejas (+5 insectos de pequeña escala)
+- **↓ Flecha Abajo**: Remover 5 abejas (-5 insectos de pequeña escala)
+- **W**: Inyectar contaminación del agua (-30% calidad)
+- **A**: Inyectar contaminación del aire (-25% calidad)
+- **P**: Desencadenar germinación de flores (evento climático favorable)
+
+**¿Qué sucede cuando cambias estos parámetros?**
+- Aumentar abejas → Más polinización, más flores, pero más depredación por aves
+- Reducir abejas → Flores sin polinizar, colapso de reproducción
+- Contaminar agua → Mueren flores, menos nutrientes, desaparición de microorganismos
+- Contaminar aire → Abejas pierden energía más rápido, reducción de capacidad de volar
+- Más flores → Más alimento, poblaciones se recuperan, pero ocupación aumenta
 
 ## 📊 Elementos del Juego
 
@@ -37,15 +53,18 @@ python bees_wetland_game.py
 ### Panel de Información (Inferior)
 | Métrica | Significado |
 |---------|------------|
-| **Día** | Progresión del tiempo |
+| **Año/Mes/Día** | Progresión del tiempo en meses y años |
 | **Estación** | Primavera, Verano, Otoño, Invierno |
 | **Abejas** | Población actual de abejas |
-| **Flores** | Población actual de flores |
+| **Aves** | Población de aves depredadoras/nectarívoras |
+| **Flores** | Población actual de flores nativas |
+| **Especies Invasoras** | Organismos no nativos que compiten |
 | **Clorofila** | Índice de vegetación (salud de las plantas) |
-| **Calidad del Agua** | Porcentaje de salubridad del recurso hídrico |
-| **Calidad del Aire** | Porcentaje de pureza del aire |
-| **Capacidad del Humedal** | Porcentaje de uso de la capacidad máxima |
-| **Comida** | Recursos disponibles del ecosistema |
+| **Agua** | Porcentaje de salubridad del recurso hídrico |
+| **Aire** | Porcentaje de pureza del aire |
+| **Microorganismos** | Actividad descomponedora del suelo |
+| **Nutrientes del Suelo** | Disponibilidad de nutrientes para plantas |
+| **Ocupación del Hábitat** | Porcentaje de uso de espacio disponible |
 
 ## 🌍 Dinámicas Ecológicas
 
@@ -88,6 +107,54 @@ python bees_wetland_game.py
   - Disponibilidad de espacio y recursos
   - Sostenibilidad del actual nivel de biodiversidad
 
+#### 🦅 Aves - Depredadores y Nectarívoros
+- Representan el siguiente nivel trófico en la cadena alimentaria
+- **Comportamiento**:
+  - Se alimentan de **abejas** (depredación) → Ganan mucha energía
+  - Se alimentan de **flores** (néctar) → Ganan menos energía
+  - Buscan automáticamente el alimento más cercano
+  - Aparecen cuando hay suficiente población de abejas
+- **Impacto en el ecosistema**:
+  - **Control de poblaciones**: Limitan el crecimiento de abejas
+  - **Variabilidad ecológica**: Crean ciclos de predador-presa
+  - **Dependencia del hábitat**: Necesitan abundancia de flores/insectos
+  - **Nidificación**: Se reproducen si hay suficiente alimento
+- **Desaparecen si**: 
+  - Hay muy pocas abejas o flores disponibles
+  - Su energía se agota por falta de alimento
+  - Edad máxima alcanzada
+
+#### 🧬 Microorganismos del Suelo
+- Descomponedores que procesan la materia orgánica muerta
+- **Generan**: 
+  - Nutrientes disponibles para plantas
+  - Humus y estructura del suelo
+  - Ciclo de nutrientes
+- **Afectados por**:
+  - Calidad del agua (lluvia y nutrientes)
+  - Cantidad de biomasa muerta (flores muertas, invasoras)
+  - Contaminación del agua
+- **Su importancia**:
+  - Más microorganismos = Mejor salud del suelo
+  - Afectan directamente la disponibilidad de nutrientes
+  - Permiten que las plantas crezcan más fuertes
+
+#### 🌿 Nutrientes del Suelo
+- Componentes químicos que las plantas necesitan
+- **Se consumen por**:
+  - Crecimiento de flores
+  - Alimentación de abejas
+  - Absorción de plantas
+- **Se regeneran por**:
+  - Actividad de microorganismos
+  - Descomposición de materia orgánica
+  - Calidad del agua (aporte de nutrientes)
+- **Efecto cascada**:
+  - Pocos nutrientes → Flores débiles
+  - Flores débiles → Abejas débiles
+  - Abejas débiles → Menos polinización
+  - Menos polinización → Colapso del ciclo
+
 #### 🚨 Especies Invasoras
 - Organismos no nativos que colonizan el humedal
 - **Aparecen cuando**:
@@ -104,6 +171,15 @@ python bees_wetland_game.py
   - Color ROJO en el contador si hay más de 30 (crítico)
   - Color NARANJA si hay entre 10-30 (alerta)
   - Disminución de flores nativas coincide con invasoras
+
+#### 📍 Ocupación del Hábitat
+- Porcentaje de espacio usado por todos los organismos
+- **Límites**: Máximo de ~70% es sostenible
+- **Señales de peligro**:
+  - >80%: Ecosistema sobrecargado, colapso inminente
+  - Competencia intensa por recursos
+  - Mortalidad aumentada
+  - Reproducción limitada
 
 ### Ciclo de las Abejas
 1. Las abejas buscan flores automáticamente
@@ -179,12 +255,58 @@ Este juego enseña:
 4. **Abejas débiles** → No pueden polinizar
 5. **Sin polinización** → Colapso total del humedal
 
+## 📚 Cadenas Tróficas - Relación de Escalas
+
+El juego modela cómo los cambios en **pequeña escala** (abejas individuales) generan efectos a **escala de ecosistema**:
+
+```
+CADENA TRÓFICA DEL HUMEDAL:
+─────────────────────────────
+
+Microorganismos (suelo)
+        ↓
+    Nutrientes
+        ↓
+   🌸 Flores 🌸
+        ↓
+  🐝 Abejas 🐝  ← Escala pequeña
+        ↓
+   🦅 Aves 🦅
+        
+Y compitiendo: 🚨 Especies Invasoras 🚨
+```
+
+### Efectos Cascada en Tiempo Real
+
+**Cuando subes la población de abejas (↑):**
+1. Más polinización → Flores se reproducen más
+2. Más flores → Más alimento disponible
+3. Ocupación del hábitat sube (más biomasa)
+4. Aves aumentan (más presas disponibles)
+5. Aves comienzan a cazar abejas (ciclo depredador-presa)
+6. Balance dinámico o colapso según recursos disponibles
+
+**Cuando contaminas el agua (W):**
+1. Calidad del agua baja
+2. Mueren flores (necesitan agua limpia)
+3. Reducen microorganismos (bajan nutrientes)
+4. Especies invasoras proliferan (aprovechan agua contaminada)
+5. Abejas sin flores = sin alimento = mueren
+6. Aves sin presas = desaparecen
+7. Colapso completo del ecosistema
+
 ## 💡 Sugerencias para Experimentar
 
-1. **Prueba a pausar** y observa los patrones
-2. **Reinicia varias veces** para ver diferentes resultados (los eventos son aleatorios)
-3. **Observa las estaciones** y cómo cambian los números
-4. **Piensa en**: ¿Qué pasaría si introducieras contaminación? ¿Y si hubiese sequía?
+1. **Observa los ciclos naturales**: Pausar y retomar
+2. **Experimenta con variables**: Usa ↑/↓ para agregar/quitar abejas
+3. **Inyecta estrés ambiental**: W y A para ver resilencia
+4. **Mira efectos a largo plazo**: Espera 10-20 meses para ver tendencias
+5. **Reinicia y compara**: ¿Diferentes simulaciones = diferentes resultados?
+6. **Piensa en**: 
+   - ¿Cuántas abejas máximo antes del colapso?
+   - ¿Qué pasa si hay mucha contaminación simultánea?
+   - ¿Pueden los microorganismos recuperar un ecosistema contaminado?
+   - ¿Las invasoras siempre ganan cuando hay contaminación?
 
 ## 🔧 Características Técnicas
 
