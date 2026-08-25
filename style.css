@@ -1175,3 +1175,34 @@ body{
   .category-table-view{ padding-inline:12px; }
   .items-data-table{ min-width:560px; }
 }
+
+/* ===================== RED ORGÁNICA Y CONTROLES DE ZOOM ===================== */
+.category-network-view{ display:flex; flex-direction:column; overflow:hidden; }
+.category-network-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 22px 0; color:var(--text-faint); font-size:10px; }
+.category-network-hint{ letter-spacing:.35px; }
+.category-zoom-controls{ display:flex; align-items:center; gap:5px; }
+.category-zoom-controls button,
+.category-zoom-controls output{ display:grid; place-items:center; min-width:30px; height:28px; border:1px solid rgba(255,255,255,.11); border-radius:8px; background:rgba(255,255,255,.045); color:var(--text-dim); font:700 14px Inter,sans-serif; }
+.category-zoom-controls button{ cursor:pointer; transition:background .15s ease, border-color .15s ease, color .15s ease; }
+.category-zoom-controls button:hover{ border-color:rgba(63,208,191,.55); background:rgba(63,208,191,.12); color:var(--green); }
+.category-zoom-controls output{ min-width:47px; color:var(--green); font-size:10px; }
+.category-network-canvas{ flex:1; min-height:0; overflow:auto; cursor:grab; touch-action:none; scrollbar-color:var(--green-dark) #161313; }
+.category-network-canvas.is-dragging{ cursor:grabbing; }
+.category-network-svg{ min-width:760px; min-height:520px; max-height:none; padding:12px 18px 22px; overflow:visible; }
+.category-network-scene{ transform-origin:380px 260px; }
+.category-network-edge{ stroke:rgba(63,208,191,.28); stroke-width:1.15; stroke-dasharray:4 5; fill:none; marker-end:url(#category-arrow); }
+.category-network-edge-sequence{ stroke:rgba(234,176,76,.52); stroke-width:1.35; stroke-dasharray:none; }
+.category-network-edge-related{ stroke:rgba(63,208,191,.40); }
+.category-network-edge-subcategory{ stroke:rgba(239,139,60,.42); stroke-dasharray:2 4; }
+.category-network-node{ cursor:pointer; outline:none; }
+.category-network-node circle{ fill:#171a1a; stroke:#3fd0bf; stroke-width:2.2; filter:drop-shadow(0 0 8px rgba(47,191,174,.42)); transition:fill .15s ease, stroke-width .15s ease; }
+.category-network-node:hover circle,
+.category-network-node:focus circle{ fill:#263c38; stroke-width:3.8; }
+.category-network-icon{ fill:#f0b25a; font-family:'Font Awesome 6 Free'; font-size:14px; font-weight:900; text-anchor:middle; pointer-events:none; }
+.category-network-label{ fill:#f3efe9; font-family:Inter,sans-serif; font-size:7.4px; font-weight:800; letter-spacing:-.1px; text-anchor:middle; pointer-events:none; }
+.category-network-empty{ fill:#b9b2aa; font:600 14px Inter,sans-serif; text-anchor:middle; }
+@media (max-width: 760px){
+  .category-network-toolbar{ padding-inline:14px; }
+  .category-network-hint{ max-width:145px; line-height:1.35; }
+  .category-network-svg{ min-width:760px; }
+}

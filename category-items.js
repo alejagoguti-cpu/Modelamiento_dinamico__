@@ -15,14 +15,22 @@
   const networkView = document.getElementById("category-network-view");
   const tableView = document.getElementById("category-table-view");
   const networkSvg = document.getElementById("category-network-svg");
+  const networkCanvas = document.getElementById("category-network-canvas");
+  const networkScene = document.getElementById("category-network-scene");
   const networkLinks = document.getElementById("category-network-links");
   const networkNodes = document.getElementById("category-network-nodes");
+  const zoomLevel = document.getElementById("category-zoom-level");
+  const zoomButtons = [...overlay.querySelectorAll("[data-zoom-action]")];
   const viewButtons = [...overlay.querySelectorAll("[data-category-view]")];
 
   let activeItems = [];
   let activeTitle = "Elementos de la categoría";
   let activeSheets = [];
   let currentView = "network";
+  let zoom = 1;
+  let panX = 0;
+  let panY = 0;
+  let dragState = null;
 
   // Correspondencia exacta entre los grupos analíticos y las hojas del Excel en Supabase.
   const SHEETS_BY_CATEGORY = [
@@ -82,6 +90,57 @@
     return [item.name, item.subcategory, item.source_sheet].filter(Boolean).join(" · ");
   }
 
+  function wrapNodeLabel(value, maxChars = 12, maxLines = 3){
+    const words = String(value || "Elemento").split(/\s+/).filter(Boolean);
+    const lines = [];
+    let current = "";
+    words.forEach(word => {
+      if (!current || `${current} ${word}`.length <= maxChars) current = current ? `${current} ${word}` : word;
+      else { lines.push(current); current = word; }
+    });
+    if (current) lines.push(current);
+    if (lines.length <= maxLines) return lines;
+    const compact = lines.slice(0, maxLines);
+    compact[maxLines - 1] = `${compact[maxLines - 1].slice(0, Math.max(3, maxChars - 1))}…`;
+    return compact;
+  }
+
+  const ICON_CODE_BY_SHEET = {
+    "Humedales": 0xf043,
+    "Sistema Hídrico": 0xf773,
+    "Parques": 0xf1bb,
+    "Ciclorutas": 0xf206,
+    "Vías Arteriales": 0xf018,
+    "Educación": 0xf19d,
+    "Salud": 0xf0fa,
+    "Cultura": 0xf1d8,
+    "Deporte": 0xf1e3,
+    "Cuidado": 0xf2b5,
+    "Comercio": 0xf54e,
+    "Localidades": 0xf1ad
+  };
+
+  function iconForItem(item){
+    return String.fromCodePoint(ICON_CODE_BY_SHEET[item.source_sheet] || 0xf1b9);
+  }
+
+  function applyViewport(){
+    networkScene.setAttribute("transform", `translate(${panX.toFixed(1)} ${panY.toFixed(1)}) scale(${zoom.toFixed(2)})`);
+    zoomLevel.textContent = `${Math.round(zoom * 100)}%`;
+  }
+
+  function resetViewport(){
+    zoom = 1;
+    panX = 0;
+    panY = 0;
+    applyViewport();
+  }
+
+  function changeZoom(delta){
+    zoom = Math.max(0.65, Math.min(2.8, Number((zoom + delta).toFixed(2))));
+    applyViewport();
+  }
+
   function setView(view){
     currentView = view === "table" ? "table" : "network";
     networkView.hidden = currentView !== "network";
@@ -109,18 +168,62 @@
     `).join("");
   }
 
-  function layoutPosition(index, total){
-    // Para conjuntos pequeños, el patrón radial hace visible la red de Humedales.
-    if (total <= 36){
-      const angle = (index / Math.max(total, 1)) * Math.PI * 2 - Math.PI / 2;
-      const radius = total <= 18 ? 178 : 214;
-      return { x: 380 + radius * Math.cos(angle), y: 260 + radius * Math.sin(angle) };
+  function organicPositions(total){
+    // Semilla determinista: la composición cambia con el número de elementos,
+    // pero nunca se convierte en una cuadrícula de filas y columnas.
+    const positions = Array.from({ length: total }, (_, index) => {
+      const angle = -Math.PI / 2 + index * 2.3999632297;
+      const spread = total <= 24 ? 62 + Math.sqrt(index + 1) * 69 : 80 + Math.sqrt(index + 1) * 42;
+      return {
+        x: 380 + Math.cos(angle) * spread * 1.23,
+        y: 260 + Math.sin(angle) * spread * 0.72
+      };
+    });
+    const minDistance = total <= 24 ? 82 : total <= 72 ? 38 : 16;
+    const bounds = { left: 38, right: 722, top: 46, bottom: 474 };
+    for (let iteration = 0; iteration < 90; iteration++){
+      for (let a = 0; a < positions.length; a++){
+        for (let b = a + 1; b < positions.length; b++){
+          const dx = positions[b].x - positions[a].x;
+          const dy = positions[b].y - positions[a].y;
+          const distance = Math.max(Math.hypot(dx, dy), 0.01);
+          if (distance >= minDistance) continue;
+          const push = (minDistance - distance) * 0.08;
+          const ux = dx / distance;
+          const uy = dy / distance;
+          positions[a].x -= ux * push;
+          positions[a].y -= uy * push;
+          positions[b].x += ux * push;
+          positions[b].y += uy * push;
+        }
+      }
+      positions.forEach(position => {
+        position.x = Math.max(bounds.left, Math.min(bounds.right, position.x));
+        position.y = Math.max(bounds.top, Math.min(bounds.bottom, position.y));
+      });
     }
-    // Para categorías grandes, todos los elementos siguen presentes en una malla legible.
-    const columns = total > 180 ? 24 : 18;
-    const column = index % columns;
-    const row = Math.floor(index / columns);
-    return { x: 24 + column * (712 / Math.max(columns - 1, 1)), y: 24 + row * 18 };
+    return positions;
+  }
+
+  function networkEdges(items){
+    const edges = [];
+    const seen = new Set();
+    const add = (from, to, kind = "related") => {
+      if (from === to) return;
+      const key = `${Math.min(from, to)}-${Math.max(from, to)}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      edges.push({ from, to, kind });
+    };
+    // Conexiones locales basadas en el orden de fila de la hoja y la subcategoría.
+    items.forEach((item, index) => {
+      if (index + 1 < items.length) add(index, index + 1, "sequence");
+      if (index + 2 < items.length && (index % 2 === 0 || item.subcategory === items[index + 2].subcategory)) add(index, index + 2, "related");
+      const nextSameSubcategory = items.findIndex((candidate, candidateIndex) => candidateIndex > index && candidate.subcategory && candidate.subcategory === item.subcategory);
+      if (nextSameSubcategory >= 0 && nextSameSubcategory - index > 2) add(index, nextSameSubcategory, "subcategory");
+    });
+    if (items.length > 3) add(items.length - 1, 0, "sequence");
+    return edges;
   }
 
   function renderNetwork(){
@@ -135,45 +238,47 @@
       return;
     }
 
-    const positions = filtered.map((_, index) => layoutPosition(index, total));
-    const center = { x: 380, y: 260 };
-    const hub = svgElement("circle", { cx: center.x, cy: center.y, r: total <= 36 ? 32 : 16, class: "category-network-hub" });
-    networkNodes.appendChild(hub);
-
-    filtered.forEach((item, index) => {
-      const position = positions[index];
-      const radius = total <= 36 ? Math.max(17, 27 - total * 0.25) : 5.5;
+    const positions = organicPositions(total);
+    networkEdges(filtered).forEach(({ from, to, kind }) => {
       const edge = svgElement("line", {
-        x1: center.x, y1: center.y, x2: position.x, y2: position.y,
-        class: "category-network-edge"
+        x1: positions[from].x, y1: positions[from].y,
+        x2: positions[to].x, y2: positions[to].y,
+        class: `category-network-edge category-network-edge-${kind}`
       });
       networkLinks.appendChild(edge);
+    });
 
+    const radius = total <= 24 ? 31 : total <= 72 ? 8 : 5.5;
+    filtered.forEach((item, index) => {
+      const position = positions[index];
+      const sheetClass = String(item.source_sheet || "pot").toLocaleLowerCase("es").replace(/[^a-z0-9]+/g, "-");
       const node = svgElement("g", {
-        class: "category-network-node",
+        class: `category-network-node category-network-node-${sheetClass}`,
         transform: `translate(${position.x.toFixed(1)},${position.y.toFixed(1)})`,
         tabindex: "0",
         role: "img",
         "aria-label": itemLabel(item)
       });
-      const circle = svgElement("circle", { r: radius });
+      const circle = svgElement("circle", { r: radius, class: "category-network-node-circle" });
       const tooltip = svgElement("title");
       tooltip.textContent = itemLabel(item);
       node.appendChild(tooltip);
       node.appendChild(circle);
-      if (total <= 36){
-        const text = svgElement("text", { class: "category-network-label", y: radius + 15 });
-        text.textContent = item.name;
-        node.appendChild(text);
+      if (total <= 24){
+        const icon = svgElement("text", { class: "category-network-icon", x: "0", y: "-9" });
+        icon.textContent = iconForItem(item);
+        node.appendChild(icon);
+        const label = svgElement("text", { class: "category-network-label", x: "0", y: "5" });
+        wrapNodeLabel(item.name, total <= 18 ? 11 : 13, 3).forEach((line, lineIndex) => {
+          const tspan = svgElement("tspan", { x: "0", dy: lineIndex === 0 ? "0" : "9" });
+          tspan.textContent = line;
+          label.appendChild(tspan);
+        });
+        node.appendChild(label);
       }
       networkNodes.appendChild(node);
     });
-
-    if (total <= 36){
-      const hubLabel = svgElement("text", { x: center.x, y: center.y + 4, class: "category-network-hub-label" });
-      hubLabel.textContent = total;
-      networkNodes.appendChild(hubLabel);
-    }
+    applyViewport();
   }
 
   function getFilteredItems(){
@@ -202,6 +307,7 @@
     search.value = "";
     overlay.hidden = false;
     document.body.style.overflow = "hidden";
+    resetViewport();
     setView("network");
     search.focus({ preventScroll: true });
 
@@ -233,6 +339,43 @@
 
   search.addEventListener("input", renderDataViews);
   viewButtons.forEach(button => button.addEventListener("click", () => setView(button.dataset.categoryView)));
+  zoomButtons.forEach(button => button.addEventListener("click", () => {
+    const action = button.dataset.zoomAction;
+    if (action === "in") changeZoom(0.2);
+    else if (action === "out") changeZoom(-0.2);
+    else resetViewport();
+  }));
+  networkCanvas.addEventListener("wheel", event => {
+    if (currentView !== "network") return;
+    event.preventDefault();
+    changeZoom(event.deltaY < 0 ? 0.12 : -0.12);
+  }, { passive: false });
+  networkCanvas.addEventListener("pointerdown", event => {
+    if (event.target.closest?.(".category-network-node")) return;
+    dragState = { pointerId: event.pointerId, x: event.clientX, y: event.clientY };
+    networkCanvas.classList.add("is-dragging");
+    networkCanvas.setPointerCapture?.(event.pointerId);
+  });
+  networkCanvas.addEventListener("pointermove", event => {
+    if (!dragState || dragState.pointerId !== event.pointerId) return;
+    const bounds = networkCanvas.getBoundingClientRect();
+    panX = Math.max(-440, Math.min(440, panX + ((event.clientX - dragState.x) * 760 / Math.max(bounds.width, 1))));
+    panY = Math.max(-300, Math.min(300, panY + ((event.clientY - dragState.y) * 520 / Math.max(bounds.height, 1))));
+    dragState.x = event.clientX;
+    dragState.y = event.clientY;
+    applyViewport();
+  });
+  ["pointerup", "pointercancel", "lostpointercapture"].forEach(type => networkCanvas.addEventListener(type, () => {
+    dragState = null;
+    networkCanvas.classList.remove("is-dragging");
+  }));
+  networkCanvas.addEventListener("dblclick", resetViewport);
+  document.addEventListener("keydown", event => {
+    if (overlay.hidden || currentView !== "network") return;
+    if (event.key === "+" || event.key === "=") changeZoom(0.2);
+    if (event.key === "-" || event.key === "_") changeZoom(-0.2);
+    if (event.key === "0") resetViewport();
+  });
   closeButton.addEventListener("click", close);
   overlay.addEventListener("click", event => { if (event.target === overlay) close(); });
   document.addEventListener("keydown", event => { if (event.key === "Escape" && !overlay.hidden) close(); });
