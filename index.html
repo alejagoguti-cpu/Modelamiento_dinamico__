@@ -264,7 +264,28 @@
   </div>
 </div>
 
+<!-- ============ POP-UP INDEPENDIENTE DE ELEMENTOS POR CATEGORÍA ============ -->
+<div id="items-modal-overlay" class="items-modal-overlay" hidden>
+  <section class="items-modal" role="dialog" aria-modal="true" aria-labelledby="items-modal-title">
+    <button id="items-modal-close" class="items-modal-close" type="button" aria-label="Cerrar listado">✕</button>
+    <div class="items-modal-header">
+      <div>
+        <p class="items-modal-kicker">Datos detallados // Supabase</p>
+        <h2 id="items-modal-title">Elementos de la categoría</h2>
+        <p id="items-modal-subtitle" class="items-modal-subtitle">Cargando elementos…</p>
+      </div>
+      <div id="items-modal-count" class="items-modal-count" aria-live="polite">0 elementos</div>
+    </div>
+    <div class="items-modal-toolbar">
+      <label class="items-search-label" for="items-search">Buscar dentro de esta categoría</label>
+      <input id="items-search" class="items-search" type="search" placeholder="Escribe un nombre…" autocomplete="off">
+    </div>
+    <div id="items-list" class="items-list" aria-live="polite"></div>
+  </section>
+</div>
+
 <script src="./supabase-client.js" defer></script>
+<script src="./category-items.js" defer></script>
 <script src="./scripts.js" defer></script>
 </body>
 </html>

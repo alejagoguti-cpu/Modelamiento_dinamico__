@@ -528,61 +528,42 @@ if (window.rapotData?.ready){
       .filter(group => group.structure_id === structureId)
       .sort((a, b) => a.name.localeCompare(b.name, "es"));
     const groupIds = new Set(groups.map(group => group.id));
-    const concepts = data.concepts
-      .filter(concept => groupIds.has(concept.group_id))
-      .sort((a, b) => a.name.localeCompare(b.name, "es"));
-    if (!structure || !concepts.length) return null;
+    const concepts = data.concepts.filter(concept => groupIds.has(concept.group_id));
+    if (!structure || !groups.length) return null;
 
-    const groupById = new Map(groups.map(group => [group.id, group]));
-    const nodes = concepts.map((concept, index) => {
-      const angle = (index / concepts.length) * Math.PI * 2 - Math.PI / 2;
-      const radius = concepts.length > 12 ? 218 : 190;
-      const group = groupById.get(concept.group_id);
+    // Un nodo representa una categoría completa. Los registros no se amontonan
+    // dentro del grafo: se consultan en el pop-up independiente al hacer clic.
+    const nodes = groups.map((group, index) => {
+      const angle = (index / groups.length) * Math.PI * 2 - Math.PI / 2;
+      const radius = groups.length <= 4 ? 190 : 215;
+      const groupConcepts = concepts.filter(concept => concept.group_id === group.id);
       return {
-        id: `db-${concept.id}`,
-        label: labelLines(concept.name),
-        icon: ICON_BY_GROUP[group?.name] || "fa-circle-nodes",
+        id: `db-group-${group.id}`,
+        label: labelLines(group.name, 21),
+        icon: ICON_BY_GROUP[group.name] || "fa-circle-nodes",
         x: 400 + radius * Math.cos(angle),
         y: 300 + radius * Math.sin(angle),
-        r: 32,
-        groupId: concept.group_id,
-        groupName: group?.name || "Conceptos",
-        source: "supabase",
-        detail: concept.detail || {}
+        r: 42,
+        groupId: group.id,
+        groupName: group.name,
+        itemCount: group.name === "Red Vial Completa"
+          ? data.potItems.filter(item => ["Vías Arteriales", "Ciclorutas"].includes(item.source_sheet)).length
+          : groupConcepts.length,
+        source: "supabase"
       };
     });
 
     const edges = [];
-    const firstByGroup = new Map();
-    groups.forEach(group => {
-      const groupNodes = nodes.filter(node => node.groupId === group.id);
-      if (!groupNodes.length) return;
-      firstByGroup.set(group.id, groupNodes[0]);
-      for (let i = 1; i < groupNodes.length; i++){
-        edges.push({
-          from: groupNodes[i - 1].id,
-          to: groupNodes[i].id,
-          kind: "soporte",
-          directed: false,
-          dashed: true,
-          sustento: {
-            tipoLabel: group.name,
-            cita: `Conceptos agrupados dinámicamente desde Supabase: ${group.name}.`,
-            pagina: null
-          }
-        });
-      }
-    });
-    const groupRoots = groups.map(group => firstByGroup.get(group.id)).filter(Boolean);
-    for (let i = 1; i < groupRoots.length; i++){
+    for (let i = 1; i < nodes.length; i++){
       edges.push({
-        from: groupRoots[i - 1].id,
-        to: groupRoots[i].id,
-        kind: "directa",
+        from: nodes[i - 1].id,
+        to: nodes[i].id,
+        kind: "soporte",
         directed: false,
+        dashed: true,
         sustento: {
-          tipoLabel: "Relación de grupo",
-          cita: `Conexión entre grupos de conceptos de ${structure.name}, cargados desde Supabase.`,
+          tipoLabel: "Relación de categorías",
+          cita: `Categorías cargadas dinámicamente desde Supabase para ${structure.name}.`,
           pagina: null
         }
       });
@@ -806,8 +787,11 @@ if (window.rapotData?.ready){
       // o si es expandible, expande el coarse graining
       function toggleDim(ev){
         ev.stopPropagation();
-        if (isExpandable && !ev.target.closest(".redes-node-label")){
-          window.toggleCoarseGraining(n.id, net, window.viasData);
+        // Cada categoría abre un segundo diálogo dedicado al listado completo.
+        // El modal de la red permanece intacto detrás, evitando mezclar grafo y registros.
+        const hasCategoryData = Boolean(n.groupName) || isExpandable;
+        if (window.rapotItems && hasCategoryData){
+          window.rapotItems.open(n, net);
           return;
         }
         const dimmed = g.classList.toggle("is-dimmed");
