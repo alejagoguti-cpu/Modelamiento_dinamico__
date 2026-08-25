@@ -612,6 +612,7 @@ const relations = {
       const g = el("g", {
         class: `redes-node${n.primary ? " is-primary" : ""}`,
         "data-accent": net.accent,
+        "data-node-id": n.id,
         tabindex: "0",
         role: "button",
         "aria-label": `${n.label.join(" ")} (click para atenuar)`,
@@ -647,9 +648,22 @@ const relations = {
       });
       float.appendChild(text);
 
+      // indica si este nodo puede expandirse (coarse graining)
+      const expandableNodes = ["redvial", "parques", "equipamient"];
+      const isExpandable = expandableNodes.includes(n.id);
+      if (isExpandable){
+        g.classList.add("is-expandable");
+        g.style.cursor = "pointer";
+      }
+
       // click en el nodo -> se atenúa junto con las líneas que lo conectan (click de nuevo lo restaura)
+      // o si es expandible, expande el coarse graining
       function toggleDim(ev){
         ev.stopPropagation();
+        if (isExpandable && !ev.target.closest(".redes-node-label")){
+          window.toggleCoarseGraining(n.id, net, window.viasData);
+          return;
+        }
         const dimmed = g.classList.toggle("is-dimmed");
         (edgesByNode[n.id] || []).forEach((edgeEl) => {
           edgeEl.classList.toggle("is-dimmed", dimmed);
@@ -820,6 +834,104 @@ const relations = {
         openNetwork(colorKey);
       }
     });
+  });
+
+  // ---------- coarse graining: expandir nodos agrupados para mostrar sub-elementos ----------
+  let coarseGrainingState = {};
+  let currentNetworkState = null;
+
+  async function loadCoarseGrainingData(){
+    try {
+      const response = await fetch('./data/vias_bogota.json');
+      const data = await response.json();
+      return data;
+    } catch (err){
+      console.error("Error cargando vias_bogota.json:", err);
+      return null;
+    }
+  }
+
+  function generateSubNodesLayout(parentNode, subElements, count){
+    const radius = 200;
+    const centerX = parentNode.x;
+    const centerY = parentNode.y;
+    const nodes = [];
+
+    subElements.forEach((elem, i) => {
+      const angle = (i / count) * 2 * Math.PI;
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+      nodes.push({
+        id: `${parentNode.id}-${i}`,
+        label: Array.isArray(elem) ? elem : [elem],
+        icon: parentNode.icon,
+        x, y,
+        r: Math.max(12, parentNode.r * 0.6),
+        parentId: parentNode.id,
+        isCoarseGrained: true,
+        primary: false
+      });
+    });
+    return nodes;
+  }
+
+  window.toggleCoarseGraining = function(nodeId, net, viasData){
+    if (!coarseGrainingState[nodeId]){
+      coarseGrainingState[nodeId] = { expanded: false, originalNodes: null };
+    }
+
+    if (coarseGrainingState[nodeId].expanded){
+      // collapse
+      coarseGrainingState[nodeId].expanded = false;
+      net.nodes = coarseGrainingState[nodeId].originalNodes.map(n => ({...n}));
+      renderNetwork(net);
+      return;
+    }
+
+    // expand
+    let subElements = [];
+
+    if (nodeId === "redvial" && viasData){
+      const todasLasVias = [];
+      if (viasData.red_vial){
+        Object.values(viasData.red_vial).forEach(categoria => {
+          if (categoria && categoria.vias && Array.isArray(categoria.vias)){
+            todasLasVias.push(...categoria.vias);
+          }
+        });
+      }
+      subElements = todasLasVias;
+    } else if (nodeId === "parques" && viasData){
+      subElements = Array(16).fill(0).map((_, i) => `Parque ${i + 1}`);
+    } else if (nodeId === "equipamient" && viasData){
+      subElements = Array(25).fill(0).map((_, i) => `Equipamiento ${i + 1}`);
+    }
+
+    if (subElements.length > 0){
+      const parentNode = net.nodes.find(n => n.id === nodeId);
+      if (parentNode){
+        // guardar estado original
+        coarseGrainingState[nodeId].originalNodes = JSON.parse(JSON.stringify(net.nodes));
+        coarseGrainingState[nodeId].expanded = true;
+
+        // generar nodos sub-elementos
+        const subNodes = generateSubNodesLayout(parentNode, subElements, subElements.length);
+
+        // quitar nodo padre y agregar sub-nodos
+        net.nodes = net.nodes.filter(n => n.id !== nodeId);
+        net.nodes.push(...subNodes);
+
+        // actualizar título con contador
+        net.count = net.nodes.length;
+
+        renderNetwork(net);
+      }
+    }
+  };
+
+  let viasData = null;
+  loadCoarseGrainingData().then(data => {
+    window.viasData = data;
   });
 
 })();

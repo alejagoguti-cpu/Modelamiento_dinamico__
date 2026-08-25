@@ -669,6 +669,16 @@ body{
 .redes-node[data-accent="blue"].is-primary   circle{ filter: drop-shadow(0 0 18px rgba(239,139,60,0.6)) drop-shadow(0 10px 22px rgba(0,0,0,0.45)); }
 .redes-node[data-accent="yellow"].is-primary circle{ filter: drop-shadow(0 0 18px rgba(234,176,76,0.6)) drop-shadow(0 10px 22px rgba(0,0,0,0.45)); }
 
+/* nodo expandible: coarse graining (red vial, parques, equipamientos) */
+.redes-node.is-expandable{ cursor: pointer; }
+.redes-node.is-expandable circle{
+  stroke-width: 4;
+  transition: filter .25s ease;
+}
+.redes-node.is-expandable:hover circle{
+  filter: drop-shadow(0 0 20px currentColor) drop-shadow(0 8px 16px rgba(0,0,0,0.4));
+}
+
 /* ---- conexiones ---- */
 .redes-edges{ transition: opacity .18s ease; }
 .redes-edges.is-hidden{ opacity: 0; pointer-events: none; }
