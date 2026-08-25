@@ -441,15 +441,8 @@ function renderNetworkInCurrentModal(elementName, elementIndex, allElements) {
   backBtn.style.display = 'flex';
 }
 
-// Renderizar red de un elemento específico (en modal separado en desktop, en el mismo modal en móvil)
+// Renderizar red de un elemento específico en modal separado (desktop y móvil)
 function renderElementNetworkModal(elementName, elementIndex, allElements) {
-  // En móvil: mostrar red EN EL MODAL ACTUAL
-  if (isMobile()) {
-    renderNetworkInCurrentModal(elementName, elementIndex, allElements);
-    return;
-  }
-
-  // En desktop: abrir modal separado
   const overlay = document.getElementById('element-network-modal-overlay');
   const svg = overlay?.querySelector('.element-network-svg');
   if (!overlay || !svg) return;
