@@ -165,120 +165,173 @@ function getExpandableElements(nodeKey) {
   return [];
 }
 
-// Renderizar red visual de los elementos expandibles CON INTERACTIVIDAD
-function renderCoarseGrainingNetwork(nodeId, nodeLabel, elements, svgContainer) {
-  const svg = svgContainer.querySelector('svg') || svgContainer;
-  const viewWidth = 800, viewHeight = 600;
-  const centerX = viewWidth / 2, centerY = viewHeight / 2;
-  const radius = Math.min(viewWidth, viewHeight) / 3;
-
-  // Limpiar SVG
-  const edgesG = svg.querySelector('.redes-edges');
-  const nodesG = svg.querySelector('.redes-nodes');
-  if (edgesG) edgesG.innerHTML = '';
-  if (nodesG) nodesG.innerHTML = '';
-
-  // Limitar elementos a mostrar para no saturar
-  const displayElements = elements.slice(0, 30);
-  const angle = Math.PI * 2 / displayElements.length;
-  const MIN_NODE_R = 24, MAX_NODE_R = 48;
-
-  // Contar conexiones por nodo (todos conectan al centro, pero algunos pueden conectarse entre sí)
-  const nodeDegree = {};
-  displayElements.forEach((_, idx) => {
-    nodeDegree[idx] = 1; // Al menos conexión al centro
+// ===================== FORCE-DIRECTED GRAPH LAYOUT =====================
+// Algoritmo simple de layout para posicionar nodos sin solapamiento
+function forceDirectedLayout(nodes, edges, width = 800, height = 600, iterations = 50) {
+  const nodeMap = {};
+  nodes.forEach((n, i) => {
+    nodeMap[n.id] = {
+      ...n,
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: 0,
+      vy: 0
+    };
   });
 
-  // Agregar conexiones dinámicas (ej: cada nodo se conecta con sus 2-3 vecinos más cercanos)
-  displayElements.forEach((_, idx) => {
-    const nextIdx = (idx + 1) % displayElements.length;
-    const prevIdx = (idx - 1 + displayElements.length) % displayElements.length;
-    nodeDegree[idx]++;
-    nodeDegree[nextIdx]++;
-    nodeDegree[prevIdx]++;
-  });
+  const K = Math.sqrt((width * height) / nodes.length); // Distancia ideal
+  const C = 1; // Constante de fuerza
+  const dt = 0.1; // Paso temporal
+  const damping = 0.8; // Fricción
 
-  // Crear nodos periféricos CON TAMAÑO DINÁMICO
-  const nodeElements = [];
-  displayElements.forEach((item, idx) => {
-    const itemAngle = angle * idx;
-    const x = centerX + radius * Math.cos(itemAngle);
-    const y = centerY + radius * Math.sin(itemAngle);
+  for (let iter = 0; iter < iterations; iter++) {
+    const forces = {};
+    Object.keys(nodeMap).forEach(id => {
+      forces[id] = { fx: 0, fy: 0 };
+    });
 
-    // Tamaño basado en grado (hub si tiene muchas conexiones)
-    const degree = nodeDegree[idx] || 1;
-    const nodeRadius = MIN_NODE_R + (degree / 4) * (MAX_NODE_R - MIN_NODE_R);
+    // Fuerzas repulsivas (todos los nodos se repelen)
+    const nodeIds = Object.keys(nodeMap);
+    for (let i = 0; i < nodeIds.length; i++) {
+      for (let j = i + 1; j < nodeIds.length; j++) {
+        const a = nodeMap[nodeIds[i]];
+        const b = nodeMap[nodeIds[j]];
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        const repulse = (K * K) / dist;
+        forces[nodeIds[i]].fx -= (repulse * dx) / dist;
+        forces[nodeIds[i]].fy -= (repulse * dy) / dist;
+        forces[nodeIds[j]].fx += (repulse * dx) / dist;
+        forces[nodeIds[j]].fy += (repulse * dy) / dist;
+      }
+    }
 
-    // Nodos vecinos para conectar
-    const neighbors = [(idx - 1 + displayElements.length) % displayElements.length, (idx + 1) % displayElements.length];
-    const connections = [{ from: idx, to: 'center' }, ...neighbors.map(n => ({ from: idx, to: n }))];
+    // Fuerzas atractivas (nodos conectados se atraen)
+    edges.forEach(edge => {
+      const a = nodeMap[edge.from];
+      const b = nodeMap[edge.to];
+      if (!a || !b) return;
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const attract = (dist * dist) / K;
+      forces[edge.from].fx += (attract * dx) / dist;
+      forces[edge.from].fy += (attract * dy) / dist;
+      forces[edge.to].fx -= (attract * dx) / dist;
+      forces[edge.to].fy -= (attract * dy) / dist;
+    });
 
-    // Guardar info del nodo
-    nodeElements.push({ idx, x, y, nodeRadius, item, connections, degree });
-  });
+    // Actualizar posiciones
+    nodeIds.forEach(id => {
+      const n = nodeMap[id];
+      const f = forces[id];
+      n.vx = (n.vx + f.fx * dt) * damping;
+      n.vy = (n.vy + f.fy * dt) * damping;
+      n.x += n.vx * dt;
+      n.y += n.vy * dt;
 
-  // Dibujar conexiones
-  if (edgesG) {
-    nodeElements.forEach(({ idx, x, y, connections }) => {
-      connections.forEach(conn => {
-        if (conn.to === 'center') {
-          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('x1', centerX);
-          line.setAttribute('y1', centerY);
-          line.setAttribute('x2', x);
-          line.setAttribute('y2', y);
-          line.setAttribute('stroke', 'rgba(255,255,255,0.15)');
-          line.setAttribute('stroke-width', '1.5');
-          line.setAttribute('class', 'redes-edge');
-          line.setAttribute('data-node', idx);
-          edgesG.appendChild(line);
-        } else if (conn.to > idx) {
-          // Evitar duplicar líneas
-          const neighbor = nodeElements[conn.to];
-          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('x1', x);
-          line.setAttribute('y1', y);
-          line.setAttribute('x2', neighbor.x);
-          line.setAttribute('y2', neighbor.y);
-          line.setAttribute('stroke', 'rgba(255,255,255,0.08)');
-          line.setAttribute('stroke-width', '1');
-          line.setAttribute('class', 'redes-edge');
-          line.setAttribute('data-node', `${idx},${conn.to}`);
-          edgesG.appendChild(line);
-        }
-      });
+      // Mantener dentro de los límites
+      n.x = Math.max(40, Math.min(width - 40, n.x));
+      n.y = Math.max(40, Math.min(height - 40, n.y));
     });
   }
 
-  // Dibujar nodos con interactividad
+  return nodeMap;
+}
+
+// Renderizar red de un elemento específico en el modal separado
+function renderElementNetworkModal(elementName, elementIndex) {
+  const overlay = document.getElementById('element-network-modal-overlay');
+  const svg = overlay?.querySelector('.element-network-svg');
+  if (!overlay || !svg) return;
+
+  const titleEl = document.getElementById('element-network-modal-title');
+  if (titleEl) titleEl.textContent = elementName;
+
+  // Crear nodos: elemento central + algunos conectados
+  const nodes = [
+    { id: 'center', label: elementName, radius: 36, primary: true }
+  ];
+
+  // Agregar nodos ficticios relacionados (simulación de conexiones)
+  const relatedCount = Math.min(8, Math.max(3, Math.floor(Math.random() * 6) + 3));
+  for (let i = 0; i < relatedCount; i++) {
+    nodes.push({
+      id: `node-${i}`,
+      label: `Elemento ${i + 1}`,
+      radius: 24 + Math.random() * 12
+    });
+  }
+
+  // Crear aristas: elemento central conecta con todos
+  const edges = [];
+  for (let i = 1; i < nodes.length; i++) {
+    edges.push({ from: 'center', to: `node-${i - 1}` });
+    // Agregar algunas conexiones secundarias
+    if (Math.random() > 0.6) {
+      const j = Math.floor(Math.random() * (nodes.length - 1)) + 1;
+      if (i !== j) edges.push({ from: `node-${i - 1}`, to: `node-${j - 1}` });
+    }
+  }
+
+  // Calcular layout
+  const nodePositions = forceDirectedLayout(nodes, edges, 800, 600);
+
+  // Limpiar SVG
+  const edgesG = svg.querySelector('.element-edges');
+  const nodesG = svg.querySelector('.element-nodes');
+  if (edgesG) edgesG.innerHTML = '';
+  if (nodesG) nodesG.innerHTML = '';
+
+  // Dibujar aristas
+  if (edgesG) {
+    edges.forEach(edge => {
+      const fromNode = nodePositions[edge.from];
+      const toNode = nodePositions[edge.to];
+      if (!fromNode || !toNode) return;
+
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', fromNode.x.toFixed(1));
+      line.setAttribute('y1', fromNode.y.toFixed(1));
+      line.setAttribute('x2', toNode.x.toFixed(1));
+      line.setAttribute('y2', toNode.y.toFixed(1));
+      line.setAttribute('stroke', 'rgba(47, 212, 200, 0.3)');
+      line.setAttribute('stroke-width', '1.5');
+      line.setAttribute('class', 'element-edge');
+      edgesG.appendChild(line);
+    });
+  }
+
+  // Dibujar nodos
   if (nodesG) {
-    nodeElements.forEach(({ idx, x, y, nodeRadius, item }) => {
+    Object.entries(nodePositions).forEach(([nodeId, node]) => {
       const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      g.setAttribute('transform', `translate(${x},${y})`);
-      g.setAttribute('class', 'redes-node cg-animated');
-      g.setAttribute('data-idx', idx);
+      g.setAttribute('transform', `translate(${node.x.toFixed(1)},${node.y.toFixed(1)})`);
+      g.setAttribute('class', 'element-node' + (node.primary ? ' is-primary' : ''));
+      g.setAttribute('data-node', nodeId);
       g.style.cursor = 'pointer';
 
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      circle.setAttribute('r', nodeRadius);
-      circle.setAttribute('fill', 'rgba(47, 212, 200, 0.1)');
+      circle.setAttribute('r', node.radius.toFixed(1));
+      circle.setAttribute('fill', node.primary ? 'rgba(47, 212, 200, 0.15)' : 'rgba(47, 212, 200, 0.08)');
       circle.setAttribute('stroke', 'rgba(47, 212, 200, 0.6)');
-      circle.setAttribute('stroke-width', '2');
+      circle.setAttribute('stroke-width', node.primary ? '3' : '2');
       g.appendChild(circle);
 
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('text-anchor', 'middle');
       text.setAttribute('dy', '0.3em');
-      text.setAttribute('font-size', '10');
-      text.setAttribute('fill', 'rgba(255,255,255,0.7)');
-      text.setAttribute('class', 'redes-node-label');
+      text.setAttribute('font-size', node.primary ? '12' : '11');
+      text.setAttribute('fill', 'rgba(255,255,255,0.85)');
+      text.setAttribute('font-weight', node.primary ? 'bold' : '500');
+      text.setAttribute('class', 'element-node-label');
 
-      const itemText = typeof item === 'object' ? (item.nombre || item.name || '?') : item;
-      const truncated = itemText.substring(0, 12) + (itemText.length > 12 ? '...' : '');
+      const truncated = node.label.substring(0, 16) + (node.label.length > 16 ? '...' : '');
       text.textContent = truncated;
       g.appendChild(text);
 
-      // Interactividad: doble click = highlight, triple click = hide
+      // Interactividad
       let clickCount = 0;
       let clickTimeout;
 
@@ -287,20 +340,23 @@ function renderCoarseGrainingNetwork(nodeId, nodeLabel, elements, svgContainer) 
         clickCount++;
 
         if (clickCount === 1) {
-          clickTimeout = setTimeout(() => {
-            clickCount = 0;
-          }, 300);
+          clickTimeout = setTimeout(() => clickCount = 0, 300);
         } else if (clickCount === 2) {
           clearTimeout(clickTimeout);
-          // DOBLE CLICK: Iluminar conexiones
-          highlightNodeConnections(idx, edgesG, nodesG);
+          // Doble click: iluminar conexiones
+          document.querySelectorAll('.element-node, .element-edge').forEach(el => {
+            el.style.opacity = '0.3';
+          });
+          g.style.opacity = '1';
+          document.querySelectorAll(`.element-edge[data-from="${nodeId}"], .element-edge[data-to="${nodeId}"]`).forEach(edge => {
+            edge.style.opacity = '1';
+          });
           clickCount = 0;
         } else if (clickCount === 3) {
           clearTimeout(clickTimeout);
-          // TRIPLE CLICK: Desaparecer nodo
-          g.classList.add('cg-hidden');
-          // Ocultar conexiones asociadas
-          document.querySelectorAll(`[data-node*="${idx}"]`).forEach(edge => {
+          // Triple click: desaparecer
+          g.style.opacity = '0';
+          document.querySelectorAll(`.element-edge[data-from="${nodeId}"], .element-edge[data-to="${nodeId}"]`).forEach(edge => {
             edge.style.opacity = '0';
           });
           clickCount = 0;
@@ -309,58 +365,10 @@ function renderCoarseGrainingNetwork(nodeId, nodeLabel, elements, svgContainer) 
 
       nodesG.appendChild(g);
     });
-
-    // Crear nodo central
-    const centerG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    centerG.setAttribute('transform', `translate(${centerX},${centerY})`);
-    centerG.setAttribute('class', 'redes-node is-primary cg-animated');
-    centerG.style.cursor = 'pointer';
-
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('r', 48);
-    circle.setAttribute('fill', 'rgba(47, 212, 200, 0.15)');
-    circle.setAttribute('stroke', 'url(#grad-green)');
-    circle.setAttribute('stroke-width', '3');
-    centerG.appendChild(circle);
-
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('dy', '0.3em');
-    text.setAttribute('font-size', '12');
-    text.setAttribute('font-weight', 'bold');
-    text.setAttribute('fill', 'rgba(255,255,255,0.9)');
-    text.textContent = nodeLabel.substring(0, 16);
-    centerG.appendChild(text);
-
-    centerG.addEventListener('click', (e) => {
-      e.stopPropagation();
-      // Limpiar highlights al hacer click en centro
-      document.querySelectorAll('.redes-node.cg-highlighted, .redes-edge.cg-highlighted').forEach(el => {
-        el.classList.remove('cg-highlighted');
-      });
-    });
-
-    nodesG.appendChild(centerG);
-  }
-}
-
-// Resaltar conexiones de un nodo
-function highlightNodeConnections(nodeIdx, edgesG, nodesG) {
-  // Limpiar highlights anteriores
-  document.querySelectorAll('.redes-node.cg-highlighted, .redes-edge.cg-highlighted').forEach(el => {
-    el.classList.remove('cg-highlighted');
-  });
-
-  // Resaltar nodo actual
-  const nodeEl = nodesG.querySelector(`[data-idx="${nodeIdx}"]`);
-  if (nodeEl) {
-    nodeEl.classList.add('cg-highlighted');
   }
 
-  // Resaltar conexiones
-  document.querySelectorAll(`.redes-edge[data-node*="${nodeIdx}"]`).forEach(edge => {
-    edge.classList.add('cg-highlighted');
-  });
+  overlay.hidden = false;
+  document.body.style.overflow = 'hidden';
 }
 
 // Abrir coarse graining modal: mostrar elementos en popup limpio y legible
@@ -422,47 +430,16 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
       <span class="item-number">${String(idx + 1).padStart(3, '0')}</span>
       <span class="item-text">${text}</span>
     `;
+
+    // Agregar click handler para abrir la red detallada del elemento
+    li.addEventListener('click', () => {
+      renderElementNetworkModal(text, idx);
+    });
+
     ul.appendChild(li);
   });
 
   listContainer.appendChild(ul);
-
-  // Mostrar toggle de vista y configurar handlers
-  const toggleDiv = document.getElementById('coarse-view-toggle');
-  if (toggleDiv) {
-    toggleDiv.hidden = false;
-
-    // Guardar contexto actual para el toggle
-    toggleDiv.dataset.nodeId = nodeId;
-    toggleDiv.dataset.nodeLabel = nodeLabel;
-    toggleDiv.dataset.elementCount = elements.length;
-
-    // Configurar botones de toggle
-    const listBtn = toggleDiv.querySelector('.toggle-list');
-    const networkBtn = toggleDiv.querySelector('.toggle-network');
-
-    if (listBtn && networkBtn) {
-      listBtn.classList.add('is-active');
-      networkBtn.classList.remove('is-active');
-
-      listBtn.onclick = (e) => {
-        e.preventDefault();
-        listBtn.classList.add('is-active');
-        networkBtn.classList.remove('is-active');
-        listContainer.style.display = '';
-        svgContainer.style.display = 'none';
-      };
-
-      networkBtn.onclick = (e) => {
-        e.preventDefault();
-        networkBtn.classList.add('is-active');
-        listBtn.classList.remove('is-active');
-        listContainer.style.display = 'none';
-        svgContainer.style.display = '';
-        renderCoarseGrainingNetwork(nodeId, nodeLabel, elements, svgContainer);
-      };
-    }
-  }
 
   // Mostrar modal
   overlay.hidden = false;
@@ -470,6 +447,59 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
 
   console.log(`Opened coarse graining for ${nodeId}: ${elements.length} elements`);
 }
+
+// ===================== MODAL CLOSE HANDLERS =====================
+(function initModalHandlers(){
+  // Cerrar modal de elementos
+  const redesOverlay = document.getElementById('redes-modal-overlay');
+  const redesCloseBtn = redesOverlay?.querySelector('.redes-modal-close');
+  if (redesCloseBtn) {
+    redesCloseBtn.addEventListener('click', () => {
+      redesOverlay.hidden = true;
+      document.body.style.overflow = '';
+    });
+  }
+  if (redesOverlay) {
+    redesOverlay.addEventListener('click', (e) => {
+      if (e.target === redesOverlay) {
+        redesOverlay.hidden = true;
+        document.body.style.overflow = '';
+      }
+    });
+  }
+
+  // Cerrar modal de red de elemento
+  const elementOverlay = document.getElementById('element-network-modal-overlay');
+  const elementCloseBtn = elementOverlay?.querySelector('.element-network-modal-close');
+  if (elementCloseBtn) {
+    elementCloseBtn.addEventListener('click', () => {
+      elementOverlay.hidden = true;
+      document.body.style.overflow = '';
+    });
+  }
+  if (elementOverlay) {
+    elementOverlay.addEventListener('click', (e) => {
+      if (e.target === elementOverlay) {
+        elementOverlay.hidden = true;
+        document.body.style.overflow = '';
+      }
+    });
+  }
+
+  // Cerrar con ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (redesOverlay && !redesOverlay.hidden) {
+        redesOverlay.hidden = true;
+        document.body.style.overflow = '';
+      }
+      if (elementOverlay && !elementOverlay.hidden) {
+        elementOverlay.hidden = true;
+        document.body.style.overflow = '';
+      }
+    }
+  });
+})();
 
 // ===================== POPUP DE RELACIONES =====================
 (function initRelationPopups(){

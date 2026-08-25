@@ -218,7 +218,7 @@
   </div>
 </section>
 
-<!-- ============ POPUP: redes por estructura ============ -->
+<!-- ============ POPUP: lista de elementos expandibles ============ -->
 <div id="redes-modal-overlay" class="redes-modal-overlay" hidden>
   <div class="redes-modal" role="dialog" aria-modal="true" aria-labelledby="redes-modal-title">
     <button class="redes-modal-close" type="button" aria-label="Cerrar">✕</button>
@@ -226,14 +226,6 @@
     <div class="redes-modal-header">
       <div class="redes-modal-header-top">
         <h2 id="redes-modal-title">Estructura</h2>
-        <div class="redes-view-toggle" id="coarse-view-toggle" hidden>
-          <button class="toggle-btn toggle-list is-active" data-view="list" aria-label="Vista de lista" title="Lista">
-            <i class="fa-solid fa-list"></i> Lista
-          </button>
-          <button class="toggle-btn toggle-network" data-view="network" aria-label="Vista de red" title="Red">
-            <i class="fa-solid fa-diagram-project"></i> Red
-          </button>
-        </div>
       </div>
       <p class="redes-modal-subtitle">Modo Analítico // Nodos = 0</p>
     </div>
@@ -243,28 +235,25 @@
         <g class="redes-edges"></g>
         <g class="redes-nodes"></g>
       </svg>
+    </div>
+  </div>
+</div>
 
-      <aside class="redes-side-panel">
-        <div class="redes-legend-card">
-          <span class="redes-legend-card-title">Leyenda de Capas</span>
-          <div class="redes-toggle-row">
-            <span>Nodos Principales</span>
-            <button class="redes-toggle is-on" type="button" data-toggle="nodes" role="switch" aria-checked="true"><span class="redes-toggle-knob"></span></button>
-          </div>
-          <div class="redes-toggle-row">
-            <span>Conexiones Activas</span>
-            <button class="redes-toggle is-on" type="button" data-toggle="edges" role="switch" aria-checked="true"><span class="redes-toggle-knob"></span></button>
-          </div>
-        </div>
+<!-- ============ POPUP: red detallada de elemento seleccionado ============ -->
+<div id="element-network-modal-overlay" class="element-network-modal-overlay" hidden>
+  <div class="element-network-modal" role="dialog" aria-modal="true" aria-labelledby="element-network-modal-title">
+    <button class="element-network-modal-close" type="button" aria-label="Cerrar">✕</button>
 
-        <div class="redes-conventions-card">
-          <span class="redes-legend-card-title">Convenciones</span>
-          <div class="redes-convention-item"><span class="redes-swatch redes-swatch-directa"></span>Directa</div>
-          <div class="redes-convention-item"><span class="redes-swatch redes-swatch-indirecta"></span>Indirecta</div>
-          <div class="redes-convention-item"><span class="redes-swatch redes-swatch-soporte"></span>Soporte</div>
-          <div class="redes-convention-item"><span class="redes-swatch redes-swatch-resiliencia"></span>Resiliencia</div>
-        </div>
-      </aside>
+    <div class="element-network-modal-header">
+      <h2 id="element-network-modal-title">Conexiones</h2>
+      <p class="element-network-modal-subtitle">Red de relaciones</p>
+    </div>
+
+    <div class="element-network-modal-body">
+      <svg class="element-network-svg" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+        <g class="element-edges"></g>
+        <g class="element-nodes"></g>
+      </svg>
     </div>
   </div>
 </div>
