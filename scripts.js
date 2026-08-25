@@ -270,7 +270,7 @@ function forceDirectedLayout(nodes, edges, width = 800, height = 600, iterations
 }
 
 // Renderizar red de un elemento específico en el modal separado
-function renderElementNetworkModal(elementName, elementIndex) {
+function renderElementNetworkModal(elementName, elementIndex, allElements) {
   const overlay = document.getElementById('element-network-modal-overlay');
   const svg = overlay?.querySelector('.element-network-svg');
   if (!overlay || !svg) return;
@@ -278,29 +278,33 @@ function renderElementNetworkModal(elementName, elementIndex) {
   const titleEl = document.getElementById('element-network-modal-title');
   if (titleEl) titleEl.textContent = elementName;
 
-  // Crear nodos: elemento central + algunos conectados
+  // Crear nodos: elemento central + elementos relacionados de la misma categoría
   const nodes = [
     { id: 'center', label: elementName, radius: 36, primary: true }
   ];
 
-  // Agregar nodos ficticios relacionados (simulación de conexiones)
-  const relatedCount = Math.min(8, Math.max(3, Math.floor(Math.random() * 6) + 3));
-  for (let i = 0; i < relatedCount; i++) {
+  // Agregar elementos relacionados de la misma categoría
+  const allElementsList = allElements || [];
+  const relatedElements = allElementsList
+    .filter((el, idx) => idx !== elementIndex) // Excluir el elemento central
+    .slice(0, 8); // Máximo 8 elementos relacionados
+
+  relatedElements.forEach((el, i) => {
+    const text = typeof el === 'object' ? (el.nombre || el.name || String(el)) : String(el);
     nodes.push({
       id: `node-${i}`,
-      label: `Elemento ${i + 1}`,
-      radius: 24 + Math.random() * 12
+      label: text.substring(0, 20),
+      radius: 24 + Math.random() * 10
     });
-  }
+  });
 
-  // Crear aristas: elemento central conecta con todos
+  // Crear aristas: elemento central conecta con todos + algunas conexiones entre periféricos
   const edges = [];
   for (let i = 1; i < nodes.length; i++) {
     edges.push({ from: 'center', to: `node-${i - 1}` });
-    // Agregar algunas conexiones secundarias
-    if (Math.random() > 0.6) {
-      const j = Math.floor(Math.random() * (nodes.length - 1)) + 1;
-      if (i !== j) edges.push({ from: `node-${i - 1}`, to: `node-${j - 1}` });
+    // Agregar conexiones entre elementos relacionados (vecinos cercanos)
+    if (i < nodes.length - 1 && Math.random() > 0.5) {
+      edges.push({ from: `node-${i - 1}`, to: `node-${i}` });
     }
   }
 
@@ -328,6 +332,8 @@ function renderElementNetworkModal(elementName, elementIndex) {
       line.setAttribute('stroke', 'rgba(47, 212, 200, 0.3)');
       line.setAttribute('stroke-width', '1.5');
       line.setAttribute('class', 'element-edge');
+      line.setAttribute('data-from', edge.from);
+      line.setAttribute('data-to', edge.to);
       edgesG.appendChild(line);
     });
   }
@@ -441,7 +447,11 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
   if (!listContainer) {
     listContainer = document.createElement('div');
     listContainer.className = 'coarse-graining-list';
-    modalBody.insertBefore(listContainer, svgContainer);
+    if (svgContainer) {
+      modalBody.insertBefore(listContainer, svgContainer);
+    } else {
+      modalBody.appendChild(listContainer);
+    }
   }
 
   // Llenar lista de elementos
@@ -462,7 +472,7 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
 
     // Agregar click handler para abrir la red detallada del elemento
     li.addEventListener('click', () => {
-      renderElementNetworkModal(text, idx);
+      renderElementNetworkModal(text, idx, elements);
     });
 
     ul.appendChild(li);
