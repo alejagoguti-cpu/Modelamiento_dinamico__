@@ -298,15 +298,15 @@ function renderNetworkInCurrentModal(elementName, elementIndex, allElements) {
 
   const allElementsList = allElements || [];
   const relatedElements = allElementsList
-    .filter((el, idx) => idx !== elementIndex)
-    .slice(0, 6); // Menos elementos en móvil
+    .filter((el, idx) => idx !== elementIndex); // Sin límite (mostrar todos)
 
   relatedElements.forEach((el, i) => {
     const text = typeof el === 'object' ? (el.nombre || el.name || String(el)) : String(el);
+    const radiusBase = Math.max(14, 22 - (relatedElements.length / 10));
     nodes.push({
       id: `node-${i}`,
       label: text.substring(0, 16),
-      radius: 18 + Math.random() * 8
+      radius: radiusBase + Math.random() * 6
     });
   });
 
@@ -319,8 +319,9 @@ function renderNetworkInCurrentModal(elementName, elementIndex, allElements) {
     }
   }
 
-  // Calcular layout
-  const nodePositions = forceDirectedLayout(nodes, edges, 800, 400);
+  // Calcular layout (más iteraciones para muchos nodos)
+  const iterations = Math.min(100, Math.max(50, nodes.length * 3));
+  const nodePositions = forceDirectedLayout(nodes, edges, 800, 400, iterations);
 
   // Limpiar SVG
   const edgesG = svgContainer.querySelector('.redes-edges');
@@ -450,23 +451,24 @@ function renderElementNetworkModal(elementName, elementIndex, allElements) {
   const titleEl = document.getElementById('element-network-modal-title');
   if (titleEl) titleEl.textContent = elementName;
 
-  // Crear nodos: elemento central + elementos relacionados de la misma categoría
+  // Crear nodos: elemento central + TODOS los elementos relacionados de la misma categoría
   const nodes = [
     { id: 'center', label: elementName, radius: 36, primary: true }
   ];
 
-  // Agregar elementos relacionados de la misma categoría
+  // Agregar TODOS los elementos relacionados de la misma categoría
   const allElementsList = allElements || [];
   const relatedElements = allElementsList
-    .filter((el, idx) => idx !== elementIndex) // Excluir el elemento central
-    .slice(0, 8); // Máximo 8 elementos relacionados
+    .filter((el, idx) => idx !== elementIndex); // Excluir el elemento central (sin límite)
 
   relatedElements.forEach((el, i) => {
     const text = typeof el === 'object' ? (el.nombre || el.name || String(el)) : String(el);
+    // Ajustar tamaño según cantidad de nodos
+    const radiusBase = Math.max(18, 28 - (relatedElements.length / 10));
     nodes.push({
       id: `node-${i}`,
-      label: text.substring(0, 20),
-      radius: 24 + Math.random() * 10
+      label: text.substring(0, 18),
+      radius: radiusBase + Math.random() * 6
     });
   });
 
@@ -480,8 +482,9 @@ function renderElementNetworkModal(elementName, elementIndex, allElements) {
     }
   }
 
-  // Calcular layout
-  const nodePositions = forceDirectedLayout(nodes, edges, 800, 600);
+  // Calcular layout (más iteraciones para muchos nodos)
+  const iterations = Math.min(100, Math.max(50, nodes.length * 3));
+  const nodePositions = forceDirectedLayout(nodes, edges, 800, 600, iterations);
 
   // Limpiar SVG
   const edgesG = svg.querySelector('.element-edges');
