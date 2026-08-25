@@ -5,16 +5,22 @@
 ```
 📁 Modelamiento_dinamico__/
 │
-├── 📄 INDEX.md                           ← Este archivo
-├── 📄 README_JUEGO.md                    ← Manual de usuario
-├── 📄 PROJECT_SUMMARY.md                 ← Resumen del proyecto
-├── 📄 INTERACTION_NETWORK.md             ← Red de interacciones ecológicas
-├── 📄 ECOLOGICAL_TERMINOLOGY_NOTES.md    ← Notas sobre terminología y futuro
+├── 📄 INDEX.md                                ← Este archivo (navegación)
+├── 📄 README_JUEGO.md                         ← Manual de usuario
+├── 📄 PROJECT_SUMMARY.md                      ← Resumen del proyecto
+├── 📄 INTERACTION_NETWORK.md                  ← Red de interacciones ecológicas
+├── 📄 ECOLOGICAL_TERMINOLOGY_NOTES.md         ← Notas sobre terminología y futuro
 │
-├── 🎮 bees_wetland_game.py               ← Código principal del juego (~700 líneas)
-├── 📦 requirements.txt                    ← Dependencias (pygame)
+├── 🎮 bees_wetland_game.py                    ← Código principal del juego (~700 líneas)
+├── 📦 requirements.txt                         ← Dependencias (pygame)
 │
-└── 📦 .git/                              ← Historial de commits
+├── 🆕 VERSIÓN 2.0 - INTEGRACIÓN DE RATAS:
+├── 📄 URBAN_ECOLOGY_DIMENSION.md              ← Ratas como biosensores socioecológicos
+├── 📄 VERSION_2_RAT_INTEGRATION.md            ← Diseño técnico de integración de ratas
+├── 📄 BIOINDICATORS_AND_DENSITY_DYNAMICS.md   ← Bioindicadores y dinámicas poblacionales
+├── 📄 FUTURE_DIMENSIONS.md                    ← Visión a escala múltiple (v3.0-v4.0)
+│
+└── 📦 .git/                                   ← Historial de commits
 ```
 
 ---
@@ -54,6 +60,26 @@
    - Propuestas para versión 2.0
    - Mejoras en terminología ecológica
    - Nuevas dinámicas a implementar
+
+### Para Especialistas en Socio-Ecología
+1. **Comienza con:** `URBAN_ECOLOGY_DIMENSION.md`
+   - Conexión urbano-rural
+   - Ratas como biosensores socioecológicos
+   - Política pública y ecosistemas
+
+2. **Profundiza con:** `VERSION_2_RAT_INTEGRATION.md`
+   - Diseño técnico de integración de ratas
+   - Dinámicas urbano-rurales
+   - Escenarios emergentes
+
+3. **Especialización:** `BIOINDICATORS_AND_DENSITY_DYNAMICS.md`
+   - Bioindicadores ecológicos
+   - Dinámicas dependientes de densidad
+   - Sistemas de diagnóstico integrado
+
+### Para Desarrollo Futuro (v3.0+)
+- Consulta `FUTURE_DIMENSIONS.md` para roadmap completo
+- Propone: multi-escala, ecotonos, resiliencia, fragmentación urbana
 
 ---
 
@@ -183,6 +209,80 @@
 
 ---
 
+### 🏙️ `URBAN_ECOLOGY_DIMENSION.md`
+**Tipo:** Análisis socio-ecológico  
+**Audiencia:** Ecólogos políticos, investigadores, formuladores de política
+
+**Contenido Principal:**
+1. **Ratas como biosensores** de condiciones socioeconómicas
+2. **Cadena causal:** Pobreza → Mercado informal → Basura → Ratas → Humedal degradado
+3. **Crítica de terminología:** "Invasoras" como indicadores de falla de política pública
+4. **Interconexión urbano-rural** y ciclos viciosos de degradación
+5. **Propuestas políticas integradas** para solucionar humedales (requiere cambio urbano)
+
+**Propósito:** Reencuadrar invasiones biológicas como síntomas de injusticia social
+
+---
+
+### 🎯 `VERSION_2_RAT_INTEGRATION.md`
+**Tipo:** Especificación técnica de versión 2.0  
+**Audiencia:** Desarrolladores, investigadores, educadores
+
+**Contenido Principal:**
+1. **Arquitectura urbano-rural** con mercados y poblaciones de ratas
+2. **Nuevas clases de agentes:**
+   - `UrbanMarket` - genera basura según regulación
+   - `RatPopulation` - reproduce/migra según disponibilidad de comida
+3. **Dinámicas implementadas:**
+   - Reproducción densidad-dependiente
+   - Migración a humedal cuando población satura
+   - Predación de ratas en aves/insectos del humedal
+4. **Controles interactivos de política urbana:**
+   - Formalizar mercado, control de plagas, sanidad
+5. **Escenarios emergentes:**
+   - Mercado formal: ratas controladas, humedal sano
+   - Mercado informal: invasión masiva, colapso
+   - Intervención tardía: daño residual persistente
+6. **Cronograma de implementación:** Fases 1-4
+
+**Propósito:** Plano técnico para implementar Versión 2.0
+
+---
+
+### 🐛 `BIOINDICATORS_AND_DENSITY_DYNAMICS.md`
+**Tipo:** Documentación especializada  
+**Audiencia:** Ecólogos, educadores, investigadores de sistemas complejos
+
+**Contenido Principal:**
+1. **Concepto de bioindicadores:**
+   - Especie cuya densidad revela condiciones ambientales
+   - NO es binaria (presencia/ausencia) sino continua (densidad)
+
+2. **Ejemplos implementados:**
+   - Ratas → indicador de comida urbana y política de residuos
+   - Moscas → indicador de materia orgánica disponible (predictor de boom de ratas)
+   - Libélulas → indicador de calidad de agua
+   - Hormigas → indicador de salud del suelo
+   - Chironomidos → indicador de eutrofización
+
+3. **Dinámicas dependientes de densidad:**
+   - Baja densidad: crecimiento exponencial, expansión territorial mínima
+   - Densidad moderada: equilibrio, reproducción moderada
+   - Alta densidad: estrés, competencia, máxima dispersión
+
+4. **Sistema de diagnóstico integrado:**
+   - Dashboard mostrando estado de todos los indicadores
+   - Predicciones en cascada (moscas altas → boom de ratas → invasión humedal)
+   - Ventana temporal para intervención
+
+5. **Poder educativo:**
+   - Enseña a "leer" ecosistemas a través de indicadores
+   - Conexión entre observación de densidades y causalidad sistémica
+
+**Propósito:** Fundación teórica para modelos avanzados de diagnosis ecosistémica
+
+---
+
 ### 📦 `requirements.txt`
 **Contiene:** 
 ```
@@ -242,21 +342,51 @@ pygame>=2.0.0
 - **Archivo:** `ECOLOGICAL_TERMINOLOGY_NOTES.md`
 - **Sección:** "Propuesta para Versión 2.0"
 
+### "¿Qué son ratas como biosensores?"
+- **Archivo:** `URBAN_ECOLOGY_DIMENSION.md`
+- **Sección:** "La Rata como Biosensor Socioeconómico"
+- **Tema:** Ratas indican condiciones de pobreza urbana y falta de regulación
+
+### "¿Cómo conectar ciudad y humedal?"
+- **Archivo:** `URBAN_ECOLOGY_DIMENSION.md`
+- **Sección:** "La Ruta de Contaminación: Plaza → Humedal"
+- **Tema:** Cadena causal de política urbana a degradación de humedal
+
+### "¿Qué es Versión 2.0 de Ratas?"
+- **Archivo:** `VERSION_2_RAT_INTEGRATION.md`
+- **Sección Completa:** Arquitectura, clases nuevas, dinámicas implementadas
+
+### "¿Qué son bioindicadores?"
+- **Archivo:** `BIOINDICATORS_AND_DENSITY_DYNAMICS.md`
+- **Sección:** "Bioindicadores: Implementación"
+- **Tema:** Especies cuya densidad revela estado del ecosistema
+
+### "¿Cómo leen los ecólogos los ecosistemas?"
+- **Archivo:** `BIOINDICATORS_AND_DENSITY_DYNAMICS.md`
+- **Sección:** "El Poder Educativo de los Bioindicadores"
+- **Tema:** Usar indicadores para predicción temprana de cambios
+
+### "¿Qué es dinámicas dependientes de densidad?"
+- **Archivo:** `BIOINDICATORS_AND_DENSITY_DYNAMICS.md`
+- **Sección:** "Dinámicas Dependientes de Densidad"
+- **Tema:** Mismo agente, comportamiento diferente según densidad absoluta
+
 ---
 
 ## 📊 Estadísticas del Proyecto
 
 | Métrica | Valor |
 |---------|-------|
-| **Líneas de código Python** | ~700 |
-| **Clases de agentes** | 6 |
+| **Líneas de código Python** | ~700 (v1.0) |
+| **Clases de agentes** | 6 (v1.0), +3 planeadas (v2.0) |
 | **Parámetros ambientales** | 12+ |
-| **Especies simuladas** | 5 |
-| **Dinámicas implementadas** | 15+ |
-| **Documentación (palabras)** | 5000+ |
-| **Archivos Markdown** | 5 |
-| **Commits de desarrollo** | 8+ |
-| **Escenarios emergentes documentados** | 3 |
+| **Especies simuladas** | 5 (v1.0), +5 bioindicadores (v2.0) |
+| **Dinámicas implementadas** | 15+ (v1.0), +10 (v2.0) |
+| **Documentación (palabras)** | 15,000+ |
+| **Archivos Markdown** | 8 (v1.0 + v2.0 design) |
+| **Commits de desarrollo** | 9+ |
+| **Escenarios emergentes documentados** | 10+ |
+| **Conexión urbano-rural** | ✅ Documentada, v2.0 planeada |
 
 ---
 
@@ -292,8 +422,7 @@ python bees_wetland_game.py
 ## 📞 Estructura de Commits
 
 ```
-8 commits de desarrollo:
-
+Versión 1.0 (8 commits):
 1. Código base + características principales
 2. Controles interactivos + seguimiento mensual/anual
 3. Documentación de niveles tróficos
@@ -302,12 +431,19 @@ python bees_wetland_game.py
 6. Resumen de proyecto completo
 7. Mejoras de instalación
 8. Terminología ecológica + roadmap futuro
+
+Versión 2.0 - Diseño (3+ commits):
+9. Dimensión urbano-ecológica: Ratas como biosensores
+10. Especificación técnica Version 2.0 - Integración de Ratas
+11. Bioindicadores y dinámicas dependientes de densidad
+(+ commits de implementación pendientes)
 ```
 
 ---
 
 ## ✅ Checklist de Completitud
 
+### Versión 1.0 (Completa)
 - ✅ Código funcional y documentado
 - ✅ Simulación de ecosistema completo
 - ✅ Manual de usuario
@@ -318,6 +454,24 @@ python bees_wetland_game.py
 - ✅ Instalación clara
 - ✅ Comentarios en código
 - ✅ Historial de commits limpio
+
+### Versión 2.0 (Diseño Completo, Implementación Pendiente)
+- ✅ Documentación de dimensión urbano-ecológica
+- ✅ Especificación técnica de integración de ratas
+- ✅ Framework de bioindicadores
+- ✅ Dinámicas densidad-dependientes documentadas
+- ⏳ Implementación de clases `UrbanMarket` y `RatPopulation`
+- ⏳ Controles interactivos de política urbana
+- ⏳ Sistema de diagnóstico de bioindicadores
+- ⏳ Testing con escenarios de perturbación
+
+### Versión 3.0+ (Roadmap Documentado)
+- ✅ Propuesta de multi-escala (FUTURE_DIMENSIONS.md)
+- ✅ Concepto de ecotonos
+- ✅ Métricas de resiliencia
+- ✅ Fragmentación urbana
+- ⏳ Agentes humanos con comportamientos diversos
+- ⏳ Integración de economía y política pública
 
 ---
 
