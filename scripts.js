@@ -657,9 +657,9 @@ function openCategoriesModal(structureId) {
     `;
 
     card.addEventListener('click', () => {
-      // Cerrar modal de categorías y abrir el de elementos
+      // Cerrar modal de categorías y abrir la red visual de elementos (NIVEL 3)
       overlay.hidden = true;
-      openCoarseGrainingModal(category.id, category.label);
+      openElementsNetworkModal(category.id, category.label);
     });
 
     gridContainer.appendChild(card);
@@ -670,6 +670,196 @@ function openCategoriesModal(structureId) {
   document.body.style.overflow = 'hidden';
 
   console.log(`Opened categories for structure: ${structureId}`);
+}
+
+// ===================== NIVEL 3: RED VISUAL DE ELEMENTOS (con animaciones premium) =====================
+// Mostrar todos los elementos de una categoría como una red visual hermosa
+function openElementsNetworkModal(categoryId, categoryLabel) {
+  if (!potData || !EXPANDABLE_NODES[categoryId]) return;
+
+  const elements = getExpandableElements(categoryId);
+  if (!elements || elements.length === 0) {
+    console.warn('No elements found for category:', categoryId);
+    return;
+  }
+
+  const overlay = document.getElementById('element-network-modal-overlay');
+  const titleEl = document.getElementById('element-network-modal-title');
+  const subtitleEl = document.querySelector('.element-network-modal-subtitle');
+  const svgContainer = document.querySelector('.element-network-svg');
+  const modalBody = document.querySelector('.element-network-modal-body');
+
+  if (!overlay || !svgContainer) return;
+
+  // Actualizar título
+  titleEl.textContent = categoryLabel;
+  subtitleEl.textContent = `Red Visual // ${elements.length} elementos`;
+
+  // Crear nodos: elemento principal en el centro + todos los demás alrededor
+  const nodes = [
+    {
+      id: 'center',
+      label: categoryLabel,
+      radius: 36,
+      primary: true,
+      color: 'rgba(47, 212, 200, 0.8)' // verde por defecto
+    }
+  ];
+
+  elements.forEach((el, i) => {
+    const text = typeof el === 'object' ? (el.nombre || el.name || String(el)) : String(el);
+    const radiusBase = Math.max(18, 26 - (elements.length / 15));
+    nodes.push({
+      id: `elem-${i}`,
+      label: text.substring(0, 20),
+      fullLabel: text,
+      radius: radiusBase + Math.random() * 4,
+      elementIndex: i,
+      allElements: elements
+    });
+  });
+
+  // Crear aristas: cada elemento conecta al centro + conexiones aleatorias entre elementos
+  const edges = [];
+  for (let i = 1; i < nodes.length; i++) {
+    edges.push({
+      from: 'center',
+      to: `elem-${i - 1}`,
+      type: 'primary'
+    });
+    // Agregar algunas conexiones secundarias entre elementos
+    if (Math.random() > 0.7 && i < nodes.length - 1) {
+      edges.push({
+        from: `elem-${i - 1}`,
+        to: `elem-${i}`,
+        type: 'secondary'
+      });
+    }
+  }
+
+  // Calcular layout con más iteraciones para mejor distribución
+  const iterations = Math.min(150, Math.max(80, nodes.length * 4));
+  const nodePositions = forceDirectedLayout(nodes, edges, 900, 700, iterations);
+
+  // Limpiar SVG
+  const edgesG = svgContainer.querySelector('.element-edges');
+  const nodesG = svgContainer.querySelector('.element-nodes');
+  if (edgesG) edgesG.innerHTML = '';
+  if (nodesG) nodesG.innerHTML = '';
+
+  // Dibujar aristas con gradientes y animaciones
+  if (edgesG) {
+    edges.forEach((edge, edgeIdx) => {
+      const fromNode = nodePositions[edge.from];
+      const toNode = nodePositions[edge.to];
+      if (!fromNode || !toNode) return;
+
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('class', `element-edge edge-${edge.type}`);
+      g.style.animationDelay = `${(edgeIdx * 50)}ms`;
+
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', fromNode.x.toFixed(1));
+      line.setAttribute('y1', fromNode.y.toFixed(1));
+      line.setAttribute('x2', toNode.x.toFixed(1));
+      line.setAttribute('y2', toNode.y.toFixed(1));
+
+      if (edge.type === 'primary') {
+        line.setAttribute('stroke', 'rgba(47, 212, 200, 0.4)');
+        line.setAttribute('stroke-width', '2');
+      } else {
+        line.setAttribute('stroke', 'rgba(47, 212, 200, 0.15)');
+        line.setAttribute('stroke-width', '1');
+      }
+
+      line.setAttribute('class', 'element-edge-line');
+      g.appendChild(line);
+      edgesG.appendChild(g);
+    });
+  }
+
+  // Dibujar nodos con animaciones
+  if (nodesG) {
+    Object.entries(nodePositions).forEach(([nodeId, node], nodeIdx) => {
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('transform', `translate(${node.x.toFixed(1)},${node.y.toFixed(1)})`);
+      g.setAttribute('class', `element-node${node.primary ? ' is-primary' : ''}`);
+      g.setAttribute('data-node-id', nodeId);
+      g.style.cursor = 'pointer';
+      g.style.animationDelay = `${(nodeIdx * 30)}ms`;
+
+      // Glow background (efecto de brillo)
+      if (!node.primary) {
+        const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        glow.setAttribute('r', (node.radius * 1.5).toFixed(1));
+        glow.setAttribute('fill', 'rgba(47, 212, 200, 0.08)');
+        glow.setAttribute('class', 'element-node-glow');
+        g.appendChild(glow);
+      }
+
+      // Círculo principal
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('r', node.radius.toFixed(1));
+      circle.setAttribute('fill', node.primary ? 'rgba(47, 212, 200, 0.25)' : 'rgba(47, 212, 200, 0.12)');
+      circle.setAttribute('stroke', node.primary ? 'rgba(47, 212, 200, 0.9)' : 'rgba(47, 212, 200, 0.6)');
+      circle.setAttribute('stroke-width', node.primary ? '3.5' : '2');
+      circle.setAttribute('class', 'element-node-circle');
+      g.appendChild(circle);
+
+      // Texto
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('dy', '0.35em');
+      text.setAttribute('font-size', node.primary ? '12' : '9.5');
+      text.setAttribute('fill', 'rgba(255,255,255,0.9)');
+      text.setAttribute('font-weight', node.primary ? 'bold' : '600');
+      text.setAttribute('class', 'element-node-label');
+      text.setAttribute('pointer-events', 'none');
+
+      const lines = node.label.split('\n');
+      lines.forEach((line, i) => {
+        if (i === 0) {
+          text.textContent = line;
+        } else {
+          const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+          tspan.setAttribute('x', '0');
+          tspan.setAttribute('dy', '1.2em');
+          tspan.textContent = line;
+          text.appendChild(tspan);
+        }
+      });
+      g.appendChild(text);
+
+      // Click para ver detalles
+      if (!node.primary) {
+        g.addEventListener('click', (e) => {
+          e.stopPropagation();
+          renderElementNetworkModal(node.fullLabel, node.elementIndex, node.allElements);
+        });
+
+        // Efecto hover
+        g.addEventListener('mouseenter', () => {
+          circle.setAttribute('stroke-width', '3');
+          circle.setAttribute('fill', 'rgba(47, 212, 200, 0.2)');
+          text.setAttribute('font-size', '10.5');
+        });
+
+        g.addEventListener('mouseleave', () => {
+          circle.setAttribute('stroke-width', '2');
+          circle.setAttribute('fill', 'rgba(47, 212, 200, 0.12)');
+          text.setAttribute('font-size', '9.5');
+        });
+      }
+
+      nodesG.appendChild(g);
+    });
+  }
+
+  // Mostrar modal
+  overlay.hidden = false;
+  document.body.style.overflow = 'hidden';
+
+  console.log(`Opened elements network for ${categoryLabel}: ${elements.length} elements`);
 }
 
 // Abrir coarse graining modal: mostrar elementos en popup limpio y legible
