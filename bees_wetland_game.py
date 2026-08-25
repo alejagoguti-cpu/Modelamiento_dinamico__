@@ -35,8 +35,12 @@ class State:
     food: int = 500
     time: int = 0
     day: int = 1
+    month: int = 1
+    year: int = 1
     season: int = 0
     paused: bool = False
+    message: str = ""
+    message_time: int = 0
 
 class Bee:
     def __init__(self, x: float, y: float):
@@ -206,8 +210,18 @@ class WetlandGame:
         self.state.time += 1
         if self.state.time % 60 == 0:
             self.state.day += 1
+            if self.state.day % 30 == 0:
+                self.state.month += 1
+                if self.state.month > 12:
+                    self.state.month = 1
+                    self.state.year += 1
             if self.state.day % 90 == 0:
                 self.state.season = (self.state.season + 1) % 4
+
+        if self.state.message_time > 0:
+            self.state.message_time -= 1
+        else:
+            self.state.message = ""
 
         for bee in self.bees:
             bee.update(self.state, self.flowers)
@@ -355,8 +369,11 @@ class WetlandGame:
 
         invasive_color = RED if self.state.invasive_species > 30 else (ORANGE if self.state.invasive_species > 10 else BLACK)
 
+        months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+        month_name = months[self.state.month - 1] if 1 <= self.state.month <= 12 else "???"
+
         info_data = [
-            (f"Día: {self.state.day}", BLACK),
+            (f"Año {self.state.year} - {month_name} (Día {self.state.day})", BLACK),
             (f"Estación: {self.season_names[self.state.season]}", BLACK),
             (f"Abejas: {self.state.bees}", BLACK),
             (f"Aves: {self.state.birds}", (100, 100, 200)),
@@ -366,7 +383,7 @@ class WetlandGame:
             (f"Agua: {self.state.water_quality:.1f}%", get_color(self.state.water_quality)),
             (f"Aire: {self.state.air_quality:.1f}%", get_color(self.state.air_quality)),
             (f"Microorganismos: {self.state.soil_microorganisms:.1f}%", get_color(self.state.soil_microorganisms)),
-            (f"Nutrientes Suelo: {self.state.soil_nutrients:.1f}%", get_color(self.state.soil_nutrients)),
+            (f"Nutrientes: {self.state.soil_nutrients:.1f}%", get_color(self.state.soil_nutrients)),
             (f"Ocupación: {self.state.habitat_occupation:.1f}%", get_color(self.state.habitat_occupation)),
         ]
 
@@ -380,8 +397,14 @@ class WetlandGame:
             pygame.draw.rect(self.screen, WHITE, text_rect.inflate(20, 10))
             self.screen.blit(pause_text, text_rect)
 
-        help_text = self.font_small.render("ESPACIO: Pausar | R: Reiniciar | Q: Salir", True, BLACK)
-        self.screen.blit(help_text, (WIDTH - 400, HEIGHT - 30))
+        if self.state.message and self.state.message_time > 0:
+            msg_text = self.font_small.render(self.state.message, True, ORANGE)
+            msg_rect = msg_text.get_rect(center=(WIDTH // 2, 30))
+            pygame.draw.rect(self.screen, WHITE, msg_rect.inflate(20, 10))
+            self.screen.blit(msg_text, msg_rect)
+
+        help_text = self.font_small.render("ESPACIO: Pausar | ↑↓: Abejas | W: Agua | A: Aire | P: Plantas | R: Reiniciar | Q: Salir", True, BLACK)
+        self.screen.blit(help_text, (10, HEIGHT - 20))
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -394,6 +417,31 @@ class WetlandGame:
                     self.__init__()
                 elif event.key == pygame.K_q:
                     self.game_running = False
+                elif event.key == pygame.K_UP and len(self.bees) < 150:
+                    for _ in range(5):
+                        self.bees.append(Bee(random.randint(100, WIDTH-100), random.randint(100, HEIGHT-200)))
+                    self.state.message = "✓ +5 Abejas agregadas"
+                    self.state.message_time = 120
+                elif event.key == pygame.K_DOWN and len(self.bees) > 0:
+                    for _ in range(min(5, len(self.bees))):
+                        self.bees.pop()
+                    self.state.message = "✗ -5 Abejas removidas"
+                    self.state.message_time = 120
+                elif event.key == pygame.K_w:
+                    self.state.water_quality -= 30
+                    self.state.water_quality = max(0, self.state.water_quality)
+                    self.state.message = "💧 Contaminación del agua inyectada"
+                    self.state.message_time = 120
+                elif event.key == pygame.K_a:
+                    self.state.air_quality -= 25
+                    self.state.air_quality = max(0, self.state.air_quality)
+                    self.state.message = "💨 Contaminación del aire inyectada"
+                    self.state.message_time = 120
+                elif event.key == pygame.K_p:
+                    for _ in range(random.randint(3, 8)):
+                        self.flowers.append(Flower(random.randint(100, WIDTH-100), random.randint(100, HEIGHT-200)))
+                    self.state.message = f"🌸 Flores germinadas (evento clima favorable)"
+                    self.state.message_time = 120
 
     def run(self):
         while self.game_running:

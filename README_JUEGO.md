@@ -32,6 +32,7 @@ python bees_wetland_game.py
 - **Puntos Verdes**: Flores sin polinizar
 - **Puntos Verde Oscuro**: Flores polinizadas
 - **Puntos Rojos (con borde negro)**: Especies invasoras
+- **Círculos Azul Claro (con borde negro grueso)**: Aves - Depredadores/Nectarívoros
 
 ### Panel de Información (Inferior)
 | Métrica | Significado |
