@@ -117,13 +117,6 @@ const EXPANDABLE_NODES = {
     icon: 'fa-building',
     color: 'azul'
   },
-  'vivienda': {
-    label: 'Vivienda',
-    dataPath: ['estructuras_territoriales', 'EFC', 'componentes', 'vivienda'],
-    quantity: 100,
-    icon: 'fa-house',
-    color: 'azul'
-  },
 
   // Estructura Socioeconómica - zonas productivas física medibles
   'industria': {
