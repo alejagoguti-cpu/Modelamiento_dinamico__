@@ -131,6 +131,35 @@ const EXPANDABLE_NODES = {
 // Estado del coarse graining: track expandidos
 const coarseGrainingState = {};
 
+// Mapeo de IDs de nodos en NETWORKS a IDs en EXPANDABLE_NODES
+const NETWORK_TO_EXPANDABLE_MAP = {
+  // EEP (verde)
+  'rios': 'rios',
+  'quebradas': 'rios', // Las quebradas son parte del sistema hídrico
+  'humedales': 'humedales',
+  'cerros': 'cerros',
+  'paramos': 'paramos',
+  'coberturas': 'rios', // Coberturas vegetales → sistema hídrico
+  'bosques': 'rios',
+  'reservas': 'rios',
+
+  // EIP (púrpura)
+  'patrimonio': 'material',
+
+  // EFC (azul)
+  'ciclorrutas': 'redvial',
+  'redvial': 'redvial',
+  'transporte': 'transporte',
+  'transporte_publico': 'transporte',
+  'parques': 'parques',
+  'equipamient': 'equipamient',
+  'equipamientos': 'equipamient',
+
+  // ESECI (amarillo)
+  'industria': 'industria',
+  'comercio': 'industria'
+};
+
 // Obtener elementos expandibles de los datos del POT
 function getExpandableElements(nodeKey) {
   if (!potData || !EXPANDABLE_NODES[nodeKey]) return [];
@@ -1079,7 +1108,9 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
     });
 
     net.nodes.forEach((n, i) => {
-      const isExpandable = EXPANDABLE_NODES[n.id];
+      // Usar mapeo para conectar IDs de NETWORKS a EXPANDABLE_NODES
+      const expandableNodeId = NETWORK_TO_EXPANDABLE_MAP[n.id] || n.id;
+      const isExpandable = EXPANDABLE_NODES[expandableNodeId];
       const g = el("g", {
         class: `redes-node${n.primary ? " is-primary" : ""}${isExpandable ? " is-expandable" : ""}`,
         "data-accent": net.accent,
@@ -1123,7 +1154,7 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
       function handleNodeClick(ev){
         ev.stopPropagation();
         if (isExpandable) {
-          openCoarseGrainingModal(n.id, n.label.join(" "));
+          openCoarseGrainingModal(expandableNodeId, n.label.join(" "));
         } else {
           const dimmed = g.classList.toggle("is-dimmed");
           (edgesByNode[n.id] || []).forEach((edgeEl) => {

@@ -622,11 +622,8 @@ body{
 }
 
 .redes-modal-body{
-  display: grid;
-  grid-template-columns: 1fr 230px;
-  gap: 22px;
+  display: block;
   margin-top: 18px;
-  align-items: start;
 }
 
 .redes-network-svg{
