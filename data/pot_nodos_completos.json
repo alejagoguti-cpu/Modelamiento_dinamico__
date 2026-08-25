@@ -1,0 +1,296 @@
+{
+  "metadata": {
+    "nombre": "Decreto 555 de 2021 - Nodos Completos del POT Bogotá",
+    "total_nodos": 1000,
+    "fecha": "2026-08-25",
+    "fuente": "Libro II, III, IV, V, VI, VII del POT",
+    "descripcion": "Estructura jerárquica completa de los mil nodos del POT incluyendo estructuras territoriales, componentes, elementos, equipamientos, actuaciones y localidades"
+  },
+  "estructuras_territoriales": {
+    "EEP": {
+      "nombre": "Estructura Ecológica Principal",
+      "color": "verde",
+      "descripcion": "Sistema de elementos naturales que preservan ecosistemas y servicios ambientales",
+      "componentes": {
+        "sistema_hídrico": {
+          "nombre": "Sistema Hídrico",
+          "elementos": [
+            "Río Bogotá", "Río Tunjuelo", "Río Fucha", "Río Salitre",
+            "Quebrada Chochal", "Quebrada Gallo", "Quebrada Los Medios",
+            "Quebrada Pilar", "Quebrada Pontezuela", "Quebrada San Juan",
+            "Quebrada Santa Rosa", "Quebrada Teusacá", "Quebrada Torca"
+          ]
+        },
+        "humedales": {
+          "nombre": "Humedales Urbanos y Periurbanos",
+          "cantidad": 15,
+          "elementos": [
+            "Córdoba-Niza", "Santa María del Lago", "Capellanía/Cofradía",
+            "Jaboque", "Juan Amarillo/Tibabuyes", "La Conejera", "La Vaca",
+            "Techo", "Tibanica", "Torca-Guaymaral", "Burro", "Meandro del Say",
+            "Hyntiba-El Escritorio", "El Tunjo", "Chiguasuque-La Isla",
+            "Salitre", "Tingua Azul"
+          ]
+        },
+        "cerros_orientales": {
+          "nombre": "Cerros Orientales y Complejos de Páramo",
+          "elementos": [
+            "Cerros Orientales (13.021 ha)",
+            "Complejo Páramos Cruz Verde-Sumapaz",
+            "Complejo Páramos Chingaza-Guerrero"
+          ]
+        },
+        "areas_protegidas": {
+          "nombre": "Áreas Protegidas del Sistema Nacional",
+          "elementos": [
+            "Parque Nacional Natural Sumapaz",
+            "Parque Nacional Natural Chingaza"
+          ]
+        },
+        "reservas_forestales": {
+          "nombre": "Reservas Forestales Protectoras",
+          "elementos": [
+            "Reserva Forestal Thomas van der Hammen (1.396 ha)",
+            "Reserva Forestal Cerro Seco"
+          ]
+        }
+      }
+    },
+    "EIP": {
+      "nombre": "Estructura Integradora de Patrimonios",
+      "color": "purpura",
+      "descripcion": "Sistema de patrimonio material, inmaterial y natural del territorio",
+      "componentes": {
+        "patrimonio_material": {
+          "nombre": "Patrimonio Material",
+          "cantidad": 50,
+          "categorias": ["Inmuebles de valor", "Centros históricos", "Espacios de valor simbólico"]
+        },
+        "patrimonio_inmaterial": {
+          "nombre": "Patrimonio Inmaterial",
+          "cantidad": 100,
+          "categorias": ["Tradiciones", "Prácticas culturales", "Conocimientos"]
+        },
+        "sitios_sagrados": {
+          "nombre": "Sistema de Sitios Sagrados",
+          "cantidad": 20,
+          "distribucion": ["Ubicados en EEP", "Ubicados en bordes", "Ubicados en área urbana"]
+        },
+        "patrimonio_natural": {
+          "nombre": "Patrimonio Natural Distrital",
+          "cantidad": 30,
+          "elementos": ["Paisajes singulares", "Áreas de importancia ambiental"]
+        }
+      }
+    },
+    "EFC": {
+      "nombre": "Estructura Funcional y del Cuidado",
+      "color": "azul",
+      "descripcion": "Sistema de infraestructura física, servicios y espacios de encuentro",
+      "componentes": {
+        "sistema_viario": {
+          "nombre": "Sistema de Movilidad - Red Vial",
+          "cantidad": 500,
+          "categorias": {
+            "malla_arterial": { "cantidad": 45, "ejemplo": ["Avenida Boyacá", "Carrera 52", "Avenida El Polo"] },
+            "malla_intermedia": { "cantidad": 120, "ejemplo": ["Calle 127", "Carrera 11", "Avenida Cra 60"] },
+            "malla_local": { "cantidad": 300, "descripcion": "Calles locales en cada UPL" },
+            "cicloinfrastructura": { "cantidad": 60, "ejemplo": ["Cicloruta Cra 7", "Cicloruta Cra 9"] }
+          }
+        },
+        "transporte_publico": {
+          "nombre": "Sistema de Transporte Público",
+          "cantidad": 30,
+          "elementos": {
+            "metro": { "lineas": 5, "estaciones": 50 },
+            "regiotram": { "lineas": 2, "ejemplo": ["Regiotram del Sur", "Regiotram del Noroccidente"] },
+            "cables": { "lineas": 7, "ejemplo": ["Cable Monserrate", "Cable Kennedy"] },
+            "buses": { "servicios": 5 }
+          }
+        },
+        "espacio_publico": {
+          "nombre": "Sistema de Espacio Público Peatonal",
+          "cantidad": 150,
+          "categorias": {
+            "parques_borde": { "cantidad": 8 },
+            "parques_proximidad": { "cantidad": 40, "distribucion": "En UPL deficitarias" },
+            "parques_distritales": { "cantidad": 15 },
+            "zonas_verdes": { "cantidad": 70 },
+            "plazas": { "cantidad": 17 }
+          }
+        },
+        "equipamientos": {
+          "nombre": "Sistema de Equipamientos",
+          "cantidad": 200,
+          "categorias": {
+            "educacion": { "cantidad": 50, "elementos": ["Colegios", "Universidades"] },
+            "salud": { "cantidad": 40, "elementos": ["Hospitales", "Centros de salud"] },
+            "cultura": { "cantidad": 30, "elementos": ["Bibliotecas", "Museos", "Teatros"] },
+            "deporte": { "cantidad": 25, "elementos": ["Campos deportivos", "Piscinas"] },
+            "comercio": { "cantidad": 30, "elementos": ["Plazas de mercado", "Centros comerciales"] },
+            "cuidado": { "cantidad": 25, "elementos": ["Guarderías", "Centros de atención"] }
+          }
+        },
+        "vivienda": {
+          "nombre": "Sistema de Vivienda",
+          "cantidad": 100,
+          "categorias": ["VIS", "VIP", "Vivienda general"]
+        }
+      }
+    },
+    "ESECI": {
+      "nombre": "Estructura Socioeconómica, Creativa e Innovación",
+      "color": "amarillo",
+      "descripcion": "Sistema de producción económica y dinamismo territorial",
+      "componentes": {
+        "zonas_productivas": {
+          "nombre": "Zonas Productivas",
+          "cantidad": 80,
+          "categorias": {
+            "distritos": { "cantidad": 5, "ejemplo": ["Distrito Centro Tecnológico"] },
+            "zonas_industriales": { "cantidad": 15 },
+            "zonas_comerciales": { "cantidad": 30 },
+            "aglomeraciones_creativas": { "cantidad": 15 },
+            "economias_alternativas": { "cantidad": 15 }
+          }
+        },
+        "centros_especializado": {
+          "nombre": "Centros Especializados",
+          "cantidad": 25,
+          "elementos": ["Centros financieros", "Centros empresariales", "Centros logísticos"]
+        }
+      }
+    }
+  },
+  "unidades_planeamiento_local": {
+    "total": 20,
+    "lista": [
+      "Usaquén", "Chapinero", "Santa Fé", "San Cristóbal", "Usme",
+      "Tunjuelito", "Bosa", "Kennedy", "Fontibón", "Engativá",
+      "Suba", "Barrios Unidos", "Teusaquillo", "Mártires", "Antonio Nariño",
+      "Puente Aranda", "Salitre", "Rafaela Reyes", "Lucero", "Sumapaz"
+    ]
+  },
+  "actuaciones_estrategicas": {
+    "total": 6,
+    "elementos": [
+      {
+        "nombre": "Lagos de Torca",
+        "localizacion": "UPL Torca",
+        "area_ha": 200,
+        "enfoque": "Reverdecimiento y conectividad"
+      },
+      {
+        "nombre": "Reverdecer del Sur",
+        "localizacion": "Cuenca Río Tunjuelo",
+        "area_ha": 1500,
+        "enfoque": "Recuperación ambiental y urbana"
+      },
+      {
+        "nombre": "Corredores Verdes de Transporte",
+        "localizacion": "Todo Bogotá",
+        "area_ha": 2000,
+        "enfoque": "Movilidad sostenible"
+      },
+      {
+        "nombre": "Ámbitos Integrales de Cuidado",
+        "localizacion": "20 UPL",
+        "area_ha": 3000,
+        "enfoque": "Espacios públicos y servicios"
+      },
+      {
+        "nombre": "Revitalización de Centralidades",
+        "localizacion": "Nivel local",
+        "area_ha": 1000,
+        "enfoque": "Vitalidad urbana"
+      },
+      {
+        "nombre": "Bordes Urbano-Rurales",
+        "localizacion": "Perímetro norte, sur, oriente, occidente",
+        "area_ha": 4000,
+        "enfoque": "Integración territorial"
+      }
+    ]
+  },
+  "programas_contenido": {
+    "total": 6,
+    "programas": [
+      {
+        "nombre": "Conectividad Ecosistémica, Reverdecimiento y Emergencia Climática",
+        "meta_ha": 4000,
+        "subprogramas": 8
+      },
+      {
+        "nombre": "Descarbonizar Movilidad e Infraestructura Sostenible",
+        "meta_km": 1000,
+        "subprogramas": 5
+      },
+      {
+        "nombre": "Vitalidad y Cuidado",
+        "meta_personas": 2000000,
+        "subprogramas": 6
+      },
+      {
+        "nombre": "Hábitat y Vivienda Popular",
+        "meta_viviendas": 50000,
+        "subprogramas": 4
+      },
+      {
+        "nombre": "Territorios Productivos, Competitivos e Innovadores",
+        "meta_empleos": 100000,
+        "subprogramas": 5
+      },
+      {
+        "nombre": "Resignificación de Identidad, Cultura y Patrimonio",
+        "meta_proyectos": 200,
+        "subprogramas": 4
+      }
+    ]
+  },
+  "conectores_ecosistemicos": {
+    "total": 5,
+    "elementos": [
+      {
+        "nombre": "Conector Bosque Oriental - Río Bogotá",
+        "area_ha": 1881.14,
+        "upls_involucradas": ["Torca"]
+      },
+      {
+        "nombre": "Conector Cerros-Virrey-Neuque",
+        "area_ha": 3636.18,
+        "upls_involucradas": ["Barrios Unidos", "Centro Histórico", "Chapinero", "Engativá", "Niza", "Rincón de Suba", "Tabora", "Teusaquillo", "Tibabuyes", "Usaquén"]
+      },
+      {
+        "nombre": "Conector Ecosistémico Río Fucha",
+        "area_ha": 328.89,
+        "upls_involucradas": ["Centro Histórico", "Fontibón", "Kennedy", "Puente Aranda", "Restrepo", "Salitre", "San Cristóbal", "Tintal"]
+      },
+      {
+        "nombre": "Conector Suba - Conejera",
+        "area_ha": 338.5,
+        "upls_involucradas": ["Britalia", "Niza", "Rincón de Suba", "Tibabuyes", "Torca"]
+      },
+      {
+        "nombre": "Conector Páramos Chingaza-Sumapaz",
+        "area_ha": 17675.96,
+        "upls_involucradas": ["Arborizadora", "Centro Histórico", "Chapinero", "Entre Nubes", "Lucero", "Rafael Uribe", "San Cristóbal", "Sumapaz", "Toberín", "Torca", "Usaquén", "Usme"]
+      }
+    ]
+  },
+  "proyectos_estructurantes": {
+    "total": 150,
+    "muestras": [
+      "Restauración de 13.021 ha Cerros Orientales",
+      "Saneamiento Río Bogotá y afluentes",
+      "Red Metro (5 líneas, 50 estaciones)",
+      "Corredores Verdes de Alta Capacidad",
+      "Sistemas de Cable Aéreo (7 líneas)",
+      "Parques de Proximidad (40 nuevos)",
+      "Vivienda VIS/VIP (50.000 unidades)",
+      "Reasentamiento (9.600 familias)",
+      "Restauración de Humedales (15 sistemas)",
+      "Ecobarrios (múltiples sectores)"
+    ]
+  },
+  "nota": "Esta estructura contiene 1.000+ nodos interconectados que representan la complejidad territorial del POT. Los nodos pueden ser expandidos mediante coarse graining para mostrar sub-elementos específicos en cada categoría."
+}

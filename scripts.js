@@ -31,6 +31,186 @@ const relations = {
     page: "p. 35"
   }
 };
+
+// ===================== COARSE GRAINING: expansión dinámica de nodos =====================
+let potData = null;
+
+// Cargar datos del POT con todos los nodos
+async function loadPOTData() {
+  try {
+    const response = await fetch('./data/pot_nodos_completos.json');
+    potData = await response.json();
+    console.log('POT data loaded:', potData.metadata);
+  } catch (error) {
+    console.warn('Could not load POT data:', error);
+  }
+}
+
+// Llamar la carga de datos al iniciar
+loadPOTData();
+
+// Mapeo de nodos expandibles: solo elementos FÍSICOS Y MEDURABLES del territorio
+// NO incluye conceptos legislativos como "Programas", "Actuaciones Estratégicas", "Proximidad"
+// Mapeado por nodeId para detección automática en las redes
+const EXPANDABLE_NODES = {
+  // Estructura Ecológica Principal - elementos naturales físicos
+  'rios': {
+    label: 'Sistema Hídrico',
+    dataPath: ['estructuras_territoriales', 'EEP', 'componentes', 'sistema_hídrico', 'elementos'],
+    icon: 'fa-water',
+    color: 'verde'
+  },
+  'humedales': {
+    label: 'Humedales',
+    dataPath: ['estructuras_territoriales', 'EEP', 'componentes', 'humedales', 'elementos'],
+    icon: 'fa-droplet',
+    color: 'verde'
+  },
+  'cerros': {
+    label: 'Cerros Orientales',
+    dataPath: ['estructuras_territoriales', 'EEP', 'componentes', 'cerros_orientales', 'elementos'],
+    icon: 'fa-mountain',
+    color: 'verde'
+  },
+  'paramos': {
+    label: 'Complejos de Páramo',
+    dataPath: ['estructuras_territoriales', 'EEP', 'componentes', 'cerros_orientales', 'elementos'],
+    icon: 'fa-mountain',
+    color: 'verde'
+  },
+
+  // Estructura Integradora de Patrimonios - patrimonio material medible
+  'material': {
+    label: 'Patrimonio Material',
+    dataPath: ['estructuras_territoriales', 'EIP', 'componentes', 'patrimonio_material'],
+    quantity: 50,
+    icon: 'fa-landmark',
+    color: 'purpura'
+  },
+
+  // Estructura Funcional y del Cuidado - infraestructura física
+  'redvial': {
+    label: 'Red Vial',
+    dataPath: ['estructuras_territoriales', 'EFC', 'componentes', 'sistema_viario'],
+    quantity: 500,
+    icon: 'fa-road',
+    color: 'azul'
+  },
+  'transporte': {
+    label: 'Transporte Público',
+    dataPath: ['estructuras_territoriales', 'EFC', 'componentes', 'transporte_publico'],
+    quantity: 30,
+    icon: 'fa-bus',
+    color: 'azul'
+  },
+  'parques': {
+    label: 'Espacio Público',
+    dataPath: ['estructuras_territoriales', 'EFC', 'componentes', 'espacio_publico'],
+    quantity: 150,
+    icon: 'fa-tree',
+    color: 'azul'
+  },
+  'equipamient': {
+    label: 'Equipamientos',
+    dataPath: ['estructuras_territoriales', 'EFC', 'componentes', 'equipamientos'],
+    quantity: 200,
+    icon: 'fa-building',
+    color: 'azul'
+  },
+  'vivienda': {
+    label: 'Vivienda',
+    dataPath: ['estructuras_territoriales', 'EFC', 'componentes', 'vivienda'],
+    quantity: 100,
+    icon: 'fa-house',
+    color: 'azul'
+  },
+
+  // Estructura Socioeconómica - zonas productivas física medibles
+  'industria': {
+    label: 'Zonas Industriales',
+    dataPath: ['estructuras_territoriales', 'ESECI', 'componentes', 'zonas_productivas'],
+    quantity: 80,
+    icon: 'fa-industry',
+    color: 'amarillo'
+  }
+};
+
+// Estado del coarse graining: track expandidos
+const coarseGrainingState = {};
+
+// Obtener elementos expandibles de los datos del POT
+function getExpandableElements(nodeKey) {
+  if (!potData || !EXPANDABLE_NODES[nodeKey]) return [];
+
+  const nodeDef = EXPANDABLE_NODES[nodeKey];
+  let data = potData;
+
+  // Navegar por dataPath
+  for (const key of nodeDef.dataPath) {
+    data = data?.[key];
+    if (!data) return [];
+  }
+
+  // Extraer elementos dependiendo de la estructura
+  if (Array.isArray(data)) {
+    return data.slice(0, 50); // Limitar a 50 para no saturar la visualización
+  } else if (data?.elementos && Array.isArray(data.elementos)) {
+    return data.elementos.slice(0, 50);
+  } else if (data?.categorias) {
+    // Para categorías, extraer ejemplos o cantidad
+    const items = [];
+    for (const [key, cat] of Object.entries(data.categorias)) {
+      if (cat.ejemplo && Array.isArray(cat.ejemplo)) {
+        items.push(...cat.ejemplo.slice(0, 10));
+      } else if (typeof cat === 'number' || cat.cantidad) {
+        items.push(`${key}: ${cat.cantidad || cat} items`);
+      }
+    }
+    return items.slice(0, 50);
+  }
+
+  return [];
+}
+
+// Toggle coarse graining: expand/collapse nodos para mostrar sub-elementos
+function toggleCoarseGraining(nodeId, nodeEl, currentNetwork) {
+  if (!EXPANDABLE_NODES[nodeId]) return;
+
+  const nodeDef = EXPANDABLE_NODES[nodeId];
+  const elements = getExpandableElements(nodeId);
+
+  if (!elements || elements.length === 0) {
+    console.warn('No elements found for node:', nodeId);
+    return;
+  }
+
+  // Toggle estado
+  const isExpanded = coarseGrainingState[nodeId];
+  coarseGrainingState[nodeId] = !isExpanded;
+
+  if (!isExpanded) {
+    // Expandir: mostrar badge con cantidad
+    nodeEl.classList.add('is-expanded');
+
+    // Crear badge que muestra cantidad de elementos
+    const badge = nodeEl.querySelector('.coarse-graining-badge') || document.createElement('span');
+    badge.className = 'coarse-graining-badge';
+    badge.textContent = `+${Math.min(elements.length, 50)}`;
+
+    if (!nodeEl.querySelector('.coarse-graining-badge')) {
+      nodeEl.appendChild(badge);
+    }
+
+    console.log(`Expanded ${nodeId}: ${elements.length} elements`);
+  } else {
+    // Contraer
+    nodeEl.classList.remove('is-expanded');
+    const badge = nodeEl.querySelector('.coarse-graining-badge');
+    if (badge) badge.remove();
+    console.log(`Collapsed ${nodeId}`);
+  }
+}
+
 // ===================== POPUP DE RELACIONES =====================
 (function initRelationPopups(){
   const links = document.querySelectorAll(".link[data-relation]");
@@ -609,12 +789,14 @@ const relations = {
     });
 
     net.nodes.forEach((n, i) => {
+      const isExpandable = EXPANDABLE_NODES[n.id];
       const g = el("g", {
-        class: `redes-node${n.primary ? " is-primary" : ""}`,
+        class: `redes-node${n.primary ? " is-primary" : ""}${isExpandable ? " is-expandable" : ""}`,
         "data-accent": net.accent,
+        "data-node-id": n.id,
         tabindex: "0",
         role: "button",
-        "aria-label": `${n.label.join(" ")} (click para atenuar)`,
+        "aria-label": `${n.label.join(" ")}${isExpandable ? " (click para expandir)" : " (click para atenuar)"}`,
         transform: `translate(${n.x},${n.y})`
       });
 
@@ -647,19 +829,23 @@ const relations = {
       });
       float.appendChild(text);
 
-      // click en el nodo -> se atenúa junto con las líneas que lo conectan (click de nuevo lo restaura)
-      function toggleDim(ev){
+      // click en el nodo -> si es expandable, toggle coarse graining; si no, atenuar
+      function handleNodeClick(ev){
         ev.stopPropagation();
-        const dimmed = g.classList.toggle("is-dimmed");
-        (edgesByNode[n.id] || []).forEach((edgeEl) => {
-          edgeEl.classList.toggle("is-dimmed", dimmed);
-        });
+        if (isExpandable) {
+          toggleCoarseGraining(n.id, g, net);
+        } else {
+          const dimmed = g.classList.toggle("is-dimmed");
+          (edgesByNode[n.id] || []).forEach((edgeEl) => {
+            edgeEl.classList.toggle("is-dimmed", dimmed);
+          });
+        }
       }
-      g.addEventListener("click", toggleDim);
+      g.addEventListener("click", handleNodeClick);
       g.addEventListener("keydown", (ev) => {
         if (ev.key === "Enter" || ev.key === " "){
           ev.preventDefault();
-          toggleDim(ev);
+          handleNodeClick(ev);
         }
       });
 

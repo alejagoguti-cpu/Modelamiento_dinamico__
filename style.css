@@ -669,6 +669,42 @@ body{
 .redes-node[data-accent="blue"].is-primary   circle{ filter: drop-shadow(0 0 18px rgba(239,139,60,0.6)) drop-shadow(0 10px 22px rgba(0,0,0,0.45)); }
 .redes-node[data-accent="yellow"].is-primary circle{ filter: drop-shadow(0 0 18px rgba(234,176,76,0.6)) drop-shadow(0 10px 22px rgba(0,0,0,0.45)); }
 
+/* ---- coarse graining: nodos expandibles ---- */
+.redes-node.is-expandable{
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.redes-node.is-expandable circle{
+  stroke-width: 4;
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
+}
+.redes-node.is-expandable:hover circle{
+  stroke-width: 5;
+  filter: drop-shadow(0 0 12px rgba(255,255,255,0.5)) drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+}
+.redes-node.is-expandable.is-expanded circle{
+  stroke-width: 5;
+  filter: drop-shadow(0 0 14px rgba(255,255,255,0.6)) drop-shadow(0 8px 16px rgba(0,0,0,0.45));
+}
+.coarse-graining-badge{
+  display: inline-block;
+  position: absolute;
+  right: -12px;
+  top: -12px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
 /* ---- conexiones ---- */
 .redes-edges{ transition: opacity .18s ease; }
 .redes-edges.is-hidden{ opacity: 0; pointer-events: none; }
