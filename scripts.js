@@ -189,12 +189,18 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
   const modalBody = document.querySelector('.redes-modal-body');
   const titleEl = document.getElementById('redes-modal-title');
   const subtitleEl = document.querySelector('.redes-modal-subtitle');
+  const sidePanel = modalBody.querySelector('.redes-side-panel');
 
   if (!overlay || !modalBody) return;
 
   // Actualizar título y subtítulo
   titleEl.textContent = nodeLabel;
   subtitleEl.textContent = `Elementos // Total = ${Math.min(elements.length, 50)}`;
+
+  // Ocultar side panel para que la lista tenga todo el espacio
+  if (sidePanel) {
+    sidePanel.style.display = 'none';
+  }
 
   // Limpiar SVG y crear lista en su lugar
   const svgContainer = modalBody.querySelector('.redes-network-svg');
@@ -917,6 +923,12 @@ function openCoarseGrainingModal(nodeId, nodeLabel) {
     const svgContainer = document.querySelector('.redes-modal-body .redes-network-svg');
     if (svgContainer) {
       svgContainer.style.display = '';
+    }
+
+    // Restaurar side panel si estaba oculto
+    const sidePanel = document.querySelector('.redes-modal-body .redes-side-panel');
+    if (sidePanel) {
+      sidePanel.style.display = '';
     }
 
     // Limpiar lista de coarse graining
