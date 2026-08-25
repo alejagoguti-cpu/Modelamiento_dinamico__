@@ -529,44 +529,62 @@ if (window.rapotData?.ready){
       .sort((a, b) => a.name.localeCompare(b.name, "es"));
     const groupIds = new Set(groups.map(group => group.id));
     const concepts = data.concepts.filter(concept => groupIds.has(concept.group_id));
-    if (!structure || !groups.length) return null;
+    const categoryNodes = (data.categoryNodes || [])
+      .filter(category => category.structure_id === structureId && category.active !== false)
+      .sort((a, b) => (a.sort_order - b.sort_order) || a.name.localeCompare(b.name, "es"));
+    if (!structure || (!groups.length && !categoryNodes.length)) return null;
 
-    // Un nodo representa una categoría completa. Los registros no se amontonan
-    // dentro del grafo: se consultan en el pop-up independiente al hacer clic.
-    const nodes = groups.map((group, index) => {
-      const angle = (index / groups.length) * Math.PI * 2 - Math.PI / 2;
-      const radius = groups.length <= 4 ? 190 : 215;
-      const groupConcepts = concepts.filter(concept => concept.group_id === group.id);
+    // Las categorías se separan en nodos de primer nivel. Los registros se consultan
+    // únicamente al hacer clic, evitando que cientos de elementos saturen el grafo.
+    const categories = categoryNodes.length ? categoryNodes : groups.map(group => ({
+      id: group.id,
+      parent_group_id: group.id,
+      name: group.name,
+      item_sheets: group.name === "Red Vial Completa" ? ["Vías Arteriales", "Ciclorutas"] : [],
+      icon: ICON_BY_GROUP[group.name] || "fa-circle-nodes",
+      color: null,
+      sort_order: 0,
+      item_count: null
+    }));
+    const center = { x: 400, y: 300 };
+    const radiusX = categories.length <= 4 ? 190 : 255;
+    const radiusY = categories.length <= 4 ? 180 : 205;
+    const nodes = categories.map((category, index) => {
+      const angle = (index / categories.length) * Math.PI * 2 - Math.PI / 2;
+      const itemSheets = Array.isArray(category.item_sheets) ? category.item_sheets : [];
+      const fallbackGroup = groups.find(group => group.id === category.parent_group_id || group.name === category.name);
+      const groupConcepts = fallbackGroup ? concepts.filter(concept => concept.group_id === fallbackGroup.id) : [];
+      const itemCount = Number.isFinite(Number(category.item_count)) && category.item_count !== null
+        ? Number(category.item_count)
+        : itemSheets.length
+          ? data.potItems.filter(item => itemSheets.includes(item.source_sheet)).length
+          : groupConcepts.length;
       return {
-        id: `db-group-${group.id}`,
-        label: labelLines(group.name, 21),
-        icon: ICON_BY_GROUP[group.name] || "fa-circle-nodes",
-        x: 400 + radius * Math.cos(angle),
-        y: 300 + radius * Math.sin(angle),
-        r: 42,
-        groupId: group.id,
-        groupName: group.name,
-        itemCount: group.name === "Red Vial Completa"
-          ? data.potItems.filter(item => ["Vías Arteriales", "Ciclorutas"].includes(item.source_sheet)).length
-          : groupConcepts.length,
+        id: `db-category-${category.id}`,
+        label: labelLines(category.name, categories.length > 6 ? 18 : 21),
+        icon: category.icon || ICON_BY_GROUP[category.name] || "fa-circle-nodes",
+        color: category.color || null,
+        x: center.x + radiusX * Math.cos(angle),
+        y: center.y + radiusY * Math.sin(angle),
+        r: itemCount > 100 ? 48 : itemCount > 70 ? 44 : 40,
+        groupId: category.parent_group_id || fallbackGroup?.id,
+        groupName: category.name,
+        itemSheets,
+        itemCount,
         source: "supabase"
       };
     });
 
-    // Humedales es un concepto propio del sistema hídrico y debe poder abrirse
-    // directamente, sin obligar al usuario a entrar primero a toda la categoría.
-    if (colorKey === "green"){
+    // Compatibilidad para instalaciones antiguas: Humedales se conserva como nodo directo
+    // solo si aún no existe el registro específico en rapot_category_nodes.
+    if (!categoryNodes.length && colorKey === "green"){
       const wetlandConcept = concepts.find(concept => concept.name.toLocaleLowerCase("es") === "humedales");
       if (wetlandConcept){
         nodes.push({
           id: `db-concept-${wetlandConcept.id}`,
-          label: ["Humedales"],
-          icon: "fa-droplet",
-          x: 400,
-          y: 500,
-          r: 48,
-          groupId: wetlandConcept.group_id,
-          groupName: "Humedales",
+          label: ["Humedales"], icon: "fa-droplet", color: "#3fd0bf",
+          x: 400, y: 500, r: 48, groupId: wetlandConcept.group_id,
+          groupName: "Humedales", itemSheets: ["Humedales"],
           itemCount: data.potItems.filter(item => item.source_sheet === "Humedales").length,
           source: "supabase"
         });
@@ -576,11 +594,7 @@ if (window.rapotData?.ready){
     const edges = [];
     for (let i = 1; i < nodes.length; i++){
       edges.push({
-        from: nodes[i - 1].id,
-        to: nodes[i].id,
-        kind: "soporte",
-        directed: false,
-        dashed: true,
+        from: nodes[i - 1].id, to: nodes[i].id, kind: "soporte", directed: false, dashed: true,
         sustento: {
           tipoLabel: "Relación de categorías",
           cita: `Categorías cargadas dinámicamente desde Supabase para ${structure.name}.`,
@@ -590,13 +604,8 @@ if (window.rapotData?.ready){
     }
 
     return {
-      title: structure.name,
-      count: nodes.length,
-      groupCount: groups.length,
-      accent: colorKey,
-      nodes,
-      edges,
-      source: "supabase"
+      title: structure.name, count: nodes.length,
+      groupCount: categories.length, accent: colorKey, nodes, edges, source: "supabase"
     };
   }
 
@@ -760,6 +769,7 @@ if (window.rapotData?.ready){
         class: `redes-node${n.primary ? " is-primary" : ""}`,
         "data-accent": net.accent,
         "data-node-id": n.id,
+        "data-category-color": n.color || "",
         tabindex: "0",
         role: "button",
         "aria-label": `${n.label.join(" ")} (click para atenuar)`,
@@ -773,6 +783,7 @@ if (window.rapotData?.ready){
       g.appendChild(float);
 
       const circle = el("circle", { r: n.r });
+      if (n.color) circle.style.stroke = n.color;
       float.appendChild(circle);
 
       const iconSize = Math.max(16, n.r * 0.5);
@@ -783,6 +794,7 @@ if (window.rapotData?.ready){
       const div = document.createElement("div");
       div.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
       div.className = "redes-node-icon";
+      if (n.color) div.style.color = n.color;
       div.innerHTML = `<i class="fa-solid ${n.icon}"></i>`;
       fo.appendChild(div);
       float.appendChild(fo);

@@ -46,7 +46,18 @@
 
   const SHEETS_BY_GROUP = {
     "Humedales": { title: "Humedales", sheets: ["Humedales"] },
-    "Sistema Hídrico": { title: "Sistema hídrico y humedales", sheets: ["Sistema Hídrico", "Humedales"] },
+    "Sistema Hídrico": { title: "Sistema hídrico", sheets: ["Sistema Hídrico"] },
+    "Parques": { title: "Parques", sheets: ["Parques"] },
+    "Educación": { title: "Educación", sheets: ["Educación"] },
+    "Salud": { title: "Salud", sheets: ["Salud"] },
+    "Cultura": { title: "Cultura", sheets: ["Cultura"] },
+    "Cultura Patrimonial": { title: "Cultura patrimonial", sheets: ["Cultura"] },
+    "Deporte": { title: "Deporte", sheets: ["Deporte"] },
+    "Cuidado": { title: "Cuidado", sheets: ["Cuidado"] },
+    "Vías Arteriales": { title: "Vías arteriales", sheets: ["Vías Arteriales"] },
+    "Ciclorutas": { title: "Ciclorutas", sheets: ["Ciclorutas"] },
+    "Comercio": { title: "Comercio", sheets: ["Comercio"] },
+    "Localidades": { title: "Localidades", sheets: ["Localidades"] },
     "Coberturas Vegetales": { title: "Coberturas vegetales y espacios naturales", sheets: ["Parques", "Humedales"] },
     "Áreas Protegidas": { title: "Áreas protegidas", sheets: ["Parques", "Humedales"] },
     "Conectividad Ecosistémica": { title: "Conectividad ecosistémica", sheets: ["Sistema Hídrico", "Humedales", "Parques", "Ciclorutas"] },
@@ -65,6 +76,9 @@
   };
 
   function resolveCategory(node, network){
+    if (Array.isArray(node?.itemSheets) && node.itemSheets.length){
+      return { title: node.groupName || "Elementos de la categoría", sheets: node.itemSheets };
+    }
     const explicit = SHEETS_BY_GROUP[node?.groupName];
     if (explicit) return explicit;
     const raw = [node?.groupName, ...(node?.label || []), node?.id, network?.title].filter(Boolean).join(" ");

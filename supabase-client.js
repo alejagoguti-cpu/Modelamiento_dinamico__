@@ -63,6 +63,13 @@
         limit: "1000"
       }));
     },
+    async getCategoryNodes(){
+      return cached("category-nodes", () => restFetch("rapot_category_nodes", {
+        select: "id,structure_id,parent_group_id,name,slug,item_sheets,icon,color,sort_order,item_count,description",
+        order: "structure_id.asc,sort_order.asc,name.asc",
+        limit: "100"
+      }));
+    },
     async getRelationships(){
       return cached("relationships", () => restFetch("rapot_relationships", {
         select: "id,source_structure_id,target_structure_id,relation_type,description",
@@ -113,11 +120,11 @@
       };
     },
     async getDashboard(){
-      const [structures, groups, concepts, relationships, references, potItems, potSummary] = await Promise.all([
-        api.getStructures(), api.getConceptGroups(), api.getConcepts(), api.getRelationships(),
+      const [structures, groups, concepts, categoryNodes, relationships, references, potItems, potSummary] = await Promise.all([
+        api.getStructures(), api.getConceptGroups(), api.getConcepts(), api.getCategoryNodes(), api.getRelationships(),
         api.getRelationshipReferences(), api.getPotItems(), api.getPotSummary()
       ]);
-      return { structures, groups, concepts, relationships, references, potItems, potSummary };
+      return { structures, groups, concepts, categoryNodes, relationships, references, potItems, potSummary };
     }
   };
 
