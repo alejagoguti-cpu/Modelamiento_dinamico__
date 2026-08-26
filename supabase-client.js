@@ -21,6 +21,7 @@
     const url = `${REST_URL}/${table}${queryString(params)}`;
     const response = await fetch(url, {
       method: "GET",
+      cache: "no-store",
       headers: {
         apikey: SUPABASE_PUBLISHABLE_KEY,
         Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
