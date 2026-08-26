@@ -487,6 +487,369 @@ if (window.rapotData?.ready){
     }
     };
 
+  // ===================== RED GLOBAL (39 CATEGORÍAS) =====================
+  // Se construye a partir de los mismos 39 nodos originales. Los identificadores
+  // se conservan para que el clic siga llegando al popup dinámico de Supabase.
+  const GLOBAL_STRUCTURE_META = {
+    green:  { title: "Ecológica Principal", color: "#3fd0bf", x: 500,  y: 470,  subtitle: "EEP" },
+    yellow: { title: "Socioeconómica, Creativa e Innovación", color: "#f5c26b", x: 1130, y: 330,  subtitle: "ESECI" },
+    blue:   { title: "Funcional y del Cuidado", color: "#f5a45f", x: 1640, y: 900,  subtitle: "EFC" },
+    purple: { title: "Integradora de Patrimonios", color: "#ef6f6f", x: 1130, y: 1160, subtitle: "EIP" }
+  };
+  const GLOBAL_NODE_TRANSFORMS = {
+    green:  { ox: 120,  oy: 135, sx: 1.22, sy: 1.13, minX: 96, minY: 37 },
+    yellow: { ox: 790,  oy: 90,  sx: 1.18, sy: 1.10, minX: 88, minY: 96 },
+    blue:   { ox: 1240, oy: 650, sx: 1.22, sy: 1.18, minX: 93, minY: 76 },
+    purple: { ox: 880,  oy: 880, sx: 1.10, sy: 1.55, minX: 159, minY: 161 }
+  };
+  const GLOBAL_CLUSTER_BOXES = {
+    green:  { x: 70,  y: 80,  width: 840, height: 720, rx: 190 },
+    yellow: { x: 720, y: 55,  width: 850, height: 640, rx: 190 },
+    blue:   { x: 1120, y: 590, width: 960, height: 720, rx: 210 },
+    purple: { x: 770, y: 820, width: 770, height: 570, rx: 190 }
+  };
+
+  function globalLabelLines(lines){
+    return Array.isArray(lines) ? lines : labelLines(lines, 18);
+  }
+
+  function buildGlobalNetwork(){
+    const nodes = [];
+    const nodeById = new Map();
+    Object.entries(NETWORKS).forEach(([colorKey, network]) => {
+      const transform = GLOBAL_NODE_TRANSFORMS[colorKey];
+      network.nodes.forEach((sourceNode) => {
+        const node = { ...sourceNode, label: globalLabelLines(sourceNode.label), accent: colorKey };
+        node.x = transform.ox + (sourceNode.x - transform.minX) * transform.sx;
+        node.y = transform.oy + (sourceNode.y - transform.minY) * transform.sy;
+        const longestLine = Math.max(...node.label.map(line => String(line).length), 1);
+        const lineBasedRadius = 25 + longestLine * 2.25 + node.label.length * 4;
+        node.r = Math.max(39, Math.min(70, lineBasedRadius, (sourceNode.r || 36) * 1.13));
+        node.primary = Boolean(sourceNode.primary);
+        nodes.push(node);
+        nodeById.set(node.id, node);
+      });
+    });
+
+    const edges = [];
+    const seenEdges = new Set();
+    Object.entries(NETWORKS).forEach(([colorKey, network]) => {
+      network.edges.forEach((edge, index) => {
+        const key = [edge.from, edge.to].sort().join("|");
+        if (!nodeById.has(edge.from) || !nodeById.has(edge.to) || seenEdges.has(`${colorKey}:${key}`)) return;
+        seenEdges.add(`${colorKey}:${key}`);
+        edges.push({
+          ...edge,
+          from: edge.from,
+          to: edge.to,
+          structure: colorKey,
+          routeIndex: index,
+          crossStructure: false
+        });
+      });
+    });
+
+    // Las seis relaciones entre estructuras se trazan entre nodos ancla ya existentes;
+    // no se agregan nodos artificiales y por eso el total sigue siendo exactamente 39.
+    const crossRelations = [
+      { from: "humedales", to: "educacion", kind: "soporte", structure: "green", relation: "EEP → ESECI", bow: -130 },
+      { from: "natural", to: "humedales", kind: "soporte", structure: "purple", relation: "EIP → EEP", bow: 95 },
+      { from: "vivienda", to: "humedales", kind: "soporte", structure: "blue", relation: "EFC → EEP", bow: -115 },
+      { from: "vivienda", to: "educacion", kind: "soporte", structure: "blue", relation: "EFC → ESECI", bow: 120 },
+      { from: "natural", to: "vivienda", kind: "directa", structure: "purple", relation: "EIP → EFC", bow: -145 },
+      { from: "natural", to: "educacion", kind: "soporte", structure: "purple", relation: "EIP → ESECI", bow: 135 }
+    ];
+    crossRelations.forEach((edge, index) => {
+      const sourceRelation = Object.values(relations).find(item => item.label === edge.relation);
+      edges.push({
+        ...edge,
+        routeIndex: index,
+        crossStructure: true,
+        directed: true,
+        sustento: sourceRelation
+          ? { pagina: sourceRelation.page, tipoLabel: edge.kind === "directa" ? "Directa" : "Soporte", cita: sourceRelation.quote }
+          : { pagina: null, tipoLabel: "Relación estructural", cita: "Relación entre estructuras del modelo POT." }
+      });
+    });
+
+    return {
+      title: "Red completa del POT",
+      count: nodes.length,
+      groupCount: 4,
+      nodes,
+      edges,
+      nodeById,
+      source: "global"
+    };
+  }
+
+  function initGlobalNetwork(){
+    const overlay = document.getElementById("global-network-modal-overlay");
+    const openButton = document.getElementById("open-global-network");
+    const closeButton = document.getElementById("global-network-close");
+    const canvas = document.getElementById("global-network-canvas");
+    const svg = document.getElementById("global-network-svg");
+    const linksG = document.getElementById("global-network-links");
+    const nodesG = document.getElementById("global-network-nodes");
+    const labelsG = document.getElementById("global-network-cluster-labels");
+    const zoomOutput = document.getElementById("global-network-zoom-level");
+    if (!overlay || !openButton || !closeButton || !canvas || !svg || !linksG || !nodesG || !labelsG) return;
+
+    const SVG_NS_GLOBAL = "http://www.w3.org/2000/svg";
+    const BASE_WIDTH = 2200;
+    const BASE_HEIGHT = 1500;
+    const DEFAULT_ZOOM = 1.2;
+    const MIN_ZOOM = 0.78;
+    const MAX_ZOOM = 1.7;
+    let zoom = DEFAULT_ZOOM;
+    let panState = null;
+
+    function svgEl(tag, attrs = {}){
+      const node = document.createElementNS(SVG_NS_GLOBAL, tag);
+      Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+      return node;
+    }
+
+    function pointOnGlobalCircle(node, target){
+      const dx = target.x - node.x;
+      const dy = target.y - node.y;
+      const distance = Math.hypot(dx, dy) || 1;
+      return { x: node.x + dx / distance * node.r, y: node.y + dy / distance * node.r };
+    }
+
+    function routedPath(a, b, bow = 0){
+      const start = pointOnGlobalCircle(a, b);
+      const end = pointOnGlobalCircle(b, a);
+      const dx = end.x - start.x;
+      const dy = end.y - start.y;
+      const distance = Math.hypot(dx, dy) || 1;
+      const normal = { x: -dy / distance, y: dx / distance };
+      const midpoint = { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 };
+      const control = { x: midpoint.x + normal.x * bow, y: midpoint.y + normal.y * bow };
+      return {
+        d: `M${start.x.toFixed(1)},${start.y.toFixed(1)} Q${control.x.toFixed(1)},${control.y.toFixed(1)} ${end.x.toFixed(1)},${end.y.toFixed(1)}`,
+        start,
+        end,
+        control
+      };
+    }
+
+    function updateZoom(){
+      const percent = Math.round(zoom * 100);
+      zoomOutput.textContent = `${percent}%`;
+      svg.style.width = `${Math.round(BASE_WIDTH * zoom)}px`;
+      svg.style.height = `${Math.round(BASE_HEIGHT * zoom)}px`;
+    }
+
+    function centerGlobalNetwork(){
+      requestAnimationFrame(() => {
+        canvas.scrollLeft = Math.max(0, (canvas.scrollWidth - canvas.clientWidth) / 2);
+        canvas.scrollTop = Math.max(0, (canvas.scrollHeight - canvas.clientHeight) / 2);
+      });
+    }
+
+    function setZoom(nextZoom, preserveCenter = true){
+      const oldZoom = zoom;
+      const centerX = canvas.scrollLeft + canvas.clientWidth / 2;
+      const centerY = canvas.scrollTop + canvas.clientHeight / 2;
+      zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, nextZoom));
+      updateZoom();
+      if (preserveCenter && oldZoom){
+        requestAnimationFrame(() => {
+          canvas.scrollLeft = Math.max(0, centerX * (zoom / oldZoom) - canvas.clientWidth / 2);
+          canvas.scrollTop = Math.max(0, centerY * (zoom / oldZoom) - canvas.clientHeight / 2);
+        });
+      }
+    }
+
+    function renderGlobalNetwork(){
+      const net = buildGlobalNetwork();
+      const byId = net.nodeById;
+      linksG.innerHTML = "";
+      nodesG.innerHTML = "";
+      labelsG.innerHTML = "";
+
+      Object.entries(GLOBAL_CLUSTER_BOXES).forEach(([colorKey, box]) => {
+        const meta = GLOBAL_STRUCTURE_META[colorKey];
+        const rect = svgEl("rect", {
+          class: "global-network-cluster-box",
+          x: box.x, y: box.y, width: box.width, height: box.height, rx: box.rx,
+          fill: meta.color, "fill-opacity": "0.025", stroke: meta.color, "stroke-opacity": "0.17", "stroke-width": "2", "stroke-dasharray": "5 12"
+        });
+        labelsG.appendChild(rect);
+        const clusterCenterX = box.x + box.width / 2;
+        const title = svgEl("text", { x: clusterCenterX, y: box.y + 38, fill: meta.color });
+        title.textContent = meta.title;
+        labelsG.appendChild(title);
+        const subtitle = svgEl("text", { class: "cluster-subtitle", x: clusterCenterX, y: box.y + 62, fill: meta.color });
+        subtitle.textContent = `${meta.subtitle} · ${NETWORKS[colorKey].nodes.length} categorías`;
+        labelsG.appendChild(subtitle);
+      });
+
+      net.edges.forEach((edge, index) => {
+        const a = byId.get(edge.from);
+        const b = byId.get(edge.to);
+        if (!a || !b) return;
+        const bow = edge.crossStructure ? edge.bow : ((index % 3) - 1) * 30;
+        const route = routedPath(a, b, bow);
+        const group = svgEl("g", {
+          class: `global-network-edge${edge.crossStructure ? " cross-structure" : ""}`,
+          tabindex: "0",
+          role: "button",
+          "aria-label": `Relación ${a.label.join(" ")} - ${b.label.join(" ")}`
+        });
+        const hit = svgEl("path", { class: "global-network-edge-hit", d: route.d });
+        const line = svgEl("path", { class: "global-network-edge-line", d: route.d });
+        group.appendChild(hit);
+        group.appendChild(line);
+        if (edge.directed !== false){
+          const angle = Math.atan2(route.end.y - route.control.y, route.end.x - route.control.x) * 180 / Math.PI;
+          const arrow = svgEl("path", {
+            class: "global-network-edge-arrow",
+            d: "M-12,-5 L0,0 L-12,5 Z",
+            transform: `translate(${route.end.x.toFixed(1)},${route.end.y.toFixed(1)}) rotate(${angle.toFixed(1)})`,
+            "marker-end": "url(#global-network-arrow)"
+          });
+          group.appendChild(arrow);
+        }
+        const relationLabel = edge.relation || `${a.label.join(" ")} → ${b.label.join(" ")}`;
+        group.addEventListener("click", (event) => {
+          event.stopPropagation();
+          openSustentoPopup(relationLabel, edge.sustento, event.clientX, event.clientY);
+        });
+        group.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          const rect = group.getBoundingClientRect();
+          openSustentoPopup(relationLabel, edge.sustento, rect.left + rect.width / 2, rect.top + rect.height / 2);
+        });
+        linksG.appendChild(group);
+      });
+
+      net.nodes.forEach((node, index) => {
+        const group = svgEl("g", {
+          class: "global-network-node",
+          "data-node-id": node.id,
+          "data-accent": node.accent,
+          tabindex: "0",
+          role: "button",
+          "aria-label": `${node.label.join(" ")} (abrir datos)` ,
+          transform: `translate(${node.x.toFixed(1)},${node.y.toFixed(1)})`
+        });
+        const radius = node.r;
+        const circle = svgEl("circle", { r: radius });
+        group.appendChild(circle);
+        const iconSize = Math.max(21, Math.min(31, radius * .48));
+        const iconFo = svgEl("foreignObject", {
+          class: "global-network-node-icon-fo",
+          x: -iconSize / 2,
+          y: -radius * .59,
+          width: iconSize,
+          height: iconSize
+        });
+        const icon = document.createElement("div");
+        icon.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+        icon.className = "global-network-node-icon";
+        icon.innerHTML = `<i class="fa-solid ${node.icon || "fa-circle-nodes"}"></i>`;
+        iconFo.appendChild(icon);
+        group.appendChild(iconFo);
+        const textStart = node.label.length >= 3 ? 1 : node.label.length === 2 ? 5 : 11;
+        const text = svgEl("text", { y: textStart });
+        node.label.forEach((line, lineIndex) => {
+          const tspan = svgEl("tspan", { x: 0, dy: lineIndex === 0 ? 0 : 14 });
+          tspan.textContent = line;
+          text.appendChild(tspan);
+        });
+        group.appendChild(text);
+        const openCategory = (event) => {
+          event.stopPropagation();
+          if (window.rapotItems){
+            if (node.categoryChildren?.length) window.rapotItems.openCategoryMenu(node, net);
+            else window.rapotItems.open(node, net);
+          }
+        };
+        group.addEventListener("click", openCategory);
+        group.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          openCategory(event);
+        });
+        nodesG.appendChild(group);
+      });
+
+      const subtitle = document.getElementById("global-network-subtitle");
+      if (subtitle) subtitle.textContent = `39 categorías · ${net.edges.length} conexiones · datos POT dinámicos desde Supabase`;
+      zoom = DEFAULT_ZOOM;
+      updateZoom();
+    }
+
+    function openGlobalNetwork(){
+      overlay.hidden = false;
+      document.body.style.overflow = "hidden";
+      renderGlobalNetwork();
+      centerGlobalNetwork();
+      // Si el usuario abre la red antes de que termine Supabase, se vuelve a pintar
+      // al finalizar la carga para que cada nodo conserve su hoja/filtro correcto.
+      if (window.rapotData?.ready?.then){
+        window.rapotData.ready.then(() => {
+          if (!overlay.hidden){
+            renderGlobalNetwork();
+            centerGlobalNetwork();
+          }
+        }).catch(() => { /* el respaldo local ya quedó pintado */ });
+      }
+    }
+
+    function closeGlobalNetwork(){
+      overlay.hidden = true;
+      document.body.style.overflow = "";
+      panState = null;
+      canvas.classList.remove("is-panning");
+    }
+
+    openButton.addEventListener("click", openGlobalNetwork);
+    closeButton.addEventListener("click", closeGlobalNetwork);
+    document.getElementById("global-network-zoom-in")?.addEventListener("click", () => setZoom(zoom + .1));
+    document.getElementById("global-network-zoom-out")?.addEventListener("click", () => setZoom(zoom - .1));
+    document.getElementById("global-network-zoom-reset")?.addEventListener("click", () => {
+      zoom = DEFAULT_ZOOM;
+      updateZoom();
+      centerGlobalNetwork();
+    });
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) closeGlobalNetwork();
+    });
+    canvas.addEventListener("wheel", (event) => {
+      if (!event.ctrlKey && Math.abs(event.deltaY) < 2) return;
+      event.preventDefault();
+      setZoom(zoom + (event.deltaY < 0 ? .06 : -.06));
+    }, { passive: false });
+    canvas.addEventListener("pointerdown", (event) => {
+      if (event.target.closest(".global-network-node, .global-network-edge")) return;
+      panState = { x: event.clientX, y: event.clientY, scrollLeft: canvas.scrollLeft, scrollTop: canvas.scrollTop };
+      canvas.setPointerCapture(event.pointerId);
+      canvas.classList.add("is-panning");
+    });
+    canvas.addEventListener("pointermove", (event) => {
+      if (!panState) return;
+      canvas.scrollLeft = panState.scrollLeft - (event.clientX - panState.x);
+      canvas.scrollTop = panState.scrollTop - (event.clientY - panState.y);
+    });
+    const stopPan = (event) => {
+      if (!panState) return;
+      panState = null;
+      canvas.classList.remove("is-panning");
+      try { canvas.releasePointerCapture(event.pointerId); } catch (error) { /* noop */ }
+    };
+    canvas.addEventListener("pointerup", stopPan);
+    canvas.addEventListener("pointercancel", stopPan);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !overlay.hidden) closeGlobalNetwork();
+    });
+  }
+
+  initGlobalNetwork();
+
   // ===================== DATOS DINÁMICOS DESDE SUPABASE =====================
   const STRUCTURE_BY_COLOR = { green: "EEP", blue: "EFC", purple: "EIP", yellow: "ESECI" };
   const ICON_BY_GROUP = {

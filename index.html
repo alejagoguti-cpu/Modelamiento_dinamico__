@@ -107,6 +107,7 @@
       </div>
 
       <div class="cta-row">
+        <button id="open-global-network" class="btn-global-network" type="button"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> VER RED COMPLETA <span>39 nodos</span> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
         <a class="btn-primary" href="./modulo-05.html">EXPLORAR NAVEGADOR MULTIESCALAR <i class="fa-solid fa-arrow-right"></i></a>
         <button class="btn-secondary" onclick="document.querySelector('.features')?.scrollIntoView({behavior:'smooth'})">CONOCE LOS 9 MÓDULOS <i class="fa-solid fa-chevron-down"></i></button>
       </div>
@@ -222,6 +223,54 @@
 
   </div>
 </section>
+
+<!-- ============ RED GLOBAL: todas las categorías y conexiones ============ -->
+<div id="global-network-modal-overlay" class="redes-modal-overlay global-network-overlay" hidden>
+  <section class="redes-modal global-network-modal" role="dialog" aria-modal="true" aria-labelledby="global-network-title">
+    <button id="global-network-close" class="redes-modal-close" type="button" aria-label="Cerrar red completa">✕</button>
+    <div class="redes-modal-header">
+      <p class="global-network-kicker">RAPOT // Vista general</p>
+      <h2 id="global-network-title">Red completa del POT</h2>
+      <p id="global-network-subtitle" class="redes-modal-subtitle">39 categorías · todas las estructuras y conexiones</p>
+    </div>
+    <div class="global-network-toolbar" role="toolbar" aria-label="Controles de la red completa">
+      <span><i class="fa-solid fa-arrows-up-down-left-right" aria-hidden="true"></i> Arrastra el lienzo para explorar toda la red</span>
+      <div class="global-network-zoom-controls" role="group" aria-label="Zoom de la red completa">
+        <button id="global-network-zoom-out" type="button" aria-label="Alejar red completa">−</button>
+        <output id="global-network-zoom-level" aria-live="polite">120%</output>
+        <button id="global-network-zoom-in" type="button" aria-label="Acercar red completa">+</button>
+        <button id="global-network-zoom-reset" type="button" aria-label="Restablecer zoom de red completa">↺</button>
+      </div>
+    </div>
+    <div class="global-network-body">
+      <div id="global-network-canvas" class="global-network-canvas">
+        <svg id="global-network-svg" class="global-network-svg" viewBox="0 0 2200 1500" role="img" aria-label="Red completa con las 39 categorías del POT">
+          <defs>
+            <marker id="global-network-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker>
+          </defs>
+          <g id="global-network-links"></g>
+          <g id="global-network-nodes"></g>
+          <g id="global-network-cluster-labels"></g>
+        </svg>
+      </div>
+      <aside class="global-network-side-panel">
+        <div class="redes-legend-card">
+          <span class="redes-legend-card-title">Red global</span>
+          <p class="global-network-description">Las cuatro estructuras se muestran juntas. Haz clic en cualquier categoría para abrir sus datos detallados.</p>
+          <div class="global-network-stat"><strong>39</strong><span>categorías</span></div>
+          <div class="global-network-stat"><strong>45</strong><span>conexiones</span></div>
+        </div>
+        <div class="redes-conventions-card">
+          <span class="redes-legend-card-title">Estructuras</span>
+          <div class="global-structure-key"><span class="global-key-dot global-key-green"></span> Ecológica Principal</div>
+          <div class="global-structure-key"><span class="global-key-dot global-key-blue"></span> Funcional y del Cuidado</div>
+          <div class="global-structure-key"><span class="global-key-dot global-key-yellow"></span> Socioeconómica, Creativa e Innovación</div>
+          <div class="global-structure-key"><span class="global-key-dot global-key-purple"></span> Integradora de Patrimonios</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</div>
 
 <!-- ============ POPUP: redes por estructura ============ -->
 <div id="redes-modal-overlay" class="redes-modal-overlay" hidden>
