@@ -1199,7 +1199,7 @@ body{
 .category-network-node:hover circle,
 .category-network-node:focus circle{ fill:#263c38; stroke-width:3.8; }
 .category-network-icon{ fill:#f0b25a; font-family:'Font Awesome 6 Free'; font-size:14px; font-weight:900; text-anchor:middle; pointer-events:none; paint-order:stroke fill; stroke:#171a1a; stroke-width:2.8px; stroke-linejoin:round; }
-.category-network-label{ fill:#f3efe9; font-family:Inter,sans-serif; font-size:7.4px; font-weight:800; letter-spacing:-.1px; text-anchor:middle; pointer-events:none; paint-order:stroke fill; stroke:#171a1a; stroke-width:2.4px; stroke-linejoin:round; }
+.category-network-label{ fill:#f3efe9; font-family:Inter,sans-serif; font-size:9.2px; font-weight:800; letter-spacing:-.08px; text-anchor:middle; pointer-events:none; paint-order:stroke fill; stroke:#171a1a; stroke-width:2.4px; stroke-linejoin:round; }
 .category-network-node > text{ overflow:visible; }
 .category-network-node circle{ overflow:visible; }
 .category-network-empty{ fill:#b9b2aa; font:600 14px Inter,sans-serif; text-anchor:middle; }

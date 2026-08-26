@@ -437,13 +437,20 @@
   }
 
   function itemNodeSpec(item, total){
-    const fontSize = total <= 24 ? 10 : total <= 72 ? 9.2 : total <= 180 ? 8.4 : total <= 400 ? 7.8 : 7.2;
-    const maxChars = total <= 24 ? 15 : total <= 72 ? 14 : total <= 180 ? 13 : total <= 400 ? 12 : 11;
+    // La densidad nunca reduce el texto por debajo de un tamaño legible.
+    const fontSize = total <= 24 ? 11.2 : total <= 72 ? 10.6 : total <= 180 ? 9.6 : total <= 400 ? 9.2 : 8.8;
+    const maxChars = total <= 24 ? 18 : total <= 72 ? 17 : total <= 180 ? 16 : total <= 400 ? 15 : 14;
     const lines = wrapFullNodeLabel(item.name, maxChars);
-    const lineHeight = fontSize + 2.4;
-    const textHeight = lines.length * lineHeight;
-    const radius = Math.max(total <= 24 ? 31 : total <= 72 ? 25 : total <= 180 ? 23 : 21, Math.ceil((textHeight + fontSize + 18) / 2));
-    return { lines, radius, fontSize, iconSize: fontSize + 5 };
+    const lineHeight = fontSize + 2.6;
+    const iconSize = fontSize + 5.5;
+    const iconGap = 5;
+    const verticalRadius = (iconSize + iconGap + (lines.length * lineHeight)) / 2 + 9;
+    const longestLine = Math.max(...lines.map(line => Array.from(line).length), 1);
+    // Aproximación conservadora del ancho de Inter para que la etiqueta no toque el borde.
+    const horizontalRadius = longestLine * fontSize * 0.32 + 12;
+    const densityRadius = total <= 24 ? 36 : total <= 72 ? 38 : total <= 180 ? 42 : 44;
+    const radius = Math.ceil(Math.max(densityRadius, verticalRadius, horizontalRadius));
+    return { lines, radius, fontSize, iconSize, lineHeight };
   }
 
   function networkEdges(items, positions = []){
@@ -571,12 +578,13 @@
 
       // Cada elemento mantiene su identidad aun en redes de 1.000 nodos.
       // El zoom físico del SVG permite leer estas etiquetas sin descartarlas.
-      const icon = svgElement("text", { class: "category-network-icon", x: "0", y: `${-(spec.lines.length * (spec.fontSize + 2.4)) / 2 - 2}`, style: `font-size:${spec.iconSize}px` });
+      const contentHeight = spec.iconSize + 5 + (spec.lines.length * spec.lineHeight);
+      const icon = svgElement("text", { class: "category-network-icon", x: "0", y: `${-contentHeight / 2 + spec.iconSize / 2}`, style: `font-size:${spec.iconSize}px` });
       icon.textContent = iconForItem(item);
       node.appendChild(icon);
-      const label = svgElement("text", { class: "category-network-label", x: "0", y: `${-(spec.lines.length * (spec.fontSize + 2.4)) / 2 + spec.fontSize + 4}`, style: `font-size:${spec.fontSize}px` });
+      const label = svgElement("text", { class: "category-network-label", x: "0", y: `${-contentHeight / 2 + spec.iconSize + 5}`, style: `font-size:${spec.fontSize}px` });
       spec.lines.forEach((line, lineIndex) => {
-        const tspan = svgElement("tspan", { x: "0", dy: lineIndex === 0 ? "0" : `${spec.fontSize + 2.4}` });
+        const tspan = svgElement("tspan", { x: "0", dy: lineIndex === 0 ? "0" : `${spec.lineHeight}` });
         tspan.textContent = line;
         label.appendChild(tspan);
       });
