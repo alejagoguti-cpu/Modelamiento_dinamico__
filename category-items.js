@@ -125,19 +125,22 @@
   }
 
   function resolveCategory(node, network){
+    const nodeTitle = node?.groupName || node?.name || node?.label?.join(" ") || "Elementos de la categoría";
+    const nodeSheets = Array.isArray(node?.itemSheets) ? node.itemSheets : node?.item_sheets;
+    const nodeFilterKey = node?.itemFilterKey || node?.item_filter_key || null;
     if (node?.noData || isSuppressedCategoryNode(node)){
-      return { title: node.groupName || node.label?.join(" ") || "Elementos de la categoría", sheets: [], filterKey: node.itemFilterKey || null, noData: true };
+      return { title: nodeTitle, sheets: [], filterKey: nodeFilterKey, noData: true };
     }
-    if (Array.isArray(node?.itemSheets) && node.itemSheets.length){
-      return { title: node.groupName || "Elementos de la categoría", sheets: node.itemSheets, filterKey: node.itemFilterKey || null };
+    if (Array.isArray(nodeSheets) && nodeSheets.length){
+      return { title: nodeTitle, sheets: nodeSheets, filterKey: nodeFilterKey };
     }
-    const explicit = SHEETS_BY_GROUP[node?.groupName];
-    if (explicit) return { ...explicit, filterKey: node.itemFilterKey || null };
-    const raw = [node?.groupName, ...(node?.label || []), node?.id, network?.title].filter(Boolean).join(" ");
+    const explicit = SHEETS_BY_GROUP[node?.groupName] || SHEETS_BY_GROUP[node?.name];
+    if (explicit) return { ...explicit, filterKey: nodeFilterKey };
+    const raw = [node?.groupName, node?.name, ...(node?.label || []), node?.id, network?.title].filter(Boolean).join(" ");
     const normalized = raw.toLocaleLowerCase("es");
     const resolved = SHEETS_BY_CATEGORY.find(category => category.match.some(token => normalized.includes(token)));
-    if (resolved) return { ...resolved, filterKey: node.itemFilterKey || null };
-    return { title: node?.groupName || node?.label?.join(" ") || network?.title || "Elementos POT", sheets: [], filterKey: node.itemFilterKey || null };
+    if (resolved) return { ...resolved, filterKey: nodeFilterKey };
+    return { title: nodeTitle || network?.title || "Elementos POT", sheets: [], filterKey: nodeFilterKey };
 
   }
 
