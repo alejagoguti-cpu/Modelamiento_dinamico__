@@ -25,8 +25,10 @@
   const backButton = document.getElementById("items-modal-back");
 
   let activeItems = [];
-  let activeTitle = "Elementos de la categoría";
+    let activeTitle = "Elementos de la categoría";
   let activeSheets = [];
+  let activeFilterKey = null;
+  let activeNoData = false;
   let currentView = "network";
   let zoom = 1;
   let panX = 0;
@@ -87,17 +89,56 @@
     }).join("").toLocaleLowerCase("es");
   }
 
+  const ITEM_FILTERS = {
+    river: item => /^río\b/i.test(String(item.name || "").trim()),
+    stream: item => /^quebrada\b/i.test(String(item.name || "").trim()),
+    border_parks: item => String(item.subcategory || "").trim().toLocaleLowerCase("es") === "parques borde"
+  };
+
+  function normalizeName(value){
+    return Array.from(String(value || "").trim().normalize("NFD")).filter(char => {
+      const code = char.charCodeAt(0);
+      return code < 768 || code > 879;
+    }).join("").toLocaleLowerCase("es").replace(/[^a-z0-9]+/g, " ").trim();
+  }
+
+  function dedupeItems(items){
+    const grouped = new Map();
+    items.forEach(item => {
+      const key = `${normalizeSheet(item.source_sheet)}::${normalizeName(item.name)}`;
+      const previous = grouped.get(key);
+      if (!previous){
+        grouped.set(key, { ...item });
+        return;
+      }
+      const subcategories = [...new Set([previous.subcategory, item.subcategory].filter(Boolean))];
+      previous.subcategory = subcategories.join(" / ") || null;
+      previous.source_row = Math.min(Number(previous.source_row) || Infinity, Number(item.source_row) || Infinity);
+    });
+    return [...grouped.values()];
+  }
+
+  function isSuppressedCategoryNode(node){
+    const structure = String(node?.structure_id || node?.structureId || "");
+    const name = normalizeName(node?.name || node?.groupName || "");
+    return (structure === "EEP" && name === "parques") || (structure === "EIP" && name === "cultura patrimonial");
+  }
+
   function resolveCategory(node, network){
+    if (node?.noData || isSuppressedCategoryNode(node)){
+      return { title: node.groupName || node.label?.join(" ") || "Elementos de la categoría", sheets: [], filterKey: node.itemFilterKey || null, noData: true };
+    }
     if (Array.isArray(node?.itemSheets) && node.itemSheets.length){
-      return { title: node.groupName || "Elementos de la categoría", sheets: node.itemSheets };
+      return { title: node.groupName || "Elementos de la categoría", sheets: node.itemSheets, filterKey: node.itemFilterKey || null };
     }
     const explicit = SHEETS_BY_GROUP[node?.groupName];
-    if (explicit) return explicit;
+    if (explicit) return { ...explicit, filterKey: node.itemFilterKey || null };
     const raw = [node?.groupName, ...(node?.label || []), node?.id, network?.title].filter(Boolean).join(" ");
     const normalized = raw.toLocaleLowerCase("es");
     const resolved = SHEETS_BY_CATEGORY.find(category => category.match.some(token => normalized.includes(token)));
-    if (resolved) return resolved;
-    return { title: node?.groupName || node?.label?.join(" ") || network?.title || "Elementos POT", sheets: [] };
+    if (resolved) return { ...resolved, filterKey: node.itemFilterKey || null };
+    return { title: node?.groupName || node?.label?.join(" ") || network?.title || "Elementos POT", sheets: [], filterKey: node.itemFilterKey || null };
+
   }
 
   function escapeHtml(value){
@@ -571,6 +612,8 @@
     activeChildCategories = Array.isArray(node.categoryChildren) ? node.categoryChildren : [];
     activeItems = [];
     activeSheets = [];
+    activeFilterKey = null;
+    activeNoData = false;
     activeTitle = node.groupName || node.label?.join(" ") || "Categorías";
     title.textContent = activeTitle;
     subtitle.textContent = "Selecciona una subcategoría para explorar sus datos exclusivos de Supabase.";
@@ -589,6 +632,8 @@
     const category = resolveCategory(node, network);
     activeTitle = category.title;
     activeSheets = category.sheets;
+    activeFilterKey = category.filterKey || null;
+    activeNoData = Boolean(category.noData);
     title.textContent = activeTitle;
     subtitle.textContent = "Cargando registros desde Supabase…";
     activeChildCategories = [];
@@ -607,14 +652,24 @@
     try {
       const items = await window.rapotData.getPotItems();
       const allowedSheets = new Set(activeSheets.map(normalizeSheet));
-      activeItems = activeSheets.length
-        ? items.filter(item => allowedSheets.has(normalizeSheet(item.source_sheet)))
-        : items.filter(item => {
-            const haystack = [item.source_sheet, item.source_header, item.subcategory, item.name].filter(Boolean).join(" ").toLocaleLowerCase("es");
-            return activeTitle.toLocaleLowerCase("es").split(/\s+/).some(token => token.length > 4 && haystack.includes(token));
-          });
-      const sheetLabel = activeSheets.length ? activeSheets.join(" + ") : "hojas POT";
-      subtitle.textContent = `${sheetLabel} · red y tabla sincronizadas con Supabase`;
+      const sourceItems = activeNoData
+        ? []
+        : activeSheets.length
+          ? items.filter(item => allowedSheets.has(normalizeSheet(item.source_sheet)))
+          : items.filter(item => {
+              const haystack = [item.source_sheet, item.source_header, item.subcategory, item.name].filter(Boolean).join(" ").toLocaleLowerCase("es");
+              return activeTitle.toLocaleLowerCase("es").split(/\s+/).some(token => token.length > 4 && haystack.includes(token));
+            });
+      const filteredItems = activeFilterKey && ITEM_FILTERS[activeFilterKey]
+        ? sourceItems.filter(ITEM_FILTERS[activeFilterKey])
+        : sourceItems;
+      activeItems = dedupeItems(filteredItems);
+      if (activeNoData){
+        subtitle.textContent = "No hay una fuente POT específica asignada a esta categoría; no se muestran datos de otra categoría.";
+      } else {
+        const sheetLabel = activeSheets.length ? activeSheets.join(" + ") : "hojas POT";
+        subtitle.textContent = `${sheetLabel} · red y tabla sincronizadas con Supabase`;
+      }
       renderDataViews();
     } catch (error){
       console.error("RAPOT: error cargando elementos de categoría", error);

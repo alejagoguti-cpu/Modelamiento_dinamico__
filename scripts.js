@@ -610,45 +610,45 @@ if (window.rapotData?.ready){
   }
 
   const CHILDREN_PARENT_NODES = {
-    green: {
-      "Sistema Hídrico": ["rios"]
-    },
     blue: {
       "Equipamientos y Servicios": ["equipamient"],
       "Red Vial Completa": ["redvial"]
-    },
-    purple: {
-      "Patrimonio Cultural Material": ["material"]
-    },
-    yellow: {
-      "Comercio y Servicios": ["empresa"]
     }
   };
 
   const DIRECT_CATEGORY_SHEETS = {
     green: {
-      "corredores": ["Sistema Hídrico"], "cerros": ["Sistema Hídrico"], "protegidas": ["Parques"],
+      "corredores": [], "cerros": [], "protegidas": [],
       "rios": ["Sistema Hídrico"], "quebradas": ["Sistema Hídrico"], "humedales": ["Humedales"],
-      "parquesmnt": ["Parques"], "paramos": ["Parques"], "coberturas": ["Parques", "Humedales"],
-      "bosques": ["Parques"], "resiliencia": ["Humedales", "Parques"], "parquesborde": ["Parques"],
-      "reservas": ["Parques"], "paisajes": ["Parques", "Humedales"]
+      "parquesmnt": [], "paramos": [], "coberturas": [], "bosques": [], "resiliencia": [],
+      "parquesborde": ["Parques"], "reservas": [], "paisajes": []
     },
     blue: {
       "cuidado": ["Cuidado"], "equipamient": ["Educación", "Salud", "Cultura", "Deporte", "Cuidado"],
-      "servpub": ["Sistema Hídrico"], "ciclorrutas": ["Ciclorutas"], "servsoc": ["Cuidado"],
-      "vivienda": ["Localidades"], "transporte": ["Vías Arteriales", "Ciclorutas"],
-      "parques": ["Parques"], "redvial": ["Vías Arteriales", "Ciclorutas"], "manzanas": ["Localidades"],
-      "corredoresv": ["Ciclorutas"]
+      "servpub": [], "ciclorrutas": ["Ciclorutas"], "servsoc": [], "vivienda": [],
+      "transporte": ["Vías Arteriales", "Ciclorutas"], "parques": ["Parques"],
+      "redvial": ["Vías Arteriales", "Ciclorutas"], "manzanas": [], "corredoresv": []
     },
     purple: {
-      "sagrados": ["Cultura"], "arqueologico": ["Cultura"], "inmaterial": ["Cultura"],
-      "material": ["Cultura"], "natural": ["Parques", "Humedales", "Sistema Hídrico"]
+      "sagrados": [], "arqueologico": [], "inmaterial": [], "material": [], "natural": []
     },
     yellow: {
-      "distrito": ["Educación"], "abastec": ["Comercio"], "empresa": ["Comercio"],
-      "plazas": ["Comercio"], "industria": ["Comercio"], "educacion": ["Educación"],
-      "turismo": ["Comercio"], "financier": ["Comercio"], "artesanal": ["Comercio"]
+      "distrito": [], "abastec": [], "empresa": [], "plazas": [], "industria": [],
+      "educacion": [], "turismo": [], "financier": [], "artesanal": []
     }
+  };
+
+  const DIRECT_CATEGORY_FILTERS = {
+    green: {
+      "rios": "river", "quebradas": "stream", "parquesborde": "border_parks"
+    }
+  };
+
+  const DIRECT_CATEGORY_NO_DATA = {
+    green: ["corredores", "cerros", "protegidas", "parquesmnt", "paramos", "coberturas", "bosques", "resiliencia", "reservas", "paisajes"],
+    blue: ["servpub", "servsoc", "vivienda", "manzanas", "corredoresv"],
+    purple: ["sagrados", "arqueologico", "inmaterial", "material", "natural"],
+    yellow: ["distrito", "abastec", "empresa", "plazas", "industria", "educacion", "turismo", "financier", "artesanal"]
   };
 
   function installDynamicNetworks(data){
@@ -663,6 +663,8 @@ if (window.rapotData?.ready){
         const sheets = nodeSheets[node.id];
         if (!sheets) return;
         node.itemSheets = sheets;
+        node.itemFilterKey = DIRECT_CATEGORY_FILTERS[colorKey]?.[node.id] || null;
+        node.noData = DIRECT_CATEGORY_NO_DATA[colorKey]?.includes(node.id) || false;
         node.groupName = node.groupName || node.label?.join(" ") || node.id;
       });
     });
