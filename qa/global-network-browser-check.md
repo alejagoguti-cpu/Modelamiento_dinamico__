@@ -38,3 +38,11 @@ El DOM reporta `nodeCount: 39`, `edgeCount: 45`, `nodesWithText: 39`, `nodesWith
 ## Regresión de vistas existentes
 
 La apertura del nodo del hero mediante teclado sigue funcionando: el modal de `Estructura Ecológica Principal` se abre con sus 14 nodos, 11 relaciones y los controles originales de capas y convenciones. La prueba inicial con un clic sintético simple no era representativa porque ese componente distingue pointerdown/pointerup y teclado.
+
+## Verificación de despliegue
+
+El commit `47583eb` fue enviado correctamente a `origin/main`. La URL pública comprobada inmediatamente después todavía muestra la versión anterior: no aparece el botón `VER RED COMPLETA`. También se intentó la URL con `?v=47583eb`, con el mismo resultado, por lo que se debe revisar si GitHub Pages está desplegando otra rama o si aún está procesando la publicación.
+
+## Producción corregida
+
+Después de publicar el workflow explícito de GitHub Actions, los runs `33136916567` (workflow del sitio) y `33136913951` (Pages) terminaron con `success`. La URL pública con el cachebuster `?v=1b50a73` ya muestra el botón `VER RED COMPLETA 39 nodos`; al activarlo, el modal público carga 39 nodos, 45 conexiones, controles de zoom y el texto de Supabase.
