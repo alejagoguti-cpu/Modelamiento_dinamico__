@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAPOT · Una ciudad que no cabe en el POT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="assets/css/modulo-02.css">
+  <link rel="stylesheet" href="assets/css/site-theme.css?v=20260823">
+  <link rel="stylesheet" href="assets/css/navigation-unified.css?v=20260824">
+</head>
+<body>
+<div class="app">
+
+          <aside class="sidebar sidebar-icons-only">
+    <a class="brand-icon" href="index.html" title="Bogotá Viva · Inicio" aria-label="Inicio"><i class="fa-solid fa-diagram-project"></i></a>
+    <nav class="icon-nav" aria-label="Módulos">
+      <a href="index.html" class="icon-nav-item" title="Inicio"><i class="fa-solid fa-house"></i></a>
+      <a href="modulo-02.html" class="icon-nav-item active" title="02 · Medir la red"><i class="fa-solid fa-chart-simple"></i></a>
+      <a href="modulo-03.html" class="icon-nav-item" title="03 · Discurso vs realidad"><i class="fa-solid fa-eye"></i></a>
+      <a href="modulo-04.html" class="icon-nav-item" title="04 · Macromodelos"><i class="fa-solid fa-bullseye"></i></a>
+      <a href="modulo-05.html" class="icon-nav-item" title="05 · Navegador multiescalar"><i class="fa-solid fa-magnifying-glass-location"></i></a>
+      <a href="modulo-06.html" class="icon-nav-item" title="06 · POT ↔ ODS"><i class="fa-solid fa-earth-americas"></i></a>
+      <a href="modulo-07.html" class="icon-nav-item" title="07 · Simulador"><i class="fa-solid fa-flask"></i></a>
+      <a href="modulo-08.html" class="icon-nav-item" title="08 · Lectura dinámica"><i class="fa-solid fa-wave-square"></i></a>
+      <a href="modulo-09.html" class="icon-nav-item" title="09 · Modelo propio"><i class="fa-solid fa-atom"></i></a>
+    </nav>
+
+    <div class="icon-nav-footer">
+      <a href="configuracion.html" class="icon-nav-item" title="Configuración"><i class="fa-solid fa-gear"></i></a>
+      <a href="demo.html" class="icon-nav-item" title="Salir"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="topbar">
+      <div class="topbar-brand"><i class="fa-solid fa-circle-nodes"></i> Bogotá Viva: Simulación Urbana</div>
+      <div class="topbar-actions">
+        <div class="icon-btn"><i class="fa-regular fa-bell"></i><span class="dot"></span></div>
+        <div class="icon-btn"><i class="fa-solid fa-sun"></i></div>
+        <div class="icon-btn"><i class="fa-solid fa-user"></i></div>
+        <i class="fa-solid fa-chevron-down topbar-chevron"></i>
+      </div>
+    </div>
+
+    <!-- RED -->
+    <div class="network-section">
+      <div class="welcome welcome-with-quote">
+        <div class="welcome-main">
+          <div class="welcome-eyebrow">INGENIERÍA INVERSA</div>
+          <h2><span class="h2-plain">Una ciudad que</span> <span class="h2-accent">no cabe en el POT</span></h2>
+          <p class="welcome-sub">Ingeniería inversa al Modelo de Ordenamiento Territorial (MOT)</p>
+        </div>
+        <div class="quote-card welcome-quote-card">
+          <div class="quote-mark">&ldquo;</div>
+          <p>Realizamos una ingeniería inversa al Modelo de Ordenamiento Territorial (MOT). Desarmamos el decreto para ver cómo interactúan realmente sus partes en el territorio.</p>
+        </div>
+      </div>
+
+      <div class="network-body">
+        <div class="network-canvas">
+          <svg id="networkViz" viewBox="0 0 2500 1820" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+
+        <!-- VISTA AMPLIADA: red de Humedales. Sustituye la red principal en el mismo
+             espacio mientras "Humedales" está seleccionado. Muestra la foto de la
+             sub-red aportada por la usuaria con hotspots clicables sobre cada humedal. -->
+        <div class="humedales-overlay" id="humedalesOverlay" style="display:none;">
+          <div class="humedales-overlay-header">
+            <div class="humedales-overlay-title-block">
+              <div class="humedales-overlay-title">El POT no entiende los humedales como territorios dinámicos</div>
+            </div>
+            <div class="humedales-zoom-controls">
+              <button class="humedales-zoom-btn" id="humedalesZoomOut" type="button" aria-label="Alejar">&minus;</button>
+              <button class="humedales-zoom-btn" id="humedalesZoomReset" type="button" aria-label="Restablecer zoom">&#8859;</button>
+              <button class="humedales-zoom-btn" id="humedalesZoomIn" type="button" aria-label="Acercar">&#43;</button>
+            </div>
+            <button class="humedales-overlay-close" id="humedalesOverlayClose" type="button" aria-label="Cerrar">&times;</button>
+          </div>
+          <div class="humedales-overlay-body" id="humedalesOverlayBody">
+            <!-- imagen + hotspots + ficha lateral se generan dinámicamente -->
+          </div>
+        </div>
+
+        <!-- VISTA AMPLIADA: plano de movilidad. Sustituye la red principal, igual
+             que el overlay de humedales, tras la animación de "Ver hallazgos clave". -->
+        <div class="movilidad-overlay" id="movilidadOverlay" style="display:none;">
+          <div class="movilidad-overlay-header">
+            <div class="movilidad-overlay-title">El POT no evalúa cómo se mueve la ciudad</div>
+            <button class="humedales-overlay-close" id="movilidadOverlayClose" type="button" aria-label="Cerrar">&times;</button>
+          </div>
+          <div class="movilidad-overlay-body" id="movilidadOverlayBody">
+            <!-- imagen + líneas neón + hotspots clicables se generan dinámicamente -->
+          </div>
+          <div class="movilidad-overlay-footer">
+            <div class="movilidad-nota-naranja">
+              <p>El POT formula un modelo concreto, propone un sistema multimodal, una ciudad de proximidad y grandes proyectos como el Metro, los Regiotram, los cables y las ciclorrutas. Sin embargo, esa relación aparece representada principalmente mediante infraestructuras, localizaciones, líneas, estaciones y metas de tiempo.</p>
+              <p>Y muestra qué componentes deben conectarse y qué proyectos deberían producir esa conexión, pero representa de manera mucho más limitada el funcionamiento cotidiano de la movilidad: quién se desplaza, a qué hora, con qué frecuencia, mediante cuántos transbordos, con qué tiempo de espera, bajo qué condiciones de congestión y con qué desigualdad de acceso.</p>
+            </div>
+            <button type="button" class="movilidad-conclusion-btn" id="movilidadConclusionBtn">
+              <i class="fa-solid fa-circle-info"></i> Ver conclusión de la red de movilidad
+            </button>
+          </div>
+        </div>
+
+        <div class="network-sidebar" style="position:relative">
+          <aside class="network-legend" id="networkLegend">
+            <div class="legend-section-box">
+              <div class="legend-title">Tipos de relación</div>
+              <label class="legend-item" data-mode="type" data-type="directa">
+                <input type="checkbox" checked><span class="legend-swatch swatch-directa-neutral"></span>
+                <span class="legend-text"><strong>Directa</strong><small>Respaldo explícito del POT</small></span>
+              </label>
+              <label class="legend-item" data-mode="type" data-type="indirecta">
+                <input type="checkbox" checked><span class="legend-swatch swatch-indirecta-neutral"></span>
+                <span class="legend-text"><strong>Indirecta</strong><small>Relación funcional intermedia</small></span>
+              </label>
+            </div>
+
+            <div class="legend-section-box">
+              <div class="legend-title">Color de la línea</div>
+              <div class="legend-static-item"><span class="legend-swatch" style="background:#f5a623;border-color:#f5a623;"></span> Soporte (sostiene / habilita)</div>
+              <div class="legend-static-item"><span class="legend-swatch" style="background:#5b8def;border-color:#5b8def;"></span> Resiliencia</div>
+            </div>
+
+            <div class="legend-section-box">
+              <div class="legend-title">Categorías del POT</div>
+              <label class="legend-item cat-item" data-mode="cat" data-cat="e1">
+                <input type="checkbox" checked>
+                <span class="cat-icon" style="color:#5cd6d1;border-color:#5cd6d1;"><i class="fa-solid fa-droplet"></i></span>
+                <span class="cat-name">Ecológica Principal</span>
+                <span class="cat-count" id="struct-e1"></span>
+              </label>
+              <label class="legend-item cat-item" data-mode="cat" data-cat="e2">
+                <input type="checkbox" checked>
+                <span class="cat-icon" style="color:#ef9f54;border-color:#ef9f54;"><i class="fa-solid fa-people-roof"></i></span>
+                <span class="cat-name">Funcional y del Cuidado</span>
+                <span class="cat-count" id="struct-e2"></span>
+              </label>
+              <label class="legend-item cat-item" data-mode="cat" data-cat="e3">
+                <input type="checkbox" checked>
+                <span class="cat-icon" style="color:#fac47b;border-color:#fac47b;"><i class="fa-solid fa-building-columns"></i></span>
+                <span class="cat-name">Socioeconómica Creativa</span>
+                <span class="cat-count" id="struct-e3"></span>
+              </label>
+              <label class="legend-item cat-item" data-mode="cat" data-cat="e4">
+                <input type="checkbox" checked>
+                <span class="cat-icon" style="color:#fb8d84;border-color:#fb8d84;"><i class="fa-solid fa-landmark"></i></span>
+                <span class="cat-name">Integradora de Patrimonio</span>
+                <span class="cat-count" id="struct-e4"></span>
+              </label>
+            </div>
+
+            <div class="legend-footer-row">
+              <button class="control-btn active" onclick="filterNetwork('all')">Todas</button>
+              <button class="control-btn" onclick="filterNetwork('directa')">Directas</button>
+              <button class="control-btn" onclick="filterNetwork('indirecta')">Indirectas</button>
+            </div>
+          </aside>
+
+          <div class="network-sidebar-actions" id="networkSidebarActions">
+            <button class="btn-primary" id="btnExplorarRelaciones">Explorar relaciones en detalle <i class="fa-solid fa-arrow-right"></i></button>
+            <button class="btn-secondary" id="btnVerHallazgos"><i class="fa-solid fa-chart-simple"></i> Ver hallazgos clave</button>
+          </div>
+
+          <!-- Panel de conclusión del zoom de humedales: vive en el sidebar,
+               reemplaza a la leyenda mientras el overlay está abierto. -->
+          <!-- Panel del zoom "El POT no evalúa cómo se mueve la ciudad": vive en el
+               sidebar y solo se muestra mientras ese overlay está abierto. Editar
+               aquí NO afecta al panel de la red inicial. -->
+          <div class="humedal-ramsar-float" id="movilidadPanelLateral" style="display:none">
+            <div style="display:inline-flex; align-items:center; gap:7px; margin-bottom:11px; padding:5px 11px; border:1.5px solid #ff9d2e; border-radius:8px; color:#ff9d2e; font-size:13px; font-weight:700; letter-spacing:.03em; box-shadow:0 0 0 1px rgba(255,157,46,.18), 0 0 14px -2px rgba(255,157,46,.55); text-shadow:0 0 8px rgba(255,157,46,.45)"><i class="fa-solid fa-chart-simple"></i> Hallazgo principal</div>
+            <div class="humedal-caso-cita" style="text-align:justify">El POT proyecta el sistema de movilidad como un conjunto de trazados y equipamientos, pero no mide cómo se mueve realmente la ciudad.</div>
+            <div class="humedal-caso-pagina" style="text-align:justify">Las líneas y los círculos del plano indican dónde llegará la infraestructura, no los tiempos de viaje, los transbordos, los desplazamientos de cuidado ni los recorridos que la gente ya hace todos los días.</div>
+          </div>
+
+          <div class="humedal-ramsar-float" id="humedalRamsarFloat" style="display:none">
+            <div style="display:inline-flex; align-items:center; gap:7px; margin-bottom:11px; padding:5px 11px; border:1.5px solid #ff9d2e; border-radius:8px; color:#ff9d2e; font-size:13px; font-weight:700; letter-spacing:.03em; box-shadow:0 0 0 1px rgba(255,157,46,.18), 0 0 14px -2px rgba(255,157,46,.55); text-shadow:0 0 8px rgba(255,157,46,.45); width:221px; height:31px"><i class="fa-solid fa-chart-simple"></i> Hallazgo principal</div>
+            <div class="humedal-caso-cita" style="text-align:justify">El POT reconoce quince humedales, pero no los desarrolla todos con el mismo nivel de detalle. Algunos aparecen con nombre propio y se vuelven casos específicos; otros permanecen dentro de la categoría general.</div>
+            <div class="humedal-caso-pagina" style="text-align:justify">La cartografía fija un polígono de protección, pero no muestra los <button type="button" class="humedales-gesto-inline" data-src="assets/humedales/gesto-2.png">recorridos de las especies</button>, las <button type="button" class="humedales-gesto-inline" data-src="assets/humedales/gesto-3.png">relaciones ecológicas</button>, los <button type="button" class="humedales-gesto-inline" data-src="assets/humedales/gesto-1.png">usos comunitarios</button> ni las presiones que atraviesan el límite del humedal. El POT no los comprende plenamente como ecosistemas que se transforman en el tiempo.</div>
+          </div>
+                </div>
+      </div>
+      <section class="red-principal-reflexion" aria-labelledby="pot-modelo-oficial-title">
+        <div class="reflection-kicker">CIERRE DE LA LECTURA</div>
+        <h2 id="pot-modelo-oficial-title">¿Es suficiente el POT como único modelo oficial de la ciudad?</h2>
+        <div class="reflection-answer">
+          <strong>No completamente.</strong>
+          <p>El POT es necesario para regular jurídicamente Bogotá, pero no es suficiente para comprender por sí solo todos los procesos que producen y transforman la ciudad.</p>
+        </div>
+
+        <div class="reflection-copy-grid">
+          <article class="reflection-copy-block">
+            <h3>¿El POT resulta suficiente para los objetivos que pretende cumplir?</h3>
+            <p><strong>Sí, para sus objetivos normativos y administrativos.</strong> Permite definir usos del suelo, delimitar áreas, establecer protecciones, orientar proyectos y coordinar decisiones públicas.</p>
+            <p><strong>No, si se pretende usarlo como una explicación completa de cómo funciona la ciudad.</strong> El POT no representa por sí solo todos los recorridos, cambios, conflictos, decisiones y respuestas que ocurren cotidianamente.</p>
+          </article>
+          <article class="reflection-copy-block">
+            <h3>¿El POT requiere ser complementado por otros modelos?</h3>
+            <p><strong>Sí.</strong> Debe complementarse con modelos que permitan observar lo que la norma y la cartografía no muestran completamente: los flujos de agua, los movimientos de las personas, el desplazamiento de especies, los conflictos, los usos cotidianos y las respuestas de los actores.</p>
+            <p>Esto no significa reemplazar el POT, sino reconocer que cumple una función diferente y necesita otras herramientas para comprender mejor el territorio.</p>
+          </article>
+        </div>
+
+        <div class="reflection-three-columns" aria-label="Qué logra, qué deja fuera y conclusión">
+          <article>
+            <div class="reflection-column-label">1. Lo que sí logra</div>
+            <p>Regula el suelo, delimita áreas, organiza estructuras y orienta proyectos.</p>
+          </article>
+          <article>
+            <div class="reflection-column-label">2. Lo que deja por fuera</div>
+            <p>No muestra completamente los flujos, los cambios en el tiempo, los actores, los conflictos ni las relaciones entre escalas.</p>
+          </article>
+          <article class="reflection-conclusion-column">
+            <div class="reflection-column-label">3. Nuestra conclusión</div>
+            <p>El POT es necesario, pero no suficiente como único modelo. Debe complementarse con modelos dinámicos, causales, adaptativos y multiescalares.</p>
+          </article>
+        </div>
+
+        <div class="models-needed">
+          <div class="reflection-kicker">LA CAPA QUE HACE FALTA</div>
+          <h3>¿Qué modelos hacen falta?</h3>
+          <p class="models-intro">El POT no se reemplaza: se complementa con modelos capaces de leer procesos, relaciones, decisiones y cambios que la norma fija, pero no puede observar por sí sola.</p>
+          <div class="models-mosaic">
+            <article class="model-needed-card"><h4>Modelo dinámico de sistemas</h4><p><strong>Analiza:</strong> cambios en el tiempo, acumulaciones, retrasos, ciclos y variaciones.</p><p><strong>Agrega:</strong> muestra cómo cambian el agua, la población, la movilidad, la vivienda y la infraestructura.</p></article>
+            <article class="model-needed-card"><h4>Modelo causal</h4><p><strong>Analiza:</strong> cómo una decisión produce consecuencias en varios sistemas.</p><p><strong>Agrega:</strong> representa cadenas como nueva vía → más viajes → congestión → ruido → afectación del hábitat.</p></article>
+            <article class="model-needed-card"><h4>Modelo basado en agentes</h4><p><strong>Analiza:</strong> decisiones de habitantes, visitantes, instituciones, empresas y organizaciones.</p><p><strong>Agrega:</strong> muestra que las personas no se comportan de manera idéntica y que sus decisiones transforman el territorio.</p></article>
+            <article class="model-needed-card"><h4>Modelo hidrológico-ecológico</h4><p><strong>Analiza:</strong> circulación del agua, escorrentía, inundaciones, vegetación, hábitat y desplazamiento de especies.</p><p><strong>Agrega:</strong> estudia el humedal como un sistema que cambia, no solo como un polígono de protección.</p></article>
+            <article class="model-needed-card"><h4>Modelo de movilidad y uso del suelo</h4><p><strong>Analiza:</strong> relación entre vivienda, empleo, equipamientos, transporte, tiempos y recorridos.</p><p><strong>Agrega:</strong> muestra cómo los usos del suelo generan viajes y cómo la movilidad transforma la ocupación urbana.</p></article>
+            <article class="model-needed-card"><h4>Modelo de redes y flujos</h4><p><strong>Analiza:</strong> conexiones entre nodos, centralidades, periferias y circulación de personas, bienes, agua o información.</p><p><strong>Agrega:</strong> permite analizar la estructura de relaciones, no solo la ubicación de los elementos.</p></article>
+            <article class="model-needed-card"><h4>Modelo multiescalar</h4><p><strong>Analiza:</strong> relaciones entre barrio, localidad, ciudad, región y territorio nacional.</p><p><strong>Agrega:</strong> muestra que Bogotá depende de flujos externos de agua, alimentos, energía, materiales, viajes e información.</p></article>
+            <article class="model-needed-card"><h4>Modelo de escenarios</h4><p><strong>Analiza:</strong> posibles futuros ante diferentes decisiones urbanas.</p><p><strong>Agrega:</strong> compara qué ocurre si se construye, se conserva, se densifica o se modifica una infraestructura.</p></article>
+            <article class="model-needed-card"><h4>Modelo adaptativo y de retroalimentación</h4><p><strong>Analiza:</strong> monitoreo, aprendizaje, respuesta y ajuste de las decisiones.</p><p><strong>Agrega:</strong> permite modificar las intervenciones cuando el territorio responde de una forma no prevista.</p></article>
+            <article class="model-needed-card"><h4>Modelo participativo o de gobernanza</h4><p><strong>Analiza:</strong> intereses, acuerdos, conflictos y decisiones de los actores.</p><p><strong>Agrega:</strong> incorpora conocimientos locales y muestra que la planificación no depende únicamente de la autoridad normativa.</p></article>
+          </div>
+        </div>
+      </section>
+    </div>
+    <!-- PANEL DE INFO: ARISTA -->
+    <div class="edge-info-panel" id="edgeInfoPanel">
+      <div class="edge-info-header">
+        <span id="edgeInfoTitle">Relación</span>
+        <button class="edge-info-close" id="edgeInfoClose" type="button" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="edge-info-type" id="edgeInfoType"></div>
+      <div id="edgeInfoFuente" style="margin-bottom:10px;"></div>
+      <div class="edge-info-quote" id="edgeInfoQuote"></div>
+      <div class="edge-info-analisis" id="edgeInfoAnalisis"></div>
+      <div class="edge-info-page" id="edgeInfoPage"></div>
+    </div>
+
+    <!-- PANEL DE INFO: NODO -->
+    <div class="edge-info-panel node-info-panel" id="nodeInfoPanel">
+      <div class="edge-info-header">
+        <span id="nodeInfoTitle">Componente</span>
+        <button class="edge-info-close" id="nodeInfoClose" type="button" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="edge-info-type" id="nodeInfoStruct"></div>
+      <div id="nodeInfoFuente" style="margin-bottom:10px;"></div>
+      <div class="edge-info-page" id="nodeInfoArticulo" style="margin-bottom:8px; color:#fff !important;"></div>
+      <div class="edge-info-quote" id="nodeInfoQuote" style="color:#fff !important;"></div>
+      <div class="edge-info-analisis" id="nodeInfoNota" style="color:#fff !important;"></div>
+      <div class="node-info-schematic-map" id="nodeInfoSchematicMap" style="display:none;"></div>
+      <div class="node-info-mapa" id="nodeInfoMapaWrap" style="display:none;">
+        <a id="nodeInfoMapa" href="#" target="_blank" rel="noopener"><i class="fa-solid fa-map-location-dot"></i> Ver cartografía / geoportal oficial</a>
+      </div>
+    </div>
+
+    <footer>
+      "No se trata de representar la ciudad, sino de comprenderla para transformarla." — <span>Equipo POT Reverse Engineering</span>
+    </footer>
+
+  </main>
+
+</div>
+
+<script src="assets/js/modulo-02.js"></script>
+
+</body>
+</html>
