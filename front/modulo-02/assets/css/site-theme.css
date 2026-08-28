@@ -1,0 +1,78 @@
+:root {
+  --site-bg: #0a0a0a;
+  --site-surface: #0f1218;
+  --site-surface-2: #121828;
+  --site-line: rgba(255,255,255,0.08);
+  --site-line-strong: rgba(255,255,255,0.14);
+  --site-text: #e7eaf2;
+  --site-muted: #8891a5;
+  --site-subtle: #5a6274;
+  --site-teal: #2fd4c8;
+  --site-teal-soft: rgba(47,212,200,0.12);
+  --site-orange: #e89a6c;
+  --site-blue: #5b8def;
+  --site-purple: #a276f2;
+  --site-radius: 10px;
+  --site-font-body: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-font-display: "Space Grotesk", Inter, system-ui, sans-serif;
+}
+
+html, body {
+  background: var(--site-bg);
+  color: var(--site-text);
+  font-family: var(--site-font-body) !important;
+}
+
+body, button, input, select, textarea, option {
+  font-family: var(--site-font-body) !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+.hero-title, .page-title, .section-title, .topbar-title,
+.brand-name, .card-title, .panel-title {
+  font-family: var(--site-font-display) !important;
+}
+
+button, input, select, textarea {
+  border-radius: var(--site-radius);
+}
+
+button, .btn, .button, a.btn, a.button {
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+}
+
+button:hover, .btn:hover, .button:hover, a.btn:hover, a.button:hover {
+  transform: translateY(-1px);
+}
+
+.card, .panel, .panel-block, .surface, .info-card, .metric-card {
+  border-color: var(--site-line) !important;
+}
+
+.muted, .subtitle, .description, .helper, .eyebrow + p {
+  color: var(--site-muted);
+}
+
+:focus-visible {
+  outline: 2px solid var(--site-teal);
+  outline-offset: 2px;
+}
+
+/* Shared sidebar tokens; module-specific layout remains untouched. */
+.sidebar.sidebar-icons-only {
+  background: var(--site-bg) !important;
+  border-right-color: rgba(255,255,255,0.07) !important;
+}
+.sidebar.sidebar-icons-only .icon-nav-item.active {
+  background: var(--site-teal-soft) !important;
+  color: var(--site-teal) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
