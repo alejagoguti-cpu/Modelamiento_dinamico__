@@ -46,3 +46,9 @@ El commit `47583eb` fue enviado correctamente a `origin/main`. La URL pública c
 ## Producción corregida
 
 Después de publicar el workflow explícito de GitHub Actions, los runs `33136916567` (workflow del sitio) y `33136913951` (Pages) terminaron con `success`. La URL pública con el cachebuster `?v=1b50a73` ya muestra el botón `VER RED COMPLETA 39 nodos`; al activarlo, el modal público carga 39 nodos, 45 conexiones, controles de zoom y el texto de Supabase.
+
+## Incidencia reportada y corrección final
+
+La causa fue doble: el build legacy de GitHub Pages del commit anterior permanecía en cola y la URL normal podía conservar los assets con la versión `20260826-mapfix`. Se añadió un workflow explícito de despliegue por GitHub Actions y se actualizaron los cachebusters a `20260828-global-network`.
+
+Los runs del workflow y de Pages para el commit `b88c8cd` terminaron en `success`. La comprobación de la URL pública normal, sin parámetros, mostró el botón `VER RED COMPLETA 39 nodos`; al abrirlo se visualizaron 39 nodos, 45 conexiones y los controles de zoom.
