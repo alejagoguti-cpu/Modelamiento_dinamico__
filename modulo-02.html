@@ -3,182 +3,177 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Módulo 2: Cómo comprendemos el territorio · RAPOT</title>
+  <title>Módulo 2: Red Territorial · RAPOT</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="./style.css">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
       color: #e2e8f0;
       font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 20px;
       min-height: 100vh;
+      overflow: hidden;
     }
 
-    .modulo-header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    .modulo-header h1 {
-      font-size: 2.5em;
-      color: #2fbfae;
-      margin: 0 0 10px 0;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-    }
-
-    .modulo-header p {
-      font-size: 1.1em;
-      color: #cbd5e1;
-      margin: 0;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .network-container {
-      background: rgba(15, 23, 42, 0.8);
-      border: 2px solid rgba(47, 212, 200, 0.2);
-      border-radius: 16px;
-      padding: 20px;
-      max-width: 1200px;
-      margin: 0 auto 40px;
-      position: relative;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    }
-
-    .network-svg {
+    .container {
       width: 100%;
-      height: auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      padding: 20px 30px;
+      background: rgba(10, 14, 39, 0.8);
+      border-bottom: 2px solid rgba(47, 212, 200, 0.2);
+      z-index: 10;
+    }
+
+    .header h1 {
+      font-size: 2em;
+      color: #2fbfae;
+      font-family: 'Space Grotesk', sans-serif;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      color: #cbd5e1;
+      font-size: 0.95em;
+    }
+
+    .network-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .network-canvas {
+      width: 100%;
+      height: 100%;
       display: block;
-      min-height: 600px;
+      cursor: grab;
     }
 
-    /* Nodos y conexiones */
-    .subsystem-node {
-      cursor: pointer;
-      transition: all 0.3s ease;
+    .network-canvas:active {
+      cursor: grabbing;
     }
 
-    .subsystem-node circle {
-      fill: url(#grad-system);
-      stroke: rgba(47, 212, 200, 0.6);
-      stroke-width: 2;
-      transition: all 0.3s ease;
+    .info-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 2px solid rgba(47, 212, 200, 0.3);
+      border-radius: 12px;
+      padding: 15px 20px;
+      font-size: 0.9em;
+      color: #cbd5e1;
+      backdrop-filter: blur(10px);
+      z-index: 20;
     }
 
-    .subsystem-node text {
-      font-size: 13px;
-      fill: white;
-      font-weight: 600;
-      text-anchor: middle;
-      pointer-events: none;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    .legend {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 2px solid rgba(47, 212, 200, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      z-index: 20;
     }
 
-    .subsystem-node:hover circle {
-      stroke: rgba(47, 212, 200, 1);
-      stroke-width: 3;
-      filter: drop-shadow(0 0 12px rgba(47, 212, 200, 0.6));
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
     }
 
-    .connection-line {
-      stroke: rgba(47, 212, 200, 0.2);
-      stroke-width: 1;
-      fill: none;
-      pointer-events: none;
+    .legend-item:last-child {
+      margin-bottom: 0;
     }
 
-    .center-button {
-      cursor: pointer;
-      transition: all 0.3s ease;
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.3);
     }
 
-    .center-button circle {
-      fill: url(#grad-center);
-      stroke: rgba(47, 212, 200, 0.8);
-      stroke-width: 3;
+    .legend-text {
+      font-size: 0.9em;
+      color: #cbd5e1;
     }
 
-    .center-button text {
-      font-size: 16px;
-      font-weight: 700;
-      fill: white;
-      text-anchor: middle;
-      pointer-events: none;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
-    }
-
-    .center-button:hover circle {
-      filter: drop-shadow(0 0 20px rgba(47, 212, 200, 0.8));
-      stroke-width: 4;
-    }
-
-    /* Modal de subsistemas */
-    .subsystems-modal-overlay {
+    /* Modal subsistemas */
+    .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.8);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      animation: fadeIn 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
     }
 
-    .subsystems-modal {
+    .modal {
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
       border: 2px solid rgba(47, 212, 200, 0.3);
-      border-radius: 20px;
+      border-radius: 16px;
       padding: 30px;
-      max-width: 900px;
+      max-width: 1000px;
       max-height: 80vh;
       overflow-y: auto;
       position: relative;
-      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.8);
     }
 
-    .subsystems-modal-close {
+    .modal-close {
       position: absolute;
       top: 15px;
       right: 15px;
       background: none;
       border: none;
       color: #2fbfae;
-      font-size: 28px;
+      font-size: 32px;
       cursor: pointer;
-      padding: 5px 10px;
       transition: all 0.3s ease;
     }
 
-    .subsystems-modal-close:hover {
+    .modal-close:hover {
       transform: scale(1.2);
       color: #1f8f82;
     }
 
-    .subsystems-modal h2 {
+    .modal h2 {
       color: #2fbfae;
-      font-size: 2em;
-      margin-top: 0;
-      margin-bottom: 30px;
+      font-size: 1.8em;
+      margin-bottom: 20px;
       font-family: 'Space Grotesk', sans-serif;
     }
 
     .subsystems-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
     }
 
@@ -193,442 +188,421 @@
 
     .subsystem-card:hover {
       border-color: rgba(47, 212, 200, 0.6);
-      background: rgba(30, 41, 59, 0.9);
+      background: rgba(47, 212, 200, 0.1);
       transform: translateY(-4px);
-      box-shadow: 0 10px 30px rgba(47, 212, 200, 0.2);
     }
 
     .subsystem-card h3 {
       color: #2fbfae;
-      margin: 0 0 10px 0;
-      font-size: 1.1em;
-      font-weight: 600;
+      margin-bottom: 10px;
+      font-size: 1em;
     }
 
     .subsystem-card p {
       color: #cbd5e1;
-      margin: 0;
-      font-size: 0.95em;
-      line-height: 1.5;
+      font-size: 0.9em;
+      margin-bottom: 10px;
     }
 
-    .subsystem-badge {
+    .badge {
       display: inline-block;
       background: rgba(47, 212, 200, 0.2);
       color: #2fbfae;
-      padding: 4px 12px;
+      padding: 5px 12px;
       border-radius: 20px;
-      font-size: 0.85em;
-      margin-top: 10px;
+      font-size: 0.8em;
       font-weight: 600;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .modulo-header h1 {
-        font-size: 1.8em;
-      }
-
-      .modulo-header p {
-        font-size: 1em;
-      }
-
-      .subsystems-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .network-svg {
-        min-height: 400px;
-      }
-
-      .subsystem-node text {
-        font-size: 11px;
-      }
     }
   </style>
 </head>
 <body>
 
-<div class="modulo-header">
-  <h1>🌐 ¿Cómo comprendemos el territorio?</h1>
-  <p>Una red interactiva que muestra cómo el POT organiza y relaciona los subsistemas territoriales de Bogotá</p>
+<div class="container">
+  <div class="header">
+    <h1>🌐 La Red Territorial del POT</h1>
+    <p>36 subsistemas conectados • Nodos más grandes = más conexiones • Visualización big data del territorio</p>
+  </div>
+
+  <div class="network-wrapper">
+    <canvas id="networkCanvas" class="network-canvas"></canvas>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background: linear-gradient(135deg, #2fbfae, #1f8f82);"></div>
+        <div class="legend-text">EEP: Ecológica</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: linear-gradient(135deg, #d86ef5, #a855f7);"></div>
+        <div class="legend-text">EIP: Patrimonios</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: linear-gradient(135deg, #3b82f6, #1e40af);"></div>
+        <div class="legend-text">EFC: Funcional</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: linear-gradient(135deg, #f59e0b, #d97706);"></div>
+        <div class="legend-text">ESECI: Socioeconómica</div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <span id="nodeCount">Cargando red...</span>
+    </div>
+  </div>
 </div>
 
-<div class="network-container">
-  <svg class="network-svg" id="territorialNetworkSvg" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
-    <!-- Gradientes -->
-    <defs>
-      <linearGradient id="grad-system" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#45d6c5"></stop>
-        <stop offset="100%" stop-color="#1f8f82"></stop>
-      </linearGradient>
-      <linearGradient id="grad-center" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#2fbfae"></stop>
-        <stop offset="100%" stop-color="#06b6d4"></stop>
-      </linearGradient>
-      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-        <feMerge>
-          <feMergeNode in="coloredBlur"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
-    </defs>
-
-    <!-- Conexiones -->
-    <g class="connections-group"></g>
-
-    <!-- Nodos -->
-    <g class="nodes-group"></g>
-
-    <!-- Botón central -->
-    <g class="center-button" id="centerButton" onclick="showSubsystemsModal()">
-      <circle cx="500" cy="350" r="45" filter="url(#glow)"></circle>
-      <text x="500" y="360" text-anchor="middle">36 +</text>
-    </g>
-  </svg>
-</div>
-
-<!-- Modal de subsistemas -->
-<div id="subsystemsModalOverlay" class="subsystems-modal-overlay" hidden onclick="closeSubsystemsModal(event)">
-  <div class="subsystems-modal" onclick="event.stopPropagation()">
-    <button class="subsystems-modal-close" onclick="closeSubsystemsModal()">&times;</button>
-    <h2>Los 36 Subsistemas Territoriales</h2>
+<!-- Modal -->
+<div id="modalOverlay" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2 id="modalTitle">36 Subsistemas Territoriales</h2>
     <div class="subsystems-grid" id="subsystemsGrid"></div>
   </div>
 </div>
 
 <script>
-// Datos de 36 subsistemas del territorio según POT Decreto 555
+// Datos de subsistemas
 const SUBSISTEMAS = [
-  // Estructura Ecológica Principal (Sistema Hídrico)
-  { nombre: "Sistema Hídrico Superficial", estructura: "EEP", cantidad: 13, color: "#2fbfae" },
-  { nombre: "Humedales Urbanos", estructura: "EEP", cantidad: 15, color: "#2fbfae" },
-  { nombre: "Cerros Orientales", estructura: "EEP", cantidad: 3, color: "#2fbfae" },
-  { nombre: "Áreas Protegidas Nacional", estructura: "EEP", cantidad: 2, color: "#2fbfae" },
-  { nombre: "Reservas Forestales", estructura: "EEP", cantidad: 2, color: "#2fbfae" },
-  { nombre: "Áreas de Importancia Ambiental", estructura: "EEP", cantidad: 6, color: "#2fbfae" },
+  // EEP
+  { nombre: "Sistema Hídrico", estructura: "EEP", conexiones: 8, color: "#2fbfae", elementos: 13 },
+  { nombre: "Humedales Urbanos", estructura: "EEP", conexiones: 7, color: "#2fbfae", elementos: 15 },
+  { nombre: "Cerros Orientales", estructura: "EEP", conexiones: 5, color: "#2fbfae", elementos: 3 },
+  { nombre: "Áreas Protegidas", estructura: "EEP", conexiones: 4, color: "#2fbfae", elementos: 2 },
+  { nombre: "Reservas Forestales", estructura: "EEP", conexiones: 4, color: "#2fbfae", elementos: 2 },
+  { nombre: "Importancia Ambiental", estructura: "EEP", conexiones: 6, color: "#2fbfae", elementos: 6 },
 
-  // Estructura Integradora de Patrimonios
-  { nombre: "Patrimonio Material Histórico", estructura: "EIP", cantidad: 50, color: "#d86ef5" },
-  { nombre: "Patrimonio Inmaterial", estructura: "EIP", cantidad: 100, color: "#d86ef5" },
-  { nombre: "Sitios Sagrados Indígenas", estructura: "EIP", cantidad: 20, color: "#d86ef5" },
-  { nombre: "Paisajes Singulares", estructura: "EIP", cantidad: 30, color: "#d86ef5" },
+  // EIP
+  { nombre: "Patrimonio Material", estructura: "EIP", conexiones: 5, color: "#d86ef5", elementos: 50 },
+  { nombre: "Patrimonio Inmaterial", estructura: "EIP", conexiones: 4, color: "#d86ef5", elementos: 100 },
+  { nombre: "Sitios Sagrados", estructura: "EIP", conexiones: 5, color: "#d86ef5", elementos: 20 },
+  { nombre: "Paisajes Singulares", estructura: "EIP", conexiones: 4, color: "#d86ef5", elementos: 30 },
 
-  // Estructura Funcional y del Cuidado - Movilidad
-  { nombre: "Malla Arterial Vial", estructura: "EFC", cantidad: 45, color: "#3b82f6" },
-  { nombre: "Ciclorutas y Ciclovías", estructura: "EFC", cantidad: 120, color: "#3b82f6" },
-  { nombre: "Sistema de Transporte Público", estructura: "EFC", cantidad: 12, color: "#3b82f6" },
-  { nombre: "Estacionamientos Públicos", estructura: "EFC", cantidad: 25, color: "#3b82f6" },
+  // EFC - Movilidad
+  { nombre: "Malla Arterial", estructura: "EFC", conexiones: 12, color: "#3b82f6", elementos: 45 },
+  { nombre: "Ciclorutas", estructura: "EFC", conexiones: 11, color: "#3b82f6", elementos: 120 },
+  { nombre: "Transporte Público", estructura: "EFC", conexiones: 10, color: "#3b82f6", elementos: 12 },
+  { nombre: "Estacionamientos", estructura: "EFC", conexiones: 8, color: "#3b82f6", elementos: 25 },
 
-  // Estructura Funcional - Equipamientos
-  { nombre: "Colegios y Educación", estructura: "EFC", cantidad: 150, color: "#3b82f6" },
-  { nombre: "Hospitales y Salud", estructura: "EFC", cantidad: 140, color: "#3b82f6" },
-  { nombre: "Bibliotecas y Cultura", estructura: "EFC", cantidad: 120, color: "#3b82f6" },
-  { nombre: "Deportivos y Recreación", estructura: "EFC", cantidad: 100, color: "#3b82f6" },
+  // EFC - Equipamientos
+  { nombre: "Colegios", estructura: "EFC", conexiones: 9, color: "#3b82f6", elementos: 150 },
+  { nombre: "Hospitales", estructura: "EFC", conexiones: 9, color: "#3b82f6", elementos: 140 },
+  { nombre: "Bibliotecas", estructura: "EFC", conexiones: 8, color: "#3b82f6", elementos: 120 },
+  { nombre: "Deportivos", estructura: "EFC", conexiones: 7, color: "#3b82f6", elementos: 100 },
 
-  // Estructura Funcional - Espacio Público
-  { nombre: "Parques Metropolitanos", estructura: "EFC", cantidad: 12, color: "#3b82f6" },
-  { nombre: "Parques Zonales", estructura: "EFC", cantidad: 45, color: "#3b82f6" },
-  { nombre: "Plazas y Plazoletas", estructura: "EFC", cantidad: 80, color: "#3b82f6" },
-  { nombre: "Espacios de Encuentro Comunitario", estructura: "EFC", cantidad: 200, color: "#3b82f6" },
+  // EFC - Espacio Público
+  { nombre: "Parques Metropolitanos", estructura: "EFC", conexiones: 6, color: "#3b82f6", elementos: 12 },
+  { nombre: "Parques Zonales", estructura: "EFC", conexiones: 8, color: "#3b82f6", elementos: 45 },
+  { nombre: "Plazas y Plazoletas", estructura: "EFC", conexiones: 9, color: "#3b82f6", elementos: 80 },
+  { nombre: "Espacios Comunitarios", estructura: "EFC", conexiones: 10, color: "#3b82f6", elementos: 200 },
 
-  // Estructura Socio Económica, Creativa e Innovación - Comercio
-  { nombre: "Zonas Comerciales", estructura: "ESECI", cantidad: 40, color: "#f59e0b" },
-  { nombre: "Mercados Populares", estructura: "ESECI", cantidad: 25, color: "#f59e0b" },
-  { nombre: "Comercio de Proximidad", estructura: "ESECI", cantidad: 800, color: "#f59e0b" },
+  // ESECI - Comercio
+  { nombre: "Zonas Comerciales", estructura: "ESECI", conexiones: 7, color: "#f59e0b", elementos: 40 },
+  { nombre: "Mercados Populares", estructura: "ESECI", conexiones: 6, color: "#f59e0b", elementos: 25 },
+  { nombre: "Comercio Proximidad", estructura: "ESECI", conexiones: 8, color: "#f59e0b", elementos: 800 },
 
-  // Estructura Socio Económica - Industria y Empleo
-  { nombre: "Áreas Industriales", estructura: "ESECI", cantidad: 8, color: "#f59e0b" },
-  { nombre: "Centros de Empleo", estructura: "ESECI", cantidad: 15, color: "#f59e0b" },
-  { nombre: "Zonas de Innovación Tecnológica", estructura: "ESECI", cantidad: 6, color: "#f59e0b" },
+  // ESECI - Industria
+  { nombre: "Áreas Industriales", estructura: "ESECI", conexiones: 5, color: "#f59e0b", elementos: 8 },
+  { nombre: "Centros de Empleo", estructura: "ESECI", conexiones: 6, color: "#f59e0b", elementos: 15 },
+  { nombre: "Innovación Tecnológica", estructura: "ESECI", conexiones: 4, color: "#f59e0b", elementos: 6 },
 
-  // Estructura Socio Económica - Vivienda
-  { nombre: "Zonas Residenciales Estrato Alto", estructura: "ESECI", cantidad: 18, color: "#f59e0b" },
-  { nombre: "Zonas Residenciales Estrato Medio", estructura: "ESECI", cantidad: 35, color: "#f59e0b" },
-  { nombre: "Zonas Residenciales Estrato Bajo", estructura: "ESECI", cantidad: 52, color: "#f59e0b" },
-  { nombre: "Barrios en Transición", estructura: "ESECI", cantidad: 40, color: "#f59e0b" },
+  // ESECI - Vivienda
+  { nombre: "Vivienda Estrato Alto", estructura: "ESECI", conexiones: 6, color: "#f59e0b", elementos: 18 },
+  { nombre: "Vivienda Estrato Medio", estructura: "ESECI", conexiones: 7, color: "#f59e0b", elementos: 35 },
+  { nombre: "Vivienda Estrato Bajo", estructura: "ESECI", conexiones: 8, color: "#f59e0b", elementos: 52 },
+  { nombre: "Barrios en Transición", estructura: "ESECI", conexiones: 7, color: "#f59e0b", elementos: 40 },
 
-  // Estructura Socio Económica - Servicios Especializados
-  { nombre: "Centros de Administración Pública", estructura: "ESECI", cantidad: 8, color: "#f59e0b" },
-  { nombre: "Instituciones Financieras", estructura: "ESECI", cantidad: 12, color: "#f59e0b" },
-  { nombre: "Servicios de Salud Especializada", estructura: "ESECI", cantidad: 18, color: "#f59e0b" },
-  { nombre: "Universidades y Centros de Investigación", estructura: "ESECI", cantidad: 10, color: "#f59e0b" },
+  // ESECI - Servicios
+  { nombre: "Administración Pública", estructura: "ESECI", conexiones: 5, color: "#f59e0b", elementos: 8 },
+  { nombre: "Instituciones Financieras", estructura: "ESECI", conexiones: 5, color: "#f59e0b", elementos: 12 },
+  { nombre: "Salud Especializada", estructura: "ESECI", conexiones: 6, color: "#f59e0b", elementos: 18 },
+  { nombre: "Universidades", estructura: "ESECI", conexiones: 5, color: "#f59e0b", elementos: 10 },
 ];
 
-// Matriz de conexiones reales del POT
-const CONEXIONES_POT = [
-  // EEP conecta con:
-  [0, 1], [0, 2], [0, 3], [0, 4], [0, 5],  // Sistema hídrico
-  [1, 2], [1, 3], [1, 4], [1, 5],          // Humedales
-  [2, 3], [2, 4], [2, 5],                  // Cerros
-
-  // EIP conecta con EEP
-  [6, 0], [6, 1], [6, 2],   // Patrimonio material
-  [7, 0], [7, 1],           // Patrimonio inmaterial
-  [8, 0], [8, 2], [8, 5],   // Sitios sagrados
-  [9, 0], [9, 1],           // Paisajes
-
-  // EFC Movilidad conecta con
-  [10, 11], [10, 12], [10, 13], // Malla arterial
-  [11, 12], [11, 13],           // Ciclorutas
-
-  // EFC Equipamientos conecta con movilidad
-  [14, 10], [14, 11],  // Colegios
-  [15, 10], [15, 11],  // Hospitales
-  [16, 10], [16, 11],  // Bibliotecas
-  [17, 10], [17, 11],  // Deportivos
-
-  // EFC Espacio Público
-  [18, 19], [18, 20], [18, 21],  // Parques
+// Conexiones reales
+const CONEXIONES = [
+  [0, 1], [0, 2], [0, 3], [0, 4], [0, 5],
+  [1, 2], [1, 3], [1, 4], [1, 5],
+  [2, 3], [2, 4], [2, 5],
+  [6, 0], [6, 1], [6, 2],
+  [7, 0], [7, 1],
+  [8, 0], [8, 2], [8, 5],
+  [9, 0], [9, 1],
+  [10, 11], [10, 12], [10, 13],
+  [11, 12], [11, 13],
+  [14, 10], [14, 11],
+  [15, 10], [15, 11],
+  [16, 10], [16, 11],
+  [17, 10], [17, 11],
+  [18, 19], [18, 20], [18, 21],
   [19, 20], [19, 21],
   [20, 21],
-
-  // ESECI Comercio conecta con
-  [22, 10], [22, 11],  // Zonas comerciales
-  [23, 10], [23, 11],  // Mercados
-
-  // ESECI Industria
-  [24, 10], [24, 12],  // Áreas industriales
-  [25, 10], [25, 11],  // Centros de empleo
-
-  // ESECI Vivienda conecta con
-  [26, 10], [26, 11], [26, 20],  // Estrato alto
-  [27, 10], [27, 11], [27, 20],  // Estrato medio
-  [28, 10], [28, 11],            // Estrato bajo
-  [29, 10], [29, 11],            // Transición
-
-  // ESECI Servicios
-  [30, 10], [30, 12], [30, 20],  // Admin pública
-  [31, 10], [31, 12], [31, 22],  // Financieras
-  [32, 15], [32, 10],            // Salud especializada
-  [33, 16], [33, 10],            // Universidades
+  [22, 10], [22, 11],
+  [23, 10], [23, 11],
+  [24, 10], [24, 12],
+  [25, 10], [25, 11],
+  [26, 10], [26, 11], [26, 20],
+  [27, 10], [27, 11], [27, 20],
+  [28, 10], [28, 11],
+  [29, 10], [29, 11],
+  [30, 10], [30, 12], [30, 20],
+  [31, 10], [31, 12], [31, 22],
+  [32, 15], [32, 10],
+  [33, 16], [33, 10],
 ];
 
-// Calcular conexiones por nodo
-function calcularConexiones() {
-  const conexiones = {};
-  SUBSISTEMAS.forEach((s, i) => conexiones[i] = 0);
-  CONEXIONES_POT.forEach(([a, b]) => {
-    conexiones[a]++;
-    conexiones[b]++;
-  });
-  return conexiones;
-}
-
-const CONEXIONES_COUNT = calcularConexiones();
-
-// Nodos de la red
-class TerritorialNode {
+// Clase Nodo
+class Node {
   constructor(id, x, y) {
     this.id = id;
     this.x = x;
     this.y = y;
     this.vx = 0;
     this.vy = 0;
-    this.fx = 0;
-    this.fy = 0;
-    this.conecta = CONEXIONES_COUNT[id] || 1;
-    // Radio proporcional a conexiones: mínimo 30, máximo 80
-    this.radius = 30 + (this.conecta / Math.max(...Object.values(CONEXIONES_COUNT))) * 50;
+    this.ax = 0;
+    this.ay = 0;
+    this.data = SUBSISTEMAS[id];
+    this.radius = 20 + this.data.conexiones * 4; // Tamaño proporcional
+    this.pinned = false;
   }
 
-  applyForce() {
-    this.x += this.vx * 0.8;
-    this.y += this.vy * 0.8;
-    this.vx *= 0.95;
-    this.vy *= 0.95;
-    this.fx = 0;
-    this.fy = 0;
-
-    // Mantener dentro del canvas
-    const margin = this.radius + 10;
-    if (this.x - margin < 0) this.x = margin;
-    if (this.x + margin > 1000) this.x = 1000 - margin;
-    if (this.y - margin < 0) this.y = margin;
-    if (this.y + margin > 700) this.y = 700 - margin;
+  applyForce(fx, fy) {
+    this.ax += fx;
+    this.ay += fy;
   }
 
-  repelFrom(other) {
-    const dx = this.x - other.x;
-    const dy = this.y - other.y;
-    const dist = Math.hypot(dx, dy);
-    const minDist = this.radius + other.radius + 15; // Separación mínima
-
-    if (dist < minDist && dist > 0) {
-      const force = (minDist - dist) / dist * 0.15;
-      this.fx += dx * force;
-      this.fy += dy * force;
-      other.fx -= dx * force;
-      other.fy -= dy * force;
+  update() {
+    if (this.pinned) {
+      this.vx = 0;
+      this.vy = 0;
+      this.ax = 0;
+      this.ay = 0;
+      return;
     }
+
+    this.vx += this.ax;
+    this.vy += this.ay;
+    this.vx *= 0.98;
+    this.vy *= 0.98;
+
+    this.x += this.vx;
+    this.y += this.vy;
+
+    this.ax = 0;
+    this.ay = 0;
   }
 
-  attractTo(other) {
-    const dx = other.x - this.x;
-    const dy = other.y - this.y;
-    const dist = Math.hypot(dx, dy);
+  draw(ctx) {
+    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+    gradient.addColorStop(0, this.data.color + '40');
+    gradient.addColorStop(1, this.data.color);
 
-    if (dist > 0) {
-      const force = dist * 0.0003;
-      this.fx += dx * force;
-      this.fy += dy * force;
-    }
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = this.data.color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Glow
+    ctx.strokeStyle = this.data.color + '60';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius + 5, 0, Math.PI * 2);
+    ctx.stroke();
   }
 }
 
-// Inicializar red
+// Canvas setup
+const canvas = document.getElementById('networkCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// Crear nodos
 let nodes = [];
-
-function initializeNetwork() {
+function initNodes() {
   nodes = [];
-  const centerX = 500;
-  const centerY = 350;
-  const radius = 280;
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const radius = Math.min(canvas.width, canvas.height) / 3;
 
-  SUBSISTEMAS.forEach((subsistema, i) => {
+  SUBSISTEMAS.forEach((s, i) => {
     const angle = (i / SUBSISTEMAS.length) * Math.PI * 2;
-    const x = centerX + Math.cos(angle) * radius;
-    const y = centerY + Math.sin(angle) * radius;
-    nodes.push(new TerritorialNode(i, x, y));
+    const x = centerX + Math.cos(angle) * radius * (0.7 + Math.random() * 0.3);
+    const y = centerY + Math.sin(angle) * radius * (0.7 + Math.random() * 0.3);
+    nodes.push(new Node(i, x, y));
   });
 }
 
-// Renderizar red
-function renderNetwork() {
-  const svg = document.getElementById('territorialNetworkSvg');
-  const connectionsGroup = svg.querySelector('.connections-group');
-  const nodesGroup = svg.querySelector('.nodes-group');
+initNodes();
 
-  connectionsGroup.innerHTML = '';
-  nodesGroup.innerHTML = '';
+// Física
+function simulationStep() {
+  const k = 0.5; // Constante de atracción
+  const c = 150; // Constante de repulsión
+  const maxForce = 5;
 
-  // Dibujar conexiones
-  CONEXIONES_POT.forEach(([a, b]) => {
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', nodes[a].x);
-    line.setAttribute('y1', nodes[a].y);
-    line.setAttribute('x2', nodes[b].x);
-    line.setAttribute('y2', nodes[b].y);
-    line.setAttribute('class', 'connection-line');
-    connectionsGroup.appendChild(line);
-  });
-
-  // Dibujar nodos
-  nodes.forEach((node, i) => {
-    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('class', 'subsystem-node');
-    g.setAttribute('data-id', i);
-
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', node.x);
-    circle.setAttribute('cy', node.y);
-    circle.setAttribute('r', node.radius);
-    circle.setAttribute('filter', 'url(#glow)');
-
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', node.x);
-    text.setAttribute('y', node.y + 5);
-    text.textContent = SUBSISTEMAS[i].nombre.substring(0, 15);
-
-    g.appendChild(circle);
-    g.appendChild(text);
-    g.onclick = () => highlightSubsystem(i);
-
-    nodesGroup.appendChild(g);
-  });
-}
-
-// Simulación física
-function simulateStep() {
-  // Repulsión entre todos los nodos
+  // Repulsión entre todos
   for (let i = 0; i < nodes.length; i++) {
     for (let j = i + 1; j < nodes.length; j++) {
-      nodes[i].repelFrom(nodes[j]);
+      const dx = nodes[j].x - nodes[i].x;
+      const dy = nodes[j].y - nodes[i].y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const minDist = nodes[i].radius + nodes[j].radius + 15;
+
+      if (dist < 500) {
+        // Repulsión si están muy cerca
+        if (dist < minDist) {
+          const force = (minDist - dist) / dist * 0.3;
+          nodes[i].applyForce(-dx * force, -dy * force);
+          nodes[j].applyForce(dx * force, dy * force);
+        } else {
+          // Repulsión general (Coulomb)
+          const force = c / (dist * dist);
+          nodes[i].applyForce(-dx * force, -dy * force);
+          nodes[j].applyForce(dx * force, dy * force);
+        }
+      }
     }
   }
 
   // Atracción según conexiones
-  CONEXIONES_POT.forEach(([a, b]) => {
-    nodes[a].attractTo(nodes[b]);
-    nodes[b].attractTo(nodes[a]);
+  CONEXIONES.forEach(([a, b]) => {
+    const dx = nodes[b].x - nodes[a].x;
+    const dy = nodes[b].y - nodes[a].y;
+    const dist = Math.hypot(dx, dy) || 1;
+    const force = (dist - 100) * k / dist;
+
+    nodes[a].applyForce(dx * force, dy * force);
+    nodes[b].applyForce(-dx * force, -dy * force);
   });
 
-  // Aplicar fuerzas
+  // Gravedad al centro
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
   nodes.forEach(node => {
-    node.vx += node.fx;
-    node.vy += node.fy;
-    node.applyForce();
+    const dx = centerX - node.x;
+    const dy = centerY - node.y;
+    const dist = Math.hypot(dx, dy) || 1;
+    const force = 0.01;
+    node.applyForce(dx * force, dy * force);
   });
 
-  renderNetwork();
-}
+  // Update
+  nodes.forEach(node => node.update());
 
-// Modal
-function showSubsystemsModal() {
-  const modal = document.getElementById('subsystemsModalOverlay');
-  const grid = document.getElementById('subsystemsGrid');
-
-  grid.innerHTML = SUBSISTEMAS.map((s, i) => `
-    <div class="subsystem-card" onclick="highlightSubsystem(${i})">
-      <h3>${s.nombre}</h3>
-      <p>${s.estructura}</p>
-      <span class="subsystem-badge">${s.cantidad} elementos</span>
-    </div>
-  `).join('');
-
-  modal.hidden = false;
-}
-
-function closeSubsystemsModal(e) {
-  if (e && e.target.id !== 'subsystemsModalOverlay') return;
-  document.getElementById('subsystemsModalOverlay').hidden = true;
-}
-
-function highlightSubsystem(id) {
-  const nodes = document.querySelectorAll('.subsystem-node');
-  nodes.forEach(n => n.style.opacity = '0.4');
-  const node = document.querySelector(`[data-id="${id}"]`);
-  if (node) {
-    node.style.opacity = '1';
-    node.querySelector('circle').style.filter = 'drop-shadow(0 0 20px rgba(47, 212, 200, 1))';
-  }
-
-  // Resaltar conexiones
-  const svg = document.getElementById('territorialNetworkSvg');
-  const lines = svg.querySelectorAll('.connection-line');
-  lines.forEach(line => line.style.opacity = '0.1');
-
-  CONEXIONES_POT.forEach(([a, b]) => {
-    if (a === id || b === id) {
-      const idx = CONEXIONES_POT.indexOf([a, b]);
-      lines[idx].style.opacity = '0.8';
-      lines[idx].style.stroke = 'rgba(47, 212, 200, 0.8)';
-      lines[idx].style.strokeWidth = '2';
-    }
+  // Limitar dentro del canvas
+  const margin = 50;
+  nodes.forEach(node => {
+    node.x = Math.max(node.radius + margin, Math.min(canvas.width - node.radius - margin, node.x));
+    node.y = Math.max(node.radius + margin, Math.min(canvas.height - node.radius - margin, node.y));
   });
 }
 
-// Iniciar
-initializeNetwork();
-renderNetwork();
+// Dibujar
+function draw() {
+  ctx.fillStyle = 'rgba(10, 14, 39, 0.1)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-// Animar la física
-let iterations = 0;
-const animate = () => {
-  simulateStep();
-  if (iterations < 200) {
-    iterations++;
-    requestAnimationFrame(animate);
-  }
-};
+  // Líneas de conexión
+  ctx.strokeStyle = 'rgba(47, 212, 200, 0.15)';
+  ctx.lineWidth = 1;
+  CONEXIONES.forEach(([a, b]) => {
+    ctx.beginPath();
+    ctx.moveTo(nodes[a].x, nodes[a].y);
+    ctx.lineTo(nodes[b].x, nodes[b].y);
+    ctx.stroke();
+  });
+
+  // Nodos
+  nodes.forEach(node => node.draw(ctx));
+
+  // Botón central
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const btnRadius = 50;
+
+  const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, btnRadius);
+  gradient.addColorStop(0, 'rgba(47, 212, 200, 0.6)');
+  gradient.addColorStop(1, 'rgba(31, 143, 130, 0.8)');
+
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, btnRadius, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = '#2fbfae';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, btnRadius, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 24px Inter';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('36 +', centerX, centerY);
+}
+
+// Animación
+let animating = true;
+function animate() {
+  simulationStep();
+  draw();
+  if (animating) requestAnimationFrame(animate);
+}
 
 animate();
 
-// Continuar simulación suave
-setInterval(() => {
-  simulateStep();
-}, 1000 / 60);
+// Eventos
+canvas.addEventListener('click', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const btnRadius = 50;
+  const dist = Math.hypot(x - centerX, y - centerY);
+
+  if (dist < btnRadius) {
+    showModal();
+  }
+});
+
+// Modal
+function showModal() {
+  const grid = document.getElementById('subsystemsGrid');
+  grid.innerHTML = SUBSISTEMAS.map((s, i) => `
+    <div class="subsystem-card">
+      <h3>${s.nombre}</h3>
+      <p>${s.estructura}</p>
+      <span class="badge">${s.elementos} elementos</span>
+      <span class="badge" style="margin-left: 8px;">${s.conexiones} conexiones</span>
+    </div>
+  `).join('');
+
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+}
+
+document.getElementById('modalOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'modalOverlay') closeModal();
+});
+
+// Estadísticas
+document.getElementById('nodeCount').textContent = `Visualizando 36 subsistemas • ${CONEXIONES.length} conexiones reales del POT`;
 </script>
 
 </body>
