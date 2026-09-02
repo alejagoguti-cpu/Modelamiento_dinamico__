@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo 2: Cómo comprendemos el territorio · RAPOT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .modulo-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .modulo-header h1 {
+      font-size: 2.5em;
+      color: #2fbfae;
+      margin: 0 0 10px 0;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+    }
+
+    .modulo-header p {
+      font-size: 1.1em;
+      color: #cbd5e1;
+      margin: 0;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .network-container {
+      background: rgba(15, 23, 42, 0.8);
+      border: 2px solid rgba(47, 212, 200, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .network-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      min-height: 600px;
+    }
+
+    /* Nodos y conexiones */
+    .subsystem-node {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .subsystem-node circle {
+      fill: url(#grad-system);
+      stroke: rgba(47, 212, 200, 0.6);
+      stroke-width: 2;
+      transition: all 0.3s ease;
+    }
+
+    .subsystem-node text {
+      font-size: 13px;
+      fill: white;
+      font-weight: 600;
+      text-anchor: middle;
+      pointer-events: none;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .subsystem-node:hover circle {
+      stroke: rgba(47, 212, 200, 1);
+      stroke-width: 3;
+      filter: drop-shadow(0 0 12px rgba(47, 212, 200, 0.6));
+    }
+
+    .connection-line {
+      stroke: rgba(47, 212, 200, 0.2);
+      stroke-width: 1;
+      fill: none;
+      pointer-events: none;
+    }
+
+    .center-button {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .center-button circle {
+      fill: url(#grad-center);
+      stroke: rgba(47, 212, 200, 0.8);
+      stroke-width: 3;
+    }
+
+    .center-button text {
+      font-size: 16px;
+      font-weight: 700;
+      fill: white;
+      text-anchor: middle;
+      pointer-events: none;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+    }
+
+    .center-button:hover circle {
+      filter: drop-shadow(0 0 20px rgba(47, 212, 200, 0.8));
+      stroke-width: 4;
+    }
+
+    /* Modal de subsistemas */
+    .subsystems-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .subsystems-modal {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 2px solid rgba(47, 212, 200, 0.3);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 900px;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.8);
+    }
+
+    .subsystems-modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: #2fbfae;
+      font-size: 28px;
+      cursor: pointer;
+      padding: 5px 10px;
+      transition: all 0.3s ease;
+    }
+
+    .subsystems-modal-close:hover {
+      transform: scale(1.2);
+      color: #1f8f82;
+    }
+
+    .subsystems-modal h2 {
+      color: #2fbfae;
+      font-size: 2em;
+      margin-top: 0;
+      margin-bottom: 30px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .subsystems-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .subsystem-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(47, 212, 200, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .subsystem-card:hover {
+      border-color: rgba(47, 212, 200, 0.6);
+      background: rgba(30, 41, 59, 0.9);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(47, 212, 200, 0.2);
+    }
+
+    .subsystem-card h3 {
+      color: #2fbfae;
+      margin: 0 0 10px 0;
+      font-size: 1.1em;
+      font-weight: 600;
+    }
+
+    .subsystem-card p {
+      color: #cbd5e1;
+      margin: 0;
+      font-size: 0.95em;
+      line-height: 1.5;
+    }
+
+    .subsystem-badge {
+      display: inline-block;
+      background: rgba(47, 212, 200, 0.2);
+      color: #2fbfae;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .modulo-header h1 {
+        font-size: 1.8em;
+      }
+
+      .modulo-header p {
+        font-size: 1em;
+      }
+
+      .subsystems-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .network-svg {
+        min-height: 400px;
+      }
+
+      .subsystem-node text {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="modulo-header">
+  <h1>🌐 ¿Cómo comprendemos el territorio?</h1>
+  <p>Una red interactiva que muestra cómo el POT organiza y relaciona los subsistemas territoriales de Bogotá</p>
+</div>
+
+<div class="network-container">
+  <svg class="network-svg" id="territorialNetworkSvg" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+    <!-- Gradientes -->
+    <defs>
+      <linearGradient id="grad-system" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#45d6c5"></stop>
+        <stop offset="100%" stop-color="#1f8f82"></stop>
+      </linearGradient>
+      <linearGradient id="grad-center" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#2fbfae"></stop>
+        <stop offset="100%" stop-color="#06b6d4"></stop>
+      </linearGradient>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <!-- Conexiones -->
+    <g class="connections-group"></g>
+
+    <!-- Nodos -->
+    <g class="nodes-group"></g>
+
+    <!-- Botón central -->
+    <g class="center-button" id="centerButton" onclick="showSubsystemsModal()">
+      <circle cx="500" cy="350" r="45" filter="url(#glow)"></circle>
+      <text x="500" y="360" text-anchor="middle">36 +</text>
+    </g>
+  </svg>
+</div>
+
+<!-- Modal de subsistemas -->
+<div id="subsystemsModalOverlay" class="subsystems-modal-overlay" hidden onclick="closeSubsystemsModal(event)">
+  <div class="subsystems-modal" onclick="event.stopPropagation()">
+    <button class="subsystems-modal-close" onclick="closeSubsystemsModal()">&times;</button>
+    <h2>Los 36 Subsistemas Territoriales</h2>
+    <div class="subsystems-grid" id="subsystemsGrid"></div>
+  </div>
+</div>
+
+<script>
+// Datos de 36 subsistemas del territorio según POT Decreto 555
+const SUBSISTEMAS = [
+  // Estructura Ecológica Principal (Sistema Hídrico)
+  { nombre: "Sistema Hídrico Superficial", estructura: "EEP", cantidad: 13, color: "#2fbfae" },
+  { nombre: "Humedales Urbanos", estructura: "EEP", cantidad: 15, color: "#2fbfae" },
+  { nombre: "Cerros Orientales", estructura: "EEP", cantidad: 3, color: "#2fbfae" },
+  { nombre: "Áreas Protegidas Nacional", estructura: "EEP", cantidad: 2, color: "#2fbfae" },
+  { nombre: "Reservas Forestales", estructura: "EEP", cantidad: 2, color: "#2fbfae" },
+  { nombre: "Áreas de Importancia Ambiental", estructura: "EEP", cantidad: 6, color: "#2fbfae" },
+
+  // Estructura Integradora de Patrimonios
+  { nombre: "Patrimonio Material Histórico", estructura: "EIP", cantidad: 50, color: "#d86ef5" },
+  { nombre: "Patrimonio Inmaterial", estructura: "EIP", cantidad: 100, color: "#d86ef5" },
+  { nombre: "Sitios Sagrados Indígenas", estructura: "EIP", cantidad: 20, color: "#d86ef5" },
+  { nombre: "Paisajes Singulares", estructura: "EIP", cantidad: 30, color: "#d86ef5" },
+
+  // Estructura Funcional y del Cuidado - Movilidad
+  { nombre: "Malla Arterial Vial", estructura: "EFC", cantidad: 45, color: "#3b82f6" },
+  { nombre: "Ciclorutas y Ciclovías", estructura: "EFC", cantidad: 120, color: "#3b82f6" },
+  { nombre: "Sistema de Transporte Público", estructura: "EFC", cantidad: 12, color: "#3b82f6" },
+  { nombre: "Estacionamientos Públicos", estructura: "EFC", cantidad: 25, color: "#3b82f6" },
+
+  // Estructura Funcional - Equipamientos
+  { nombre: "Colegios y Educación", estructura: "EFC", cantidad: 150, color: "#3b82f6" },
+  { nombre: "Hospitales y Salud", estructura: "EFC", cantidad: 140, color: "#3b82f6" },
+  { nombre: "Bibliotecas y Cultura", estructura: "EFC", cantidad: 120, color: "#3b82f6" },
+  { nombre: "Deportivos y Recreación", estructura: "EFC", cantidad: 100, color: "#3b82f6" },
+
+  // Estructura Funcional - Espacio Público
+  { nombre: "Parques Metropolitanos", estructura: "EFC", cantidad: 12, color: "#3b82f6" },
+  { nombre: "Parques Zonales", estructura: "EFC", cantidad: 45, color: "#3b82f6" },
+  { nombre: "Plazas y Plazoletas", estructura: "EFC", cantidad: 80, color: "#3b82f6" },
+  { nombre: "Espacios de Encuentro Comunitario", estructura: "EFC", cantidad: 200, color: "#3b82f6" },
+
+  // Estructura Socio Económica, Creativa e Innovación - Comercio
+  { nombre: "Zonas Comerciales", estructura: "ESECI", cantidad: 40, color: "#f59e0b" },
+  { nombre: "Mercados Populares", estructura: "ESECI", cantidad: 25, color: "#f59e0b" },
+  { nombre: "Comercio de Proximidad", estructura: "ESECI", cantidad: 800, color: "#f59e0b" },
+
+  // Estructura Socio Económica - Industria y Empleo
+  { nombre: "Áreas Industriales", estructura: "ESECI", cantidad: 8, color: "#f59e0b" },
+  { nombre: "Centros de Empleo", estructura: "ESECI", cantidad: 15, color: "#f59e0b" },
+  { nombre: "Zonas de Innovación Tecnológica", estructura: "ESECI", cantidad: 6, color: "#f59e0b" },
+
+  // Estructura Socio Económica - Vivienda
+  { nombre: "Zonas Residenciales Estrato Alto", estructura: "ESECI", cantidad: 18, color: "#f59e0b" },
+  { nombre: "Zonas Residenciales Estrato Medio", estructura: "ESECI", cantidad: 35, color: "#f59e0b" },
+  { nombre: "Zonas Residenciales Estrato Bajo", estructura: "ESECI", cantidad: 52, color: "#f59e0b" },
+  { nombre: "Barrios en Transición", estructura: "ESECI", cantidad: 40, color: "#f59e0b" },
+
+  // Estructura Socio Económica - Servicios Especializados
+  { nombre: "Centros de Administración Pública", estructura: "ESECI", cantidad: 8, color: "#f59e0b" },
+  { nombre: "Instituciones Financieras", estructura: "ESECI", cantidad: 12, color: "#f59e0b" },
+  { nombre: "Servicios de Salud Especializada", estructura: "ESECI", cantidad: 18, color: "#f59e0b" },
+  { nombre: "Universidades y Centros de Investigación", estructura: "ESECI", cantidad: 10, color: "#f59e0b" },
+];
+
+// Matriz de conexiones reales del POT
+const CONEXIONES_POT = [
+  // EEP conecta con:
+  [0, 1], [0, 2], [0, 3], [0, 4], [0, 5],  // Sistema hídrico
+  [1, 2], [1, 3], [1, 4], [1, 5],          // Humedales
+  [2, 3], [2, 4], [2, 5],                  // Cerros
+
+  // EIP conecta con EEP
+  [6, 0], [6, 1], [6, 2],   // Patrimonio material
+  [7, 0], [7, 1],           // Patrimonio inmaterial
+  [8, 0], [8, 2], [8, 5],   // Sitios sagrados
+  [9, 0], [9, 1],           // Paisajes
+
+  // EFC Movilidad conecta con
+  [10, 11], [10, 12], [10, 13], // Malla arterial
+  [11, 12], [11, 13],           // Ciclorutas
+
+  // EFC Equipamientos conecta con movilidad
+  [14, 10], [14, 11],  // Colegios
+  [15, 10], [15, 11],  // Hospitales
+  [16, 10], [16, 11],  // Bibliotecas
+  [17, 10], [17, 11],  // Deportivos
+
+  // EFC Espacio Público
+  [18, 19], [18, 20], [18, 21],  // Parques
+  [19, 20], [19, 21],
+  [20, 21],
+
+  // ESECI Comercio conecta con
+  [22, 10], [22, 11],  // Zonas comerciales
+  [23, 10], [23, 11],  // Mercados
+
+  // ESECI Industria
+  [24, 10], [24, 12],  // Áreas industriales
+  [25, 10], [25, 11],  // Centros de empleo
+
+  // ESECI Vivienda conecta con
+  [26, 10], [26, 11], [26, 20],  // Estrato alto
+  [27, 10], [27, 11], [27, 20],  // Estrato medio
+  [28, 10], [28, 11],            // Estrato bajo
+  [29, 10], [29, 11],            // Transición
+
+  // ESECI Servicios
+  [30, 10], [30, 12], [30, 20],  // Admin pública
+  [31, 10], [31, 12], [31, 22],  // Financieras
+  [32, 15], [32, 10],            // Salud especializada
+  [33, 16], [33, 10],            // Universidades
+];
+
+// Calcular conexiones por nodo
+function calcularConexiones() {
+  const conexiones = {};
+  SUBSISTEMAS.forEach((s, i) => conexiones[i] = 0);
+  CONEXIONES_POT.forEach(([a, b]) => {
+    conexiones[a]++;
+    conexiones[b]++;
+  });
+  return conexiones;
+}
+
+const CONEXIONES_COUNT = calcularConexiones();
+
+// Nodos de la red
+class TerritorialNode {
+  constructor(id, x, y) {
+    this.id = id;
+    this.x = x;
+    this.y = y;
+    this.vx = 0;
+    this.vy = 0;
+    this.fx = 0;
+    this.fy = 0;
+    this.conecta = CONEXIONES_COUNT[id] || 1;
+    // Radio proporcional a conexiones: mínimo 30, máximo 80
+    this.radius = 30 + (this.conecta / Math.max(...Object.values(CONEXIONES_COUNT))) * 50;
+  }
+
+  applyForce() {
+    this.x += this.vx * 0.8;
+    this.y += this.vy * 0.8;
+    this.vx *= 0.95;
+    this.vy *= 0.95;
+    this.fx = 0;
+    this.fy = 0;
+
+    // Mantener dentro del canvas
+    const margin = this.radius + 10;
+    if (this.x - margin < 0) this.x = margin;
+    if (this.x + margin > 1000) this.x = 1000 - margin;
+    if (this.y - margin < 0) this.y = margin;
+    if (this.y + margin > 700) this.y = 700 - margin;
+  }
+
+  repelFrom(other) {
+    const dx = this.x - other.x;
+    const dy = this.y - other.y;
+    const dist = Math.hypot(dx, dy);
+    const minDist = this.radius + other.radius + 15; // Separación mínima
+
+    if (dist < minDist && dist > 0) {
+      const force = (minDist - dist) / dist * 0.15;
+      this.fx += dx * force;
+      this.fy += dy * force;
+      other.fx -= dx * force;
+      other.fy -= dy * force;
+    }
+  }
+
+  attractTo(other) {
+    const dx = other.x - this.x;
+    const dy = other.y - this.y;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist > 0) {
+      const force = dist * 0.0003;
+      this.fx += dx * force;
+      this.fy += dy * force;
+    }
+  }
+}
+
+// Inicializar red
+let nodes = [];
+
+function initializeNetwork() {
+  nodes = [];
+  const centerX = 500;
+  const centerY = 350;
+  const radius = 280;
+
+  SUBSISTEMAS.forEach((subsistema, i) => {
+    const angle = (i / SUBSISTEMAS.length) * Math.PI * 2;
+    const x = centerX + Math.cos(angle) * radius;
+    const y = centerY + Math.sin(angle) * radius;
+    nodes.push(new TerritorialNode(i, x, y));
+  });
+}
+
+// Renderizar red
+function renderNetwork() {
+  const svg = document.getElementById('territorialNetworkSvg');
+  const connectionsGroup = svg.querySelector('.connections-group');
+  const nodesGroup = svg.querySelector('.nodes-group');
+
+  connectionsGroup.innerHTML = '';
+  nodesGroup.innerHTML = '';
+
+  // Dibujar conexiones
+  CONEXIONES_POT.forEach(([a, b]) => {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', nodes[a].x);
+    line.setAttribute('y1', nodes[a].y);
+    line.setAttribute('x2', nodes[b].x);
+    line.setAttribute('y2', nodes[b].y);
+    line.setAttribute('class', 'connection-line');
+    connectionsGroup.appendChild(line);
+  });
+
+  // Dibujar nodos
+  nodes.forEach((node, i) => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'subsystem-node');
+    g.setAttribute('data-id', i);
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', node.x);
+    circle.setAttribute('cy', node.y);
+    circle.setAttribute('r', node.radius);
+    circle.setAttribute('filter', 'url(#glow)');
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', node.x);
+    text.setAttribute('y', node.y + 5);
+    text.textContent = SUBSISTEMAS[i].nombre.substring(0, 15);
+
+    g.appendChild(circle);
+    g.appendChild(text);
+    g.onclick = () => highlightSubsystem(i);
+
+    nodesGroup.appendChild(g);
+  });
+}
+
+// Simulación física
+function simulateStep() {
+  // Repulsión entre todos los nodos
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      nodes[i].repelFrom(nodes[j]);
+    }
+  }
+
+  // Atracción según conexiones
+  CONEXIONES_POT.forEach(([a, b]) => {
+    nodes[a].attractTo(nodes[b]);
+    nodes[b].attractTo(nodes[a]);
+  });
+
+  // Aplicar fuerzas
+  nodes.forEach(node => {
+    node.vx += node.fx;
+    node.vy += node.fy;
+    node.applyForce();
+  });
+
+  renderNetwork();
+}
+
+// Modal
+function showSubsystemsModal() {
+  const modal = document.getElementById('subsystemsModalOverlay');
+  const grid = document.getElementById('subsystemsGrid');
+
+  grid.innerHTML = SUBSISTEMAS.map((s, i) => `
+    <div class="subsystem-card" onclick="highlightSubsystem(${i})">
+      <h3>${s.nombre}</h3>
+      <p>${s.estructura}</p>
+      <span class="subsystem-badge">${s.cantidad} elementos</span>
+    </div>
+  `).join('');
+
+  modal.hidden = false;
+}
+
+function closeSubsystemsModal(e) {
+  if (e && e.target.id !== 'subsystemsModalOverlay') return;
+  document.getElementById('subsystemsModalOverlay').hidden = true;
+}
+
+function highlightSubsystem(id) {
+  const nodes = document.querySelectorAll('.subsystem-node');
+  nodes.forEach(n => n.style.opacity = '0.4');
+  const node = document.querySelector(`[data-id="${id}"]`);
+  if (node) {
+    node.style.opacity = '1';
+    node.querySelector('circle').style.filter = 'drop-shadow(0 0 20px rgba(47, 212, 200, 1))';
+  }
+
+  // Resaltar conexiones
+  const svg = document.getElementById('territorialNetworkSvg');
+  const lines = svg.querySelectorAll('.connection-line');
+  lines.forEach(line => line.style.opacity = '0.1');
+
+  CONEXIONES_POT.forEach(([a, b]) => {
+    if (a === id || b === id) {
+      const idx = CONEXIONES_POT.indexOf([a, b]);
+      lines[idx].style.opacity = '0.8';
+      lines[idx].style.stroke = 'rgba(47, 212, 200, 0.8)';
+      lines[idx].style.strokeWidth = '2';
+    }
+  });
+}
+
+// Iniciar
+initializeNetwork();
+renderNetwork();
+
+// Animar la física
+let iterations = 0;
+const animate = () => {
+  simulateStep();
+  if (iterations < 200) {
+    iterations++;
+    requestAnimationFrame(animate);
+  }
+};
+
+animate();
+
+// Continuar simulación suave
+setInterval(() => {
+  simulateStep();
+}, 1000 / 60);
+</script>
+
+</body>
+</html>
