@@ -58,42 +58,46 @@
       width: 100%;
       height: 100%;
       display: block;
+      background: radial-gradient(circle at center, rgba(26, 31, 58, 0.8) 0%, rgba(10, 14, 39, 0.95) 100%);
     }
 
     .connection-line {
-      stroke: rgba(47, 212, 200, 0.2);
-      stroke-width: 1;
+      stroke: rgba(180, 140, 50, 0.35);
+      stroke-width: 1.5;
       fill: none;
+      pointer-events: none;
     }
 
     .node-circle {
-      fill-opacity: 0.85;
-      stroke-width: 2;
-      filter: drop-shadow(0 0 8px rgba(47, 212, 200, 0.3));
+      fill-opacity: 0.9;
+      stroke-width: 2.5;
+      stroke: url(#grad-border);
+      filter: drop-shadow(0 0 10px rgba(180, 140, 50, 0.4));
       transition: all 0.3s ease;
       cursor: pointer;
     }
 
     .node-circle:hover {
-      filter: drop-shadow(0 0 20px rgba(47, 212, 200, 0.8));
-      stroke-width: 3;
+      filter: drop-shadow(0 0 25px rgba(180, 140, 50, 0.8));
+      stroke-width: 3.5;
     }
 
     .node-label {
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
       text-anchor: middle;
       pointer-events: none;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-      fill: white;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+      fill: #fef3c7;
+      letter-spacing: 0.5px;
     }
 
     .legend {
       position: absolute;
       top: 20px;
       right: 20px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 2px solid rgba(47, 212, 200, 0.3);
+      background: rgba(15, 23, 42, 0.95);
+      border: 2px solid rgba(180, 140, 50, 0.4);
       border-radius: 12px;
       padding: 20px;
       backdrop-filter: blur(10px);
@@ -106,6 +110,7 @@
       margin-bottom: 12px;
       gap: 10px;
       font-size: 0.9em;
+      color: #e2e8f0;
     }
 
     .legend-item:last-child {
@@ -113,10 +118,10 @@
     }
 
     .legend-color {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.3);
+      border: 2px solid rgba(180, 140, 50, 0.5);
     }
 
     /* Modal */
@@ -126,7 +131,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.85);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -143,7 +148,7 @@
 
     .modal {
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      border: 2px solid rgba(47, 212, 200, 0.3);
+      border: 2px solid rgba(180, 140, 50, 0.4);
       border-radius: 16px;
       padding: 30px;
       max-width: 1000px;
@@ -158,7 +163,7 @@
       right: 15px;
       background: none;
       border: none;
-      color: #2fbfae;
+      color: #b48c32;
       font-size: 32px;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -166,11 +171,11 @@
 
     .modal-close:hover {
       transform: scale(1.2);
-      color: #1f8f82;
+      color: #f59e0b;
     }
 
     .modal h2 {
-      color: #2fbfae;
+      color: #b48c32;
       font-size: 1.8em;
       margin-bottom: 20px;
       font-family: 'Space Grotesk', sans-serif;
@@ -184,7 +189,7 @@
 
     .subsystem-card {
       background: rgba(30, 41, 59, 0.6);
-      border: 1px solid rgba(47, 212, 200, 0.2);
+      border: 1px solid rgba(180, 140, 50, 0.2);
       border-radius: 12px;
       padding: 20px;
       transition: all 0.3s ease;
@@ -192,13 +197,13 @@
     }
 
     .subsystem-card:hover {
-      border-color: rgba(47, 212, 200, 0.6);
-      background: rgba(47, 212, 200, 0.1);
+      border-color: rgba(180, 140, 50, 0.6);
+      background: rgba(180, 140, 50, 0.1);
       transform: translateY(-4px);
     }
 
     .subsystem-card h3 {
-      color: #2fbfae;
+      color: #b48c32;
       margin-bottom: 10px;
       font-size: 1em;
     }
@@ -211,8 +216,8 @@
 
     .badge {
       display: inline-block;
-      background: rgba(47, 212, 200, 0.2);
-      color: #2fbfae;
+      background: rgba(180, 140, 50, 0.2);
+      color: #b48c32;
       padding: 5px 12px;
       border-radius: 20px;
       font-size: 0.8em;
@@ -225,11 +230,11 @@
 <div class="container">
   <div class="header">
     <h1>🌐 La Red Territorial del POT</h1>
-    <p>36 subsistemas únicos • Red estática • Conexiones reales del Decreto 555</p>
+    <p>36 subsistemas únicos • Red estática distribuida • Conexiones reales del Decreto 555</p>
   </div>
 
   <div class="network-wrapper">
-    <svg id="networkSvg" viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg">
+    <svg id="networkSvg" viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="grad-eep" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#2fbfae"></stop>
@@ -240,11 +245,15 @@
           <stop offset="100%" stop-color="#a855f7"></stop>
         </linearGradient>
         <linearGradient id="grad-efc" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#f59e0b"></stop>
+          <stop offset="100%" stop-color="#d97706"></stop>
+        </linearGradient>
+        <linearGradient id="grad-eseci" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#3b82f6"></stop>
           <stop offset="100%" stop-color="#1e40af"></stop>
         </linearGradient>
-        <linearGradient id="grad-eseci" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#f59e0b"></stop>
+        <linearGradient id="grad-border" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#b48c32"></stop>
           <stop offset="100%" stop-color="#d97706"></stop>
         </linearGradient>
       </defs>
@@ -262,11 +271,11 @@
         <div>EIP: Patrimonios</div>
       </div>
       <div class="legend-item">
-        <div class="legend-color" style="background: linear-gradient(135deg, #3b82f6, #1e40af);"></div>
+        <div class="legend-color" style="background: linear-gradient(135deg, #f59e0b, #d97706);"></div>
         <div>EFC: Funcional</div>
       </div>
       <div class="legend-item">
-        <div class="legend-color" style="background: linear-gradient(135deg, #f59e0b, #d97706);"></div>
+        <div class="legend-color" style="background: linear-gradient(135deg, #3b82f6, #1e40af);"></div>
         <div>ESECI: Socioeconómica</div>
       </div>
     </div>
@@ -283,67 +292,66 @@
 </div>
 
 <script>
-// 36 Subsistemas ÚNICOS (sin jerarquías ni componentes que se componen entre sí)
+// 36 Subsistemas ESPECÍFICOS - SIN REDUNDANCIAS
 const SUBSISTEMAS = [
-  // EEP (6)
-  { nombre: "Ríos Principales", estructura: "EEP", conexiones: 8, gradient: "grad-eep", elementos: 13 },
-  { nombre: "Sistema de Humedales", estructura: "EEP", conexiones: 7, gradient: "grad-eep", elementos: 15 },
-  { nombre: "Páramos y Cerros", estructura: "EEP", conexiones: 5, gradient: "grad-eep", elementos: 5 },
-  { nombre: "Áreas Protegidas", estructura: "EEP", conexiones: 4, gradient: "grad-eep", elementos: 2 },
-  { nombre: "Bosques y Vegetación", estructura: "EEP", conexiones: 6, gradient: "grad-eep", elementos: 8 },
-  { nombre: "Biodiversidad y Fauna", estructura: "EEP", conexiones: 5, gradient: "grad-eep", elementos: 20 },
+  // EEP - Específicos (6)
+  { nombre: "Río Bogotá", estructura: "EEP", conexiones: 6, gradient: "grad-eep", elementos: 1 },
+  { nombre: "Jaboque", estructura: "EEP", conexiones: 5, gradient: "grad-eep", elementos: 1 },
+  { nombre: "Cerros Orientales", estructura: "EEP", conexiones: 5, gradient: "grad-eep", elementos: 1 },
+  { nombre: "Páramo Chingaza", estructura: "EEP", conexiones: 4, gradient: "grad-eep", elementos: 1 },
+  { nombre: "Bosque Thomas van der Hammen", estructura: "EEP", conexiones: 4, gradient: "grad-eep", elementos: 1 },
+  { nombre: "Conejera", estructura: "EEP", conexiones: 5, gradient: "grad-eep", elementos: 1 },
 
-  // EIP (4)
-  { nombre: "Patrimonio Histórico", estructura: "EIP", conexiones: 5, gradient: "grad-eip", elementos: 50 },
-  { nombre: "Cultura Inmaterial", estructura: "EIP", conexiones: 4, gradient: "grad-eip", elementos: 100 },
-  { nombre: "Sitios Sagrados", estructura: "EIP", conexiones: 5, gradient: "grad-eip", elementos: 20 },
-  { nombre: "Paisajes Singulares", estructura: "EIP", conexiones: 4, gradient: "grad-eip", elementos: 30 },
+  // EIP - Específicos (4)
+  { nombre: "Candelaria Centro Histórico", estructura: "EIP", conexiones: 5, gradient: "grad-eip", elementos: 1 },
+  { nombre: "Tradiciones Muiscas", estructura: "EIP", conexiones: 4, gradient: "grad-eip", elementos: 1 },
+  { nombre: "Monserrate Sagrado", estructura: "EIP", conexiones: 5, gradient: "grad-eip", elementos: 1 },
+  { nombre: "Salto del Tequendama", estructura: "EIP", conexiones: 4, gradient: "grad-eip", elementos: 1 },
 
-  // EFC (14) - Infraestructura única
-  { nombre: "Vías Arteriales", estructura: "EFC", conexiones: 12, gradient: "grad-efc", elementos: 45 },
-  { nombre: "Cicloinfraestructura", estructura: "EFC", conexiones: 11, gradient: "grad-efc", elementos: 120 },
-  { nombre: "Sistema de Transporte", estructura: "EFC", conexiones: 10, gradient: "grad-efc", elementos: 12 },
-  { nombre: "Infraestructura de Parqueos", estructura: "EFC", conexiones: 8, gradient: "grad-efc", elementos: 25 },
-  { nombre: "Escuelas y Educación", estructura: "EFC", conexiones: 9, gradient: "grad-efc", elementos: 150 },
-  { nombre: "Hospitales y Salud", estructura: "EFC", conexiones: 9, gradient: "grad-efc", elementos: 140 },
-  { nombre: "Bibliotecas y Cultura", estructura: "EFC", conexiones: 8, gradient: "grad-efc", elementos: 120 },
-  { nombre: "Equipamientos Deportivos", estructura: "EFC", conexiones: 7, gradient: "grad-efc", elementos: 100 },
-  { nombre: "Parques Principales", estructura: "EFC", conexiones: 8, gradient: "grad-efc", elementos: 57 },
-  { nombre: "Plazas y Espacio Público", estructura: "EFC", conexiones: 9, gradient: "grad-efc", elementos: 80 },
-  { nombre: "Servicios de Agua", estructura: "EFC", conexiones: 6, gradient: "grad-efc", elementos: 1 },
-  { nombre: "Servicios de Energía", estructura: "EFC", conexiones: 6, gradient: "grad-efc", elementos: 1 },
-  { nombre: "Servicios de Telecomunicaciones", estructura: "EFC", conexiones: 5, gradient: "grad-efc", elementos: 1 },
-  { nombre: "Gestión de Residuos", estructura: "EFC", conexiones: 4, gradient: "grad-efc", elementos: 8 },
+  // EFC - Específicos (14)
+  { nombre: "Avenida Boyacá", estructura: "EFC", conexiones: 11, gradient: "grad-efc", elementos: 1 },
+  { nombre: "Ciclovía Sabana", estructura: "EFC", conexiones: 10, gradient: "grad-efc", elementos: 1 },
+  { nombre: "TransMilenio", estructura: "EFC", conexiones: 9, gradient: "grad-efc", elementos: 1 },
+  { nombre: "Estaciones de Metro", estructura: "EFC", conexiones: 8, gradient: "grad-efc", elementos: 1 },
+  { nombre: "Red Colegios", estructura: "EFC", conexiones: 9, gradient: "grad-efc", elementos: 1 },
+  { nombre: "Hospitales Zona Centro", estructura: "EFC", conexiones: 9, gradient: "grad-efc", elementos: 1 },
+  { nombre: "Biblioteca Luis Ángel Arango", estructura: "EFC", conexiones: 7, gradient: "grad-efc", elementos: 1 },
+  { nombre: "Coliseo El Campín", estructura: "EFC", conexiones: 6, gradient: "grad-efc", elementos: 1 },
+  { nombre: "Parque Metropolitano Simón Bolívar", estructura: "EFC", conexiones: 8, gradient: "grad-efc", elementos: 1 },
+  { nombre: "Plaza Mayor", estructura: "EFC", conexiones: 8, gradient: "grad-efc", elementos: 1 },
+  { nombre: "Acueducto de Bogotá", estructura: "EFC", conexiones: 5, gradient: "grad-efc", elementos: 1 },
+  { nombre: "Red de Energía", estructura: "EFC", conexiones: 5, gradient: "grad-efc", elementos: 1 },
+  { nombre: "Red de Telecom", estructura: "EFC", conexiones: 4, gradient: "grad-efc", elementos: 1 },
+  { nombre: "Relleno Sanitario Doña Juana", estructura: "EFC", conexiones: 3, gradient: "grad-efc", elementos: 1 },
 
-  // ESECI (12) - Socioeconómico único
-  { nombre: "Zonas Comerciales", estructura: "ESECI", conexiones: 7, gradient: "grad-eseci", elementos: 40 },
-  { nombre: "Centros de Mercado", estructura: "ESECI", conexiones: 6, gradient: "grad-eseci", elementos: 25 },
-  { nombre: "Comercio Minorista", estructura: "ESECI", conexiones: 8, gradient: "grad-eseci", elementos: 800 },
-  { nombre: "Distritos Industriales", estructura: "ESECI", conexiones: 5, gradient: "grad-eseci", elementos: 8 },
-  { nombre: "Centros de Empleabilidad", estructura: "ESECI", conexiones: 6, gradient: "grad-eseci", elementos: 15 },
-  { nombre: "Zonas de Innovación", estructura: "ESECI", conexiones: 4, gradient: "grad-eseci", elementos: 6 },
-  { nombre: "Vivienda de Interés Social", estructura: "ESECI", conexiones: 8, gradient: "grad-eseci", elementos: 70 },
-  { nombre: "Vivienda Media", estructura: "ESECI", conexiones: 7, gradient: "grad-eseci", elementos: 35 },
-  { nombre: "Vivienda Premium", estructura: "ESECI", conexiones: 6, gradient: "grad-eseci", elementos: 18 },
-  { nombre: "Sedes Administrativas", estructura: "ESECI", conexiones: 5, gradient: "grad-eseci", elementos: 8 },
-  { nombre: "Instituciones Financieras", estructura: "ESECI", conexiones: 5, gradient: "grad-eseci", elementos: 12 },
-  { nombre: "Universidades e Investigación", estructura: "ESECI", conexiones: 5, gradient: "grad-eseci", elementos: 10 },
+  // ESECI - Específicos (12)
+  { nombre: "Centro Comercial Zona Centro", estructura: "ESECI", conexiones: 6, gradient: "grad-eseci", elementos: 1 },
+  { nombre: "Paloquemao Mercado", estructura: "ESECI", conexiones: 5, gradient: "grad-eseci", elementos: 1 },
+  { nombre: "Comercio Minorista Chapinero", estructura: "ESECI", conexiones: 7, gradient: "grad-eseci", elementos: 1 },
+  { nombre: "Distrito Industrial Puente Aranda", estructura: "ESECI", conexiones: 4, gradient: "grad-eseci", elementos: 1 },
+  { nombre: "Parque Tecnológico Yumbo", estructura: "ESECI", conexiones: 4, gradient: "grad-eseci", elementos: 1 },
+  { nombre: "Centro de Convenciones", estructura: "ESECI", conexiones: 5, gradient: "grad-eseci", elementos: 1 },
+  { nombre: "Vivienda Ciudad Kennedy", estructura: "ESECI", conexiones: 7, gradient: "grad-eseci", elementos: 1 },
+  { nombre: "Vivienda Usaquén Medio", estructura: "ESECI", conexiones: 6, gradient: "grad-eseci", elementos: 1 },
+  { nombre: "Vivienda Teusaquillo Premium", estructura: "ESECI", conexiones: 5, gradient: "grad-eseci", elementos: 1 },
+  { nombre: "Alcaldía Mayor", estructura: "ESECI", conexiones: 4, gradient: "grad-eseci", elementos: 1 },
+  { nombre: "Banco de la República", estructura: "ESECI", conexiones: 4, gradient: "grad-eseci", elementos: 1 },
+  { nombre: "Universidad Nacional", estructura: "ESECI", conexiones: 5, gradient: "grad-eseci", elementos: 1 },
 ];
 
-// Conexiones - SOLO las reales
+// Conexiones - SOLO reales
 const CONEXIONES = [
   // EEP interno
-  [0, 1], [0, 4], [0, 5],
-  [1, 4], [1, 5],
-  [2, 4],
-  [3, 0],
+  [0, 1], [0, 2], [0, 4],
+  [1, 5],
+  [2, 3],
 
   // EIP interno
   [6, 7], [6, 8],
   [7, 9],
 
   // EFC - movilidad base
-  [10, 11], [10, 12],
+  [10, 11], [10, 12], [10, 13],
   [11, 12], [11, 13],
 
   // EFC - equipamientos a movilidad
@@ -379,38 +387,57 @@ const CONEXIONES = [
   [35, 10], [35, 16],
 ];
 
-// Generar posiciones en círculos concéntricos ESTÁTICAS
+// Generar layout distribuido con buena separación
 function generateLayout() {
   const positions = [];
-  const centerX = 700;
-  const centerY = 450;
+  const positions_data = [
+    // EEP - fila superior
+    { x: 150, y: 120 },   // 0
+    { x: 350, y: 80 },    // 1
+    { x: 550, y: 100 },   // 2
+    { x: 750, y: 70 },    // 3
+    { x: 950, y: 100 },   // 4
+    { x: 1150, y: 85 },   // 5
 
-  // Distribución por estructura
-  const estruturaIndices = {
-    EEP: [0, 1, 2, 3, 4, 5],
-    EIP: [6, 7, 8, 9],
-    EFC: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-    ESECI: [24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35],
-  };
+    // EIP
+    { x: 1350, y: 180 },  // 6
+    { x: 1480, y: 320 },  // 7
+    { x: 1420, y: 480 },  // 8
+    { x: 1300, y: 600 },  // 9
 
-  // Radio por estructura
-  const radii = {
-    EEP: 120,
-    EIP: 220,
-    EFC: 320,
-    ESECI: 320,
-  };
+    // EFC - zona central derecha (grande)
+    { x: 200, y: 350 },   // 10
+    { x: 400, y: 300 },   // 11
+    { x: 600, y: 280 },   // 12
+    { x: 800, y: 300 },   // 13
+    { x: 250, y: 550 },   // 14
+    { x: 450, y: 600 },   // 15
+    { x: 650, y: 620 },   // 16
+    { x: 850, y: 610 },   // 17
+    { x: 350, y: 800 },   // 18
+    { x: 600, y: 850 },   // 19
+    { x: 1000, y: 450 },  // 20
+    { x: 1100, y: 600 },  // 21
+    { x: 1200, y: 750 },  // 22
+    { x: 1350, y: 850 },  // 23
 
-  Object.entries(estruturaIndices).forEach(([estructura, indices]) => {
-    const radius = radii[estructura];
-    const startAngle = estructura === "EIP" ? Math.PI : 0;
+    // ESECI - zona inferior izquierda
+    { x: 100, y: 750 },   // 24
+    { x: 250, y: 900 },   // 25
+    { x: 450, y: 920 },   // 26
+    { x: 1100, y: 800 },  // 27
+    { x: 1250, y: 920 },  // 28
+    { x: 150, y: 400 },   // 29
+    { x: 900, y: 750 },   // 30
+    { x: 1020, y: 900 },  // 31
+    { x: 750, y: 450 },   // 32
+    { x: 1400, y: 750 },  // 33
+    { x: 1480, y: 850 },  // 34
+    { x: 1520, y: 600 },  // 35
+  ];
 
-    indices.forEach((idx, i) => {
-      const angle = startAngle + (i / indices.length) * Math.PI * 2;
-      const x = centerX + Math.cos(angle) * radius;
-      const y = centerY + Math.sin(angle) * radius;
-      positions[idx] = { x, y };
-    });
+  positions_data.forEach((p, i) => {
+    positions[i] = p;
   });
 
   return positions;
@@ -444,14 +471,13 @@ function render() {
     g.setAttribute('data-id', i);
     g.onclick = () => showModal();
 
-    const radius = 20 + s.conexiones * 3;
+    const radius = 28 + s.conexiones * 2.5;
 
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     circle.setAttribute('cx', positions[i].x);
     circle.setAttribute('cy', positions[i].y);
     circle.setAttribute('r', radius);
     circle.setAttribute('fill', `url(#${s.gradient})`);
-    circle.setAttribute('stroke', `url(#${s.gradient})`);
     circle.setAttribute('class', 'node-circle');
     g.appendChild(circle);
 
@@ -459,7 +485,7 @@ function render() {
     text.setAttribute('x', positions[i].x);
     text.setAttribute('y', positions[i].y + 5);
     text.setAttribute('class', 'node-label');
-    text.textContent = s.nombre.substring(0, 20);
+    text.textContent = s.nombre.substring(0, 16);
     g.appendChild(text);
 
     nodesGroup.appendChild(g);
@@ -475,8 +501,7 @@ function showModal() {
     <div class="subsystem-card">
       <h3>${s.nombre}</h3>
       <p>${s.estructura}</p>
-      <span class="badge">${s.elementos} elementos</span>
-      <span class="badge" style="margin-left: 8px;">${s.conexiones} conexiones</span>
+      <span class="badge">${s.conexiones} conexiones</span>
     </div>
   `).join('');
 
