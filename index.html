@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Ccircle cx='17' cy='9' r='3' fill='%230f9488'/%3E%3Ccircle cx='10' cy='21' r='3' fill='%230f9488'/%3E%3Ccircle cx='24' cy='21' r='3' fill='%230f9488'/%3E%3C/svg%3E">
 <title>RAPOT · La ciudad construida por relaciones</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
@@ -10,34 +11,34 @@
 <link rel="stylesheet" href="./style.css?v=20260828-global-network">
   <link rel="stylesheet" href="site-theme.css?v=20260823">
 </head>
-<body>
+<body id="top">
 
 <!-- gradientes artísticos (paleta inspirada en infografía: teal, coral, gris, mostaza) compartidos por el diagrama principal y los popups de red -->
 <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
   <defs>
     <linearGradient id="grad-green" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#45d6c5"></stop>
-      <stop offset="100%" stop-color="#1f8f82"></stop>
+      <stop offset="0%" stop-color="#14a89b"></stop>
+      <stop offset="100%" stop-color="#0a6f66"></stop>
     </linearGradient>
     <linearGradient id="grad-purple" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ff8f8f"></stop>
-      <stop offset="100%" stop-color="#d94f5c"></stop>
+      <stop offset="0%" stop-color="#de5b6a"></stop>
+      <stop offset="100%" stop-color="#b83b4d"></stop>
     </linearGradient>
     <linearGradient id="grad-blue" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ffb37a"></stop>
-      <stop offset="100%" stop-color="#e8763c"></stop>
+      <stop offset="0%" stop-color="#e07a3c"></stop>
+      <stop offset="100%" stop-color="#b5541f"></stop>
     </linearGradient>
     <linearGradient id="grad-yellow" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#f5c26b"></stop>
-      <stop offset="100%" stop-color="#d9902e"></stop>
+      <stop offset="0%" stop-color="#c98a1e"></stop>
+      <stop offset="100%" stop-color="#a06b12"></stop>
     </linearGradient>
     <linearGradient id="grad-soporte" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#eab04c"></stop>
-      <stop offset="100%" stop-color="#ef6f6f"></stop>
+      <stop offset="0%" stop-color="#b45309"></stop>
+      <stop offset="100%" stop-color="#d1495b"></stop>
     </linearGradient>
     <linearGradient id="grad-resiliencia" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#2fbfae"></stop>
-      <stop offset="100%" stop-color="#ef8b3c"></stop>
+      <stop offset="0%" stop-color="#0f9488"></stop>
+      <stop offset="100%" stop-color="#c2410c"></stop>
     </linearGradient>
     <!-- desenfoque usado por el "blob" orgánico que conecta los nodos en los popups de red -->
     <filter id="blob-blur" x="-60%" y="-60%" width="220%" height="220%">
@@ -50,7 +51,7 @@
   <nav class="navbar">
     <div class="logo">
       <svg class="icon" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="17" cy="17" r="16" fill="none" stroke="rgba(47,212,200,0.55)" stroke-width="1.4"/>
+        <circle cx="17" cy="17" r="16" fill="none" stroke="rgba(15,148,136,0.55)" stroke-width="1.4"/>
         <circle cx="17" cy="9"  r="3"></circle>
         <circle cx="10" cy="21" r="3"></circle>
         <circle cx="24" cy="21" r="3"></circle>
@@ -60,11 +61,10 @@
       </div>
     </div>
     <ul class="menu">
-      <li class="active">INICIO</li>
-      <li>MÓDULOS</li>
-      <li>METODOLOGÍA</li>
-      <li>CASO HUMEDAL</li>
-      <li>EQUIPO</li>
+      <li class="active"><a href="#top">INICIO</a></li>
+      <li><a href="#modulos">MÓDULOS</a></li>
+      <li><a href="./modulo-05.html">NAVEGADOR</a></li>
+      <li><a href="./front/modulo-02/index.html">CASO HUMEDAL</a></li>
     </ul>
     <a class="demo" href="./demo.html" target="_blank" rel="noopener noreferrer">VER DEMOSTRACIÓN <i class="fa-solid fa-arrow-right"></i></a>
   </nav>
@@ -109,7 +109,7 @@
       <div class="cta-row">
         <button id="open-global-network" class="btn-global-network" type="button"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> VER RED COMPLETA <span>39 nodos</span> <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
         <a class="btn-primary" href="./modulo-05.html">EXPLORAR NAVEGADOR MULTIESCALAR <i class="fa-solid fa-arrow-right"></i></a>
-        <button class="btn-secondary" onclick="document.querySelector('.features')?.scrollIntoView({behavior:'smooth'})">CONOCE LOS 9 MÓDULOS <i class="fa-solid fa-chevron-down"></i></button>
+        <a class="btn-secondary" href="#modulos">CONOCE LOS 7 MÓDULOS <i class="fa-solid fa-chevron-down"></i></a>
       </div>
     </div>
 
@@ -123,16 +123,16 @@
         <span class="legend-title">Convenciones</span>
         <span class="legend-item">
           <svg class="leg-svg" viewBox="0 0 50 12" width="50" height="12" aria-hidden="true">
-            <line x1="2" y1="6" x2="38" y2="6" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-dasharray="3 3"></line>
-            <path d="M38,6 L31,2 L31,10 Z" fill="rgba(255,255,255,0.55)"></path>
+            <line x1="2" y1="6" x2="38" y2="6" stroke="rgba(23,20,18,0.4)" stroke-width="1.5" stroke-dasharray="3 3"></line>
+            <path d="M38,6 L31,2 L31,10 Z" fill="rgba(23,20,18,0.55)"></path>
           </svg>
           Redes dirigidas
         </span>
         <span class="legend-item">
           <svg class="leg-svg" viewBox="0 0 56 12" width="56" height="12" aria-hidden="true">
-            <line x1="8" y1="6" x2="48" y2="6" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-dasharray="3 3"></line>
-            <path d="M8,6 L15,2 L15,10 Z" fill="rgba(255,255,255,0.55)"></path>
-            <path d="M48,6 L41,2 L41,10 Z" fill="rgba(255,255,255,0.55)"></path>
+            <line x1="8" y1="6" x2="48" y2="6" stroke="rgba(23,20,18,0.4)" stroke-width="1.5" stroke-dasharray="3 3"></line>
+            <path d="M8,6 L15,2 L15,10 Z" fill="rgba(23,20,18,0.55)"></path>
+            <path d="M48,6 L41,2 L41,10 Z" fill="rgba(23,20,18,0.55)"></path>
           </svg>
           Redes bidireccionales
         </span>
@@ -221,6 +221,94 @@
      </div>
     </div>
 
+  </div>
+</section>
+
+
+<!-- ============ LOS 7 MÓDULOS DEL CORTE ============ -->
+<section class="features" id="modulos">
+  <div class="features-inner">
+    <div class="features-head">
+      <div>
+        <p class="features-kicker">Corte II · Localidad de Kennedy</p>
+        <h2>Los 7 módulos del navegador multiescalar</h2>
+        <p class="features-sub">Módulos 01 a 03: entregables de la primera sesión. Módulos 04 a 07: segunda sesión.
+        Cada tarjeta abre su módulo dentro del navegador, con las cuatro escalas de lectura.</p>
+      </div>
+      <a class="features-cta" href="./modulo-05.html">Abrir el navegador completo <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+    </div>
+    <div class="module-grid">
+      <a class="module-card" href="./modulo-05.html#m1">
+        <div class="module-card-top">
+          <span class="module-num">MÓDULO 01</span>
+          <span class="module-sesion" data-sesion="1">Sesión 1</span>
+        </div>
+        <div class="module-icon"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i></div>
+        <h3>Red de macromodelos</h3>
+        <p>Los paradigmas y supuestos que sostienen nuestra manera de comprender la ciudad, y la consecuencia de cada relación.</p>
+        <span class="module-go">Abrir en el navegador <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+      </a>
+      <a class="module-card" href="./modulo-05.html#m2">
+        <div class="module-card-top">
+          <span class="module-num">MÓDULO 02</span>
+          <span class="module-sesion" data-sesion="1">Sesión 1</span>
+        </div>
+        <div class="module-icon"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i></div>
+        <h3>El POT en Kennedy</h3>
+        <p>El modelo territorial del Decreto 555 para la localidad 8 y el mapeo de AE09, AE15, AE16 y AE17.</p>
+        <span class="module-go">Abrir en el navegador <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+      </a>
+      <a class="module-card" href="./modulo-05.html#m3">
+        <div class="module-card-top">
+          <span class="module-num">MÓDULO 03</span>
+          <span class="module-sesion" data-sesion="1">Sesión 1</span>
+        </div>
+        <div class="module-icon"><i class="fa-solid fa-list-check" aria-hidden="true"></i></div>
+        <h3>Problemas, indicadores y ODS</h3>
+        <p>Lo que el POT ve, lo que nuestro modelo revela, y el indicador y la meta ODS de cada problema.</p>
+        <span class="module-go">Abrir en el navegador <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+      </a>
+      <a class="module-card" href="./modulo-05.html#m4">
+        <div class="module-card-top">
+          <span class="module-num">MÓDULO 04</span>
+          <span class="module-sesion" data-sesion="2">Sesión 2</span>
+        </div>
+        <div class="module-icon"><i class="fa-solid fa-circle-nodes" aria-hidden="true"></i></div>
+        <h3>Dinámicas, actores y macroproblema</h3>
+        <p>De los datos a las causas: bucles, macroproblema de Kennedy y quién tiene poder de decisión.</p>
+        <span class="module-go">Abrir en el navegador <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+      </a>
+      <a class="module-card" href="./modulo-05.html#m5">
+        <div class="module-card-top">
+          <span class="module-num">MÓDULO 05</span>
+          <span class="module-sesion" data-sesion="2">Sesión 2</span>
+        </div>
+        <div class="module-icon"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></div>
+        <h3>Conectografías</h3>
+        <p>Las relaciones de la red espacializadas sobre la cartografía real: causalidades, cruces y flujos.</p>
+        <span class="module-go">Abrir en el navegador <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+      </a>
+      <a class="module-card" href="./modulo-05.html#m6">
+        <div class="module-card-top">
+          <span class="module-num">MÓDULO 06</span>
+          <span class="module-sesion" data-sesion="2">Sesión 2</span>
+        </div>
+        <div class="module-icon"><i class="fa-solid fa-arrows-spin" aria-hidden="true"></i></div>
+        <h3>Autoorganización y sostenibilidad</h3>
+        <p>Dónde se autoorganiza Kennedy sin poder central, qué la sostiene y qué la puede llevar al colapso.</p>
+        <span class="module-go">Abrir en el navegador <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+      </a>
+      <a class="module-card" href="./modulo-05.html#m7">
+        <div class="module-card-top">
+          <span class="module-num">MÓDULO 07</span>
+          <span class="module-sesion" data-sesion="2">Sesión 2</span>
+        </div>
+        <div class="module-icon"><i class="fa-solid fa-landmark-dome" aria-hidden="true"></i></div>
+        <h3>Exposición: Çatalhöyük</h3>
+        <p>Metabolismo, emergencia y coevolución de una ciudad sin plan, en 10 a 12 minutos.</p>
+        <span class="module-go">Abrir en el navegador <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -345,7 +433,7 @@
           <div id="category-network-canvas" class="category-network-canvas">
             <svg id="category-network-svg" class="category-network-svg" viewBox="0 0 760 520" role="img" aria-label="Red distribuida de elementos de la categoría">
               <defs>
-                <marker id="category-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d7a53c"></path></marker>
+                <marker id="category-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#a06b12"></path></marker>
               </defs>
               <g id="category-network-scene">
                 <g id="category-network-links"></g>

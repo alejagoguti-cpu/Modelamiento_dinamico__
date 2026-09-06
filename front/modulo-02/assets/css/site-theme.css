@@ -1,17 +1,18 @@
 :root {
-  --site-bg: #0a0a0a;
-  --site-surface: #0f1218;
-  --site-surface-2: #121828;
-  --site-line: rgba(255,255,255,0.08);
-  --site-line-strong: rgba(255,255,255,0.14);
-  --site-text: #e7eaf2;
-  --site-muted: #8891a5;
-  --site-subtle: #5a6274;
-  --site-teal: #2fd4c8;
-  --site-teal-soft: rgba(47,212,200,0.12);
-  --site-orange: #e89a6c;
-  --site-blue: #5b8def;
-  --site-purple: #a276f2;
+  /* tema blanco minimalista */
+  --site-bg: #ffffff;
+  --site-surface: #ffffff;
+  --site-surface-2: #f6f6f4;
+  --site-line: rgba(23,20,18,0.10);
+  --site-line-strong: rgba(23,20,18,0.18);
+  --site-text: #16130f;
+  --site-muted: #5b554e;
+  --site-subtle: #8b847c;
+  --site-teal: #0f9488;
+  --site-teal-soft: rgba(15,148,136,0.10);
+  --site-orange: #c2410c;
+  --site-blue: #2c5fd1;
+  --site-purple: #7b45d6;
   --site-radius: 10px;
   --site-font-body: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --site-font-display: "Space Grotesk", Inter, system-ui, sans-serif;
@@ -61,7 +62,7 @@ button:hover, .btn:hover, .button:hover, a.btn:hover, a.button:hover {
 /* Shared sidebar tokens; module-specific layout remains untouched. */
 .sidebar.sidebar-icons-only {
   background: var(--site-bg) !important;
-  border-right-color: rgba(255,255,255,0.07) !important;
+  border-right-color: rgba(23,20,18,0.07) !important;
 }
 .sidebar.sidebar-icons-only .icon-nav-item.active {
   background: var(--site-teal-soft) !important;

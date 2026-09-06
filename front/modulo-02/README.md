@@ -47,7 +47,7 @@ El HTML carga automáticamente desde CDN:
 - **Teal (#2fd4c8)** - Primario, ecología
 - **Naranja (#f5a623)** - Soporte/relaciones
 - **Azul (#5b8def)** - Resiliencia
-- **Fondo (#0a0a0a)** - Dark mode
+- **Fondo (#ffffff)** - Tema blanco minimalista
 
 ## 🔧 Funciones JS principales
 

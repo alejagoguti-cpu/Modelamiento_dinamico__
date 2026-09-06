@@ -66,10 +66,10 @@ const STRUCT_STYLE = {
 };
 
 const FUENTE_STYLE = {
-  cita_literal:         { color: "#2fd4c8", label: "Cita literal verificada (Nivel A)",              icon: "fa-quote-right" },
-  indice_oficial:       { color: "#5b8def", label: "Índice oficial (título confirmado)",             icon: "fa-list-check" },
-  fuente_secundaria:    { color: "#f5c945", label: "Fuente secundaria (ABC POT / prensa oficial)",    icon: "fa-newspaper" },
-  inferencia:           { color: "#ef9552", label: "Inferencia razonada del equipo",                 icon: "fa-lightbulb" },
+  cita_literal:         { color: "#0f9488", label: "Cita literal verificada (Nivel A)",              icon: "fa-quote-right" },
+  indice_oficial:       { color: "#2c5fd1", label: "Índice oficial (título confirmado)",             icon: "fa-list-check" },
+  fuente_secundaria:    { color: "#b45309", label: "Fuente secundaria (ABC POT / prensa oficial)",    icon: "fa-newspaper" },
+  inferencia:           { color: "#c2410c", label: "Inferencia razonada del equipo",                 icon: "fa-lightbulb" },
   inventario_pendiente: { color: "#8b93a8", label: "Inventario previo (Nivel B/C — cita sin validar)", icon: "fa-hourglass-half" },
   por_verificar:        { color: "#e0a94c", label: "Aportado por la usuaria — pendiente de comprobar contra el PDF", icon: "fa-magnifying-glass" },
 };
@@ -129,14 +129,14 @@ function nodeById(id) { return ODS_NODES.find(n => n.id === id); }
    del Excel: 0 relaciones verificadas intersistema en las 4 filas).
    ========================================================== */
 const TYPE_STYLE = {
-  directa:   { color: "#2fd4c8", label: "Directa (respaldo explícito del POT)" },
+  directa:   { color: "#0f9488", label: "Directa (respaldo explícito del POT)" },
   indirecta: { color: "#8b93a8", label: "Indirecta (relación funcional intermedia)" },
-  vacio:     { color: "#ef4444", label: "Vacío de articulación (hallazgo)" },
+  vacio:     { color: "#c62828", label: "Vacío de articulación (hallazgo)" },
 };
 // Color de trazo por "Tipo de relación" (dimensión independiente del estilo de línea)
 const RELACION_STYLE = {
   Soporte:     { color: "#f5a623", label: "Soporte (sostiene / habilita)" },
-  Resiliencia: { color: "#5b8def", label: "Resiliencia (conectividad ecosistémica / clima)" },
+  Resiliencia: { color: "#2c5fd1", label: "Resiliencia (conectividad ecosistémica / clima)" },
 };
 
 const RAW_EDGES = [
@@ -701,7 +701,7 @@ function drawNodes(svg) {
     const circle = document.createElementNS(SVG_NS, "circle");
     circle.setAttribute("class", "node-ring" + (node.isMainHub ? " node-ring-hub" : ""));
     circle.setAttribute("cx", node.x); circle.setAttribute("cy", node.y); circle.setAttribute("r", node.r);
-    circle.setAttribute("fill", "#0a0a0a");
+    circle.setAttribute("fill", "#ffffff");
     circle.setAttribute("stroke", node.color);
     circle.setAttribute("stroke-width", node.isMainHub ? 2.5 : 1.6);
     circle.setAttribute("filter", "url(#glow-" + node.color.replace("#", "") + ")");
@@ -914,28 +914,28 @@ const HUMEDAL_LINEAS = [
 ];
 
 const HUMEDALES_CASOS = {
-  torca_guaymaral: { nombre: "Humedal Torca–Guaymaral", label: "Humedal\nTorca-\nGuaymaral", x: 15.1, y: 26.6, diam: 3.4, color: "#2fd4c8",
+  torca_guaymaral: { nombre: "Humedal Torca–Guaymaral", label: "Humedal\nTorca-\nGuaymaral", x: 15.1, y: 26.6, diam: 3.4, color: "#0f9488",
     cita: "El POT reconoce 15 humedales en Bogotá; estos son los casos que el documento desarrolla o nombra de manera específica en los fragmentos analizados.", pagina: "77" },
-  la_conejera: { nombre: "Humedal La Conejera", label: "Humedal La\nConejera", x: 27.3, y: 50.6, diam: 3.8, color: "#2fd4c8",
+  la_conejera: { nombre: "Humedal La Conejera", label: "Humedal La\nConejera", x: 27.3, y: 50.6, diam: 3.8, color: "#0f9488",
     cita: "11 de los humedales de Bogotá, como el de La Conejera, tienen certificación Ramsar, la máxima distinción internacional en la conservación de estos ecosistemas.", pagina: "77" },
-  tibabuyes: { nombre: "Humedal Tibabuyes", label: "Humedal\nTibabuyes", x: 37.3, y: 46, diam: 2.7, color: "#2fd4c8",
+  tibabuyes: { nombre: "Humedal Tibabuyes", label: "Humedal\nTibabuyes", x: 37.3, y: 46, diam: 2.7, color: "#0f9488",
     cita: "Peñalosa consideró útil endurecer el humedal Tibabuyes y, orgulloso de su obra, decidió continuarla en su segundo mandato superponiéndole una ciclovía de concreto.", pagina: null,
     conclusion: "El polígono es útil para establecer límites jurídicos, responsabilidades y restricciones de uso, pero es insuficiente para representar todo lo que ocurre en el humedal. No muestra por sí solo los flujos de agua, los cambios estacionales, los recorridos de las especies, los usos comunitarios ni las presiones de la infraestructura." },
-  ciclorutas_humedal: { nombre: "Ciclorutas sobre el sistema de humedales", label: "Ciclorutas", x: 46.4, y: 47.3, diam: 3.8, color: "#ef9552",
+  ciclorutas_humedal: { nombre: "Ciclorutas sobre el sistema de humedales", label: "Ciclorutas", x: 46.4, y: 47.3, diam: 3.8, color: "#c2410c",
     cita: "Peñalosa consideró útil endurecer el humedal Tibabuyes y, orgulloso de su obra, decidió continuarla en su segundo mandato superponiéndole una ciclovía de concreto.", pagina: null },
-  cordoba: { nombre: "Humedal Córdoba", label: "Humedal\nCórdoba", x: 39.7, y: 35.6, diam: 3.1, color: "#2fd4c8",
+  cordoba: { nombre: "Humedal Córdoba", label: "Humedal\nCórdoba", x: 39.7, y: 35.6, diam: 3.1, color: "#0f9488",
     cita: "Humedal Córdoba regula el agua, previene inundaciones y es el hogar de las aves, murciélagos e insectos que polinizan nuestras plantas.", pagina: "56" },
-  santa_maria_del_lago: { nombre: "Humedal Santa María del Lago", label: "Humedal\nSanta María\ndel Lago", x: 48.6, y: 40.6, diam: 3.3, color: "#2fd4c8",
+  santa_maria_del_lago: { nombre: "Humedal Santa María del Lago", label: "Humedal\nSanta María\ndel Lago", x: 48.6, y: 40.6, diam: 3.3, color: "#0f9488",
     cita: "La transferencia de derechos de construcción y desarrollo de predios ubicados en suelo de protección nos permite asegurar mejores condiciones para la preservación de ecosistemas como el humedal Santa María del Lago, en la localidad de Engativá.", pagina: "221–222" },
   fauna_y_flora: { nombre: "Fauna y flora asociada al sistema de humedales", label: "Fauna y\nflora", x: 62.2, y: 38.8, diam: 4.8, color: "#7d92b3",
     cita: "El POT reconoce 15 humedales en Bogotá. Estos son los casos que el POT desarrolla o nombra de manera específica en los fragmentos analizados; esto no significa que sean los únicos humedales existentes, sino que son los que reciben mayor visibilidad dentro del documento.", pagina: "77" },
   suelo_de_proteccion: { nombre: "Suelo de protección", label: "suelo de\nprotección", x: 55.6, y: 40, diam: 3.1, color: "#7d92b3",
     cita: "La transferencia de derechos de construcción y desarrollo de predios ubicados en suelo de protección nos permite asegurar mejores condiciones para la preservación de ecosistemas como el humedal Santa María del Lago, en la localidad de Engativá.", pagina: "221–222" },
-  malla_via: { nombre: "Malla vial (conflicto con Capellanía)", label: "Malla vía", x: 53.8, y: 48.1, diam: 6.1, color: "#ef9552",
+  malla_via: { nombre: "Malla vial (conflicto con Capellanía)", label: "Malla vía", x: 53.8, y: 48.1, diam: 6.1, color: "#c2410c",
     cita: "Con respecto a los humedales de la ciudad, dentro del POT únicamente se identificó un conflicto de malla vial arterial con la Reserva Distrital de Humedal Capellanía, en Fontibón.", pagina: "49–50" },
-  capellania: { nombre: "Humedal Capellanía", label: "Humedal\nCapellanía", x: 51.6, y: 58.8, diam: 3.4, color: "#2fd4c8",
+  capellania: { nombre: "Humedal Capellanía", label: "Humedal\nCapellanía", x: 51.6, y: 58.8, diam: 3.4, color: "#0f9488",
     cita: "Dentro del POT solo se nombra Reserva Distrital de Humedal Capellanía, en Fontibón debido a que tiene un conflicto de malla vial arterial con la ... es necesario reducir parte de este ecosistema para poder habilitar el paso de la vía. No obstante, el POT Bogotá Reverdece reconoce el área para la vía y amplía en otros puntos del humedal las áreas que se sustraerán para la vía; así, Capellanía pasa de tener 27,03 ha... a tener 29,32 ha.\"", pagina: "49–50" },
-  la_vaca: { nombre: "Humedal La Vaca", label: "Humedal\nla vaca", x: 67.4, y: 72.4, diam: 3.4, color: "#2fd4c8",
+  la_vaca: { nombre: "Humedal La Vaca", label: "Humedal\nla vaca", x: 67.4, y: 72.4, diam: 3.4, color: "#0f9488",
     cita: "El Humedal La Vaca, en Patio Bonito, parte de una antigua laguna muisca gobernada por el cacique Techovita, es un reservorio de agua, plantas y animales protegido por la comunidad.", pagina: "103" },
 };
 
@@ -961,7 +961,7 @@ function showHumedalesOverlay(opts) {
   // por eso basta usar el mismo valor para width/height (círculo perfecto).
   const hotspotsHTML = Object.entries(HUMEDALES_CASOS).map(([key, c]) => `
     <button type="button" class="humedal-hotspot" data-key="${key}"
-      style="left:${c.x}%; top:${c.y}%; width:${c.diam}%; height:${c.diam * (16/9)}%; --hotspot-color:${c.color || "#2fd4c8"};"
+      style="left:${c.x}%; top:${c.y}%; width:${c.diam}%; height:${c.diam * (16/9)}%; --hotspot-color:${c.color || "#0f9488"};"
       title="${c.nombre}" data-lines="${c.label.split("\n").length}">
       <span class="humedal-hotspot-label">${c.label}</span>
     </button>
@@ -1049,6 +1049,14 @@ function showHumedalesOverlay(opts) {
       const preview = document.getElementById("humedalesGestoPreview");
       const image = document.getElementById("humedalesGestoPreviewImg");
       if (!preview || !image) return;
+      // Si la imagen del gesto todavía no está en el repositorio, no se muestra
+      // un recuadro roto: se oculta el preview y el botón deja de ofrecerse.
+      image.onerror = () => {
+        preview.style.display = "none";
+        btn.classList.remove("active");
+        btn.setAttribute("aria-disabled", "true");
+        btn.title = "Imagen del gesto no disponible todavía";
+      };
       image.src = btn.dataset.src;
       image.alt = btn.textContent.trim();
       preview.style.display = "block";
@@ -1446,7 +1454,7 @@ const MOVILIDAD_TRAZO_ROSA = [
 ];
 
 const MOVILIDAD_LINEAS_ROSA = [
-  { id: "primera_linea_metro", color: "#f76fb0", rel: "primera_linea_metro", etiqueta: "", puntos: [[50.0,34.5],[53.0,34.8],[56.0,35.4],[59.0,36.2],[61.0,38.0],[62.5,40.8],[62.0,43.8],[60.5,46.8],[60.0,49.5],[61.5,52.2],[63.5,55.0],[64.0,58.5],[64.0,62.0],[63.0,65.0],[61.0,68.0],[59.0,70.5],[56.5,73.0],[53.5,74.8],[50.5,76.0],[48.0,77.0],[47.0,79.0]] },
+  { id: "primera_linea_metro", color: "#c02a7a", rel: "primera_linea_metro", etiqueta: "", puntos: [[50.0,34.5],[53.0,34.8],[56.0,35.4],[59.0,36.2],[61.0,38.0],[62.5,40.8],[62.0,43.8],[60.5,46.8],[60.0,49.5],[61.5,52.2],[63.5,55.0],[64.0,58.5],[64.0,62.0],[63.0,65.0],[61.0,68.0],[59.0,70.5],[56.5,73.0],[53.5,74.8],[50.5,76.0],[48.0,77.0],[47.0,79.0]] },
 ];
 
 const MOVILIDAD_CORREDORES_NEON = [];

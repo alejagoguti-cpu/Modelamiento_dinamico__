@@ -491,10 +491,10 @@ if (window.rapotData?.ready){
   // Se construye a partir de los mismos 39 nodos originales. Los identificadores
   // se conservan para que el clic siga llegando al popup dinámico de Supabase.
   const GLOBAL_STRUCTURE_META = {
-    green:  { title: "Ecológica Principal", color: "#3fd0bf", x: 500,  y: 470,  subtitle: "EEP" },
-    yellow: { title: "Socioeconómica, Creativa e Innovación", color: "#f5c26b", x: 1130, y: 330,  subtitle: "ESECI" },
-    blue:   { title: "Funcional y del Cuidado", color: "#f5a45f", x: 1640, y: 900,  subtitle: "EFC" },
-    purple: { title: "Integradora de Patrimonios", color: "#ef6f6f", x: 1130, y: 1160, subtitle: "EIP" }
+    green:  { title: "Ecológica Principal", color: "#0f9488", x: 500,  y: 470,  subtitle: "EEP" },
+    yellow: { title: "Socioeconómica, Creativa e Innovación", color: "#c98a1e", x: 1130, y: 330,  subtitle: "ESECI" },
+    blue:   { title: "Funcional y del Cuidado", color: "#c2410c", x: 1640, y: 900,  subtitle: "EFC" },
+    purple: { title: "Integradora de Patrimonios", color: "#d1495b", x: 1130, y: 1160, subtitle: "EIP" }
   };
   const GLOBAL_NODE_TRANSFORMS = {
     green:  { ox: 120,  oy: 135, sx: 1.22, sy: 1.13, minX: 96, minY: 37 },
@@ -945,7 +945,7 @@ if (window.rapotData?.ready){
       if (wetlandConcept){
         nodes.push({
           id: `db-concept-${wetlandConcept.id}`,
-          label: ["Humedales"], icon: "fa-droplet", color: "#3fd0bf",
+          label: ["Humedales"], icon: "fa-droplet", color: "#0f9488",
           x: 400, y: 500, r: 48, groupId: wetlandConcept.group_id,
           groupName: "Humedales", itemSheets: ["Humedales"],
           itemCount: data.potItems.filter(item => item.source_sheet === "Humedales").length,
@@ -1286,11 +1286,11 @@ if (window.rapotData?.ready){
 
   function getComputedColor(accent){
     switch (accent){
-      case "green":  return "#3fd0bf";
-      case "purple": return "#ff8f8f";
-      case "blue":   return "#f5a45f";
-      case "yellow": return "#f5c26b";
-      default: return "#3fd0bf";
+      case "green":  return "#0f9488";
+      case "purple": return "#de5b6a";
+      case "blue":   return "#c2410c";
+      case "yellow": return "#c98a1e";
+      default: return "#0f9488";
     }
   }
 

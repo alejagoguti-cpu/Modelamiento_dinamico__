@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Ccircle cx='17' cy='9' r='3' fill='%230f9488'/%3E%3Ccircle cx='10' cy='21' r='3' fill='%230f9488'/%3E%3Ccircle cx='24' cy='21' r='3' fill='%230f9488'/%3E%3C/svg%3E">
+<title>RAPOT · Navegador multiescalar · Kennedy</title>
+<meta name="description" content="Navegador multiescalar de RAPOT: los 7 módulos del Corte II sobre el modelo territorial del POT en la localidad de Kennedy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/css/modulo-05.css?v=20260906">
+</head>
+<body>
+
+<header class="m5-topbar">
+  <div class="wrap m5-topbar-inner">
+    <a class="m5-brand" href="./index.html">
+      <svg viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="17" cy="17" r="16"></circle>
+        <circle cx="17" cy="9" r="3"></circle>
+        <circle cx="10" cy="21" r="3"></circle>
+        <circle cx="24" cy="21" r="3"></circle>
+      </svg>
+      <span>RAPOT<small>NAVEGADOR MULTIESCALAR</small></span>
+    </a>
+    <nav aria-label="Secciones">
+      <ul class="m5-topnav">
+        <li><a href="./index.html">Inicio</a></li>
+        <li><a href="#modulos" class="is-active">Los 7 módulos</a></li>
+        <li><a href="./front/modulo-02/index.html">Módulo 02</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="wrap m5-hero">
+    <p class="m5-kicker">Corte II · Localidad 8 de Bogotá</p>
+    <h1>El modelo territorial del POT, leído <em>a todas las escalas</em> de Kennedy.</h1>
+    <p class="m5-lead">
+      Este navegador recorre los siete módulos del corte: parte de los macromodelos que sostienen nuestra
+      manera de comprender la ciudad, aterriza el POT en Kennedy y sus cuatro actuaciones estratégicas,
+      y cierra con la lectura de autoorganización y el contraste histórico con Çatalhöyük.
+      Cada módulo se lee en cuatro escalas: metropolitana, localidad, UPL/UPZ y barrio–manzana.
+    </p>
+    <dl class="m5-meta">
+      <div><dt>Instrumento</dt><dd>Decreto 555 / 2021</dd></div>
+      <div><dt>Localidad</dt><dd>Kennedy</dd></div>
+      <div><dt>Act. estratégicas</dt><dd>AE09 · AE15 · AE16 · AE17</dd></div>
+      <div><dt>Módulos</dt><dd>7</dd></div>
+    </dl>
+  </section>
+
+  <!-- ================= SELECTOR DE ESCALA ================= -->
+  <section class="wrap">
+    <div class="m5-scales">
+      <div class="m5-scales-head">
+        <h2>Escala de lectura</h2>
+        <p>Cambia la escala y cada módulo muestra qué se observa en ese nivel.</p>
+      </div>
+      <div class="m5-scale-row" role="group" aria-label="Escala de lectura">
+        <button class="m5-scale" type="button" data-scale="metro" aria-pressed="true">Metropolitana / regional</button>
+        <button class="m5-scale" type="button" data-scale="local" aria-pressed="false">Localidad de Kennedy</button>
+        <button class="m5-scale" type="button" data-scale="upl" aria-pressed="false">UPL / UPZ</button>
+        <button class="m5-scale" type="button" data-scale="manzana" aria-pressed="false">Barrio – manzana</button>
+      </div>
+      <p class="m5-scale-note" id="scale-note"></p>
+    </div>
+  </section>
+
+  <!-- ================= GRID DE MÓDULOS ================= -->
+  <section class="wrap m5-section" id="modulos">
+    <div class="m5-section-head">
+      <div>
+        <h2>Los 7 módulos del corte</h2>
+        <p>Módulos 01–03: entregables de la primera sesión. Módulos 04–07: segunda sesión.</p>
+      </div>
+      <div class="m5-progress">
+        <span class="m5-progress-track"><span class="m5-progress-fill" id="progress-fill"></span></span>
+        <span id="progress-label">0 / 7 listos</span>
+      </div>
+    </div>
+    <div class="m5-grid" id="m5-grid"><!-- las tarjetas se generan en JS --></div>
+  </section>
+
+  <!-- ================= PANEL DE DETALLE ================= -->
+  <section class="wrap">
+    <article class="m5-detail" id="m5-detail" hidden aria-live="polite">
+      <div class="m5-detail-head">
+        <div>
+          <p class="m5-kicker" id="detail-kicker"></p>
+          <h2 id="detail-title"></h2>
+        </div>
+        <button class="m5-detail-close" id="detail-close" type="button" aria-label="Cerrar módulo">&times;</button>
+      </div>
+      <div class="m5-detail-body">
+        <div id="detail-main"></div>
+        <aside class="m5-aside" id="detail-aside"></aside>
+      </div>
+      <div class="m5-detail-nav">
+        <button type="button" id="detail-prev"><small>Anterior</small><span>—</span></button>
+        <button type="button" id="detail-next" class="m5-next"><small>Siguiente</small><span>—</span></button>
+      </div>
+    </article>
+  </section>
+
+  <footer class="wrap m5-footer">
+    <span>RAPOT · Modelamiento dinámico · Corte II</span>
+    <span><a href="./index.html">Volver al inicio</a> · <a href="./front/modulo-02/index.html">Ingeniería inversa del POT</a></span>
+  </footer>
+</main>
+
+<script src="./assets/js/modulo-05.js?v=20260906" defer></script>
+</body>
+</html>
