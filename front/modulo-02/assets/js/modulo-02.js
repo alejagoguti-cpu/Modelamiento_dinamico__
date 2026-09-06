@@ -55,13 +55,13 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const XHTML_NS = "http://www.w3.org/1999/xhtml";
 
 const STRUCT_STYLE = {
-  e1: { color: "#5cd6d1", label: "1. Estructura Ecológica Principal", short: "EEP",
+  e1: { color: "#0f9488", label: "1. Estructura Ecológica Principal", short: "EEP",
     articulos: "Art. 41–79 (39 artículos)", paginas: "pp. 70–101" },
-  e2: { color: "#ef9f54", label: "2. Estructura Funcional y del Cuidado", short: "EFC",
+  e2: { color: "#c2410c", label: "2. Estructura Funcional y del Cuidado", short: "EFC",
     articulos: "Art. 88–99 (12 artículos)", paginas: "pp. 109–120" },
-  e3: { color: "#fac47b", label: "3. Estructura Socioeconómica, Creativa y de Innovación", short: "ESECI",
+  e3: { color: "#a06b12", label: "3. Estructura Socioeconómica, Creativa y de Innovación", short: "ESECI",
     articulos: "Art. 100–101 (2 artículos, + Art.240/243/327 en Libro III)", paginas: "pp. 120–122 / 223–279" },
-  e4: { color: "#fb8d84", label: "4. Estructura Integradora de Patrimonios", short: "EIP",
+  e4: { color: "#d1495b", label: "4. Estructura Integradora de Patrimonios", short: "EIP",
     articulos: "Art. 80–87 (8 artículos)", paginas: "pp. 101–109" },
 };
 
@@ -70,8 +70,8 @@ const FUENTE_STYLE = {
   indice_oficial:       { color: "#2c5fd1", label: "Índice oficial (título confirmado)",             icon: "fa-list-check" },
   fuente_secundaria:    { color: "#b45309", label: "Fuente secundaria (ABC POT / prensa oficial)",    icon: "fa-newspaper" },
   inferencia:           { color: "#c2410c", label: "Inferencia razonada del equipo",                 icon: "fa-lightbulb" },
-  inventario_pendiente: { color: "#8b93a8", label: "Inventario previo (Nivel B/C — cita sin validar)", icon: "fa-hourglass-half" },
-  por_verificar:        { color: "#e0a94c", label: "Aportado por la usuaria — pendiente de comprobar contra el PDF", icon: "fa-magnifying-glass" },
+  inventario_pendiente: { color: "#6b7280", label: "Inventario previo (Nivel B/C — cita sin validar)", icon: "fa-hourglass-half" },
+  por_verificar:        { color: "#a06b12", label: "Aportado por la usuaria — pendiente de comprobar contra el PDF", icon: "fa-magnifying-glass" },
 };
 
 /* ==========================================================
@@ -130,12 +130,12 @@ function nodeById(id) { return ODS_NODES.find(n => n.id === id); }
    ========================================================== */
 const TYPE_STYLE = {
   directa:   { color: "#0f9488", label: "Directa (respaldo explícito del POT)" },
-  indirecta: { color: "#8b93a8", label: "Indirecta (relación funcional intermedia)" },
+  indirecta: { color: "#6b7280", label: "Indirecta (relación funcional intermedia)" },
   vacio:     { color: "#c62828", label: "Vacío de articulación (hallazgo)" },
 };
 // Color de trazo por "Tipo de relación" (dimensión independiente del estilo de línea)
 const RELACION_STYLE = {
-  Soporte:     { color: "#f5a623", label: "Soporte (sostiene / habilita)" },
+  Soporte:     { color: "#b45309", label: "Soporte (sostiene / habilita)" },
   Resiliencia: { color: "#2c5fd1", label: "Resiliencia (conectividad ecosistémica / clima)" },
 };
 
@@ -516,10 +516,10 @@ function buildMapBackground(svg) {
   defs.appendChild(filter);
   g.appendChild(defs);
 
-  // relleno base oscuro de la silueta
+  // relleno base de la silueta (mancha cálida muy tenue sobre papel blanco)
   const fill = document.createElementNS(SVG_NS, "path");
   fill.setAttribute("d", blobPath);
-  fill.setAttribute("fill", "#111111");
+  fill.setAttribute("fill", "#f6f4f1");
   g.appendChild(fill);
 
   // textura de terreno, recortada a la silueta
@@ -535,9 +535,9 @@ function buildMapBackground(svg) {
   vignette.setAttribute("id", "mapVignette");
   vignette.setAttribute("cx", "50%"); vignette.setAttribute("cy", "42%"); vignette.setAttribute("r", "65%");
   const stop1 = document.createElementNS(SVG_NS, "stop");
-  stop1.setAttribute("offset", "0%"); stop1.setAttribute("stop-color", "#1a1a1a"); stop1.setAttribute("stop-opacity", "0.3");
+  stop1.setAttribute("offset", "0%"); stop1.setAttribute("stop-color", "#ffffff"); stop1.setAttribute("stop-opacity", "0.5");
   const stop2 = document.createElementNS(SVG_NS, "stop");
-  stop2.setAttribute("offset", "100%"); stop2.setAttribute("stop-color", "#000000"); stop2.setAttribute("stop-opacity", "0.55");
+  stop2.setAttribute("offset", "100%"); stop2.setAttribute("stop-color", "#e4e1dc"); stop2.setAttribute("stop-opacity", "0.5");
   vignette.appendChild(stop1); vignette.appendChild(stop2);
   defs.appendChild(vignette);
   const vignetteRect = document.createElementNS(SVG_NS, "rect");
@@ -551,7 +551,7 @@ function buildMapBackground(svg) {
   const outline = document.createElementNS(SVG_NS, "path");
   outline.setAttribute("d", blobPath);
   outline.setAttribute("fill", "none");
-  outline.setAttribute("stroke", "rgba(200,200,200,0.22)");
+  outline.setAttribute("stroke", "rgba(23,20,18,0.14)");
   outline.setAttribute("stroke-width", "1.5");
   g.appendChild(outline);
 
@@ -584,7 +584,7 @@ function buildAmbientMesh(svg) {
   }
   // colores ambientales: ciclan entre los 4 colores de estructura para dar
   // la sensación de "mesh multicolor" de la referencia
-  const palette = ["#5cd6d1", "#ef9f54", "#fac47b", "#fb8d84"];
+  const palette = ["#0f9488", "#c2410c", "#a06b12", "#d1495b"];
 
   // líneas finas entre puntos cercanos (umbral de distancia)
   const THRESH = 230;
@@ -719,7 +719,7 @@ function drawNodes(svg) {
     iconEl.setAttribute("style", `color:${node.color}; font-size:${Math.max(node.r * (node.isMainHub ? 0.42 : 0.34), 15)}px;`);
 
     const nameEl = document.createElementNS(XHTML_NS, "div");
-    nameEl.setAttribute("style", `font-size:${Math.max(node.r * 0.16, 15)}px; padding:0 3px; font-weight:700; color:#f2f3f6; line-height:1.15; white-space:pre-line; text-align:center; font-family:'Inter',sans-serif;`);
+    nameEl.setAttribute("style", `font-size:${Math.max(node.r * 0.16, 15)}px; padding:0 3px; font-weight:700; color:#16130f; line-height:1.15; white-space:pre-line; text-align:center; font-family:'Inter',sans-serif;`);
     nameEl.textContent = node.name;
 
     wrapper.appendChild(iconEl); wrapper.appendChild(nameEl);
@@ -927,9 +927,9 @@ const HUMEDALES_CASOS = {
     cita: "Humedal Córdoba regula el agua, previene inundaciones y es el hogar de las aves, murciélagos e insectos que polinizan nuestras plantas.", pagina: "56" },
   santa_maria_del_lago: { nombre: "Humedal Santa María del Lago", label: "Humedal\nSanta María\ndel Lago", x: 48.6, y: 40.6, diam: 3.3, color: "#0f9488",
     cita: "La transferencia de derechos de construcción y desarrollo de predios ubicados en suelo de protección nos permite asegurar mejores condiciones para la preservación de ecosistemas como el humedal Santa María del Lago, en la localidad de Engativá.", pagina: "221–222" },
-  fauna_y_flora: { nombre: "Fauna y flora asociada al sistema de humedales", label: "Fauna y\nflora", x: 62.2, y: 38.8, diam: 4.8, color: "#7d92b3",
+  fauna_y_flora: { nombre: "Fauna y flora asociada al sistema de humedales", label: "Fauna y\nflora", x: 62.2, y: 38.8, diam: 4.8, color: "#5b6b82",
     cita: "El POT reconoce 15 humedales en Bogotá. Estos son los casos que el POT desarrolla o nombra de manera específica en los fragmentos analizados; esto no significa que sean los únicos humedales existentes, sino que son los que reciben mayor visibilidad dentro del documento.", pagina: "77" },
-  suelo_de_proteccion: { nombre: "Suelo de protección", label: "suelo de\nprotección", x: 55.6, y: 40, diam: 3.1, color: "#7d92b3",
+  suelo_de_proteccion: { nombre: "Suelo de protección", label: "suelo de\nprotección", x: 55.6, y: 40, diam: 3.1, color: "#5b6b82",
     cita: "La transferencia de derechos de construcción y desarrollo de predios ubicados en suelo de protección nos permite asegurar mejores condiciones para la preservación de ecosistemas como el humedal Santa María del Lago, en la localidad de Engativá.", pagina: "221–222" },
   malla_via: { nombre: "Malla vial (conflicto con Capellanía)", label: "Malla vía", x: 53.8, y: 48.1, diam: 6.1, color: "#c2410c",
     cita: "Con respecto a los humedales de la ciudad, dentro del POT únicamente se identificó un conflicto de malla vial arterial con la Reserva Distrital de Humedal Capellanía, en Fontibón.", pagina: "49–50" },

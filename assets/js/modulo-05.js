@@ -603,7 +603,7 @@
   var currentScale = "metro";
   var openId = null;
 
-  var grid = document.getElementById("m5-grid");
+  var list = document.getElementById("m5-list");
   var detail = document.getElementById("m5-detail");
   var detailKicker = document.getElementById("detail-kicker");
   var detailTitle = document.getElementById("detail-title");
@@ -616,48 +616,45 @@
   var progressFill = document.getElementById("progress-fill");
   var progressLabel = document.getElementById("progress-label");
 
-  /* ------------------------------------------------------------ tarjetas */
-  function buildCards() {
+  /* ---------------------------------------------------------------- filas */
+  function buildRows() {
     var html = MODULES.map(function (m) {
       return [
-        '<div class="m5-card" id="card-', m.id, '" data-id="', m.id, '" role="button" tabindex="0"',
-        ' aria-expanded="false" aria-label="Abrir módulo ', m.num, ': ', m.title, '">',
-        '<div class="m5-card-top">',
-        '<span class="m5-card-num">MÓDULO ', m.num, '</span>',
-        '<span class="m5-tag" data-sesion="', m.sesion, '">Sesión ', m.sesion, '</span>',
-        '</div>',
-        '<h3>', m.title, '</h3>',
-        '<p>', m.summary, '</p>',
-        '<div class="m5-card-scale" data-scale-slot="', m.id, '"><b></b><span></span></div>',
-        '<div class="m5-card-foot">',
-        '<span class="m5-open-hint">Abrir módulo &rarr;</span>',
-        '<label class="m5-check" data-nostop="1">',
-        '<input type="checkbox" data-done="', m.id, '" aria-label="Marcar módulo ', m.num, ' como listo">',
+        '<div class="m5-row" id="row-', m.id, '" data-id="', m.id, '" role="button" tabindex="0"',
+        ' aria-expanded="false" aria-label="Abrir m\u00f3dulo ', m.num, ': ', m.title, '">',
+        '<span class="m5-row-num">', m.num, '</span>',
+        '<span class="m5-row-title"><h3>', m.title, '</h3><p>', m.summary, '</p></span>',
+        '<span class="m5-row-scale" data-scale-slot="', m.id, '"><b></b><span></span></span>',
+        '<span class="m5-row-side">',
+        '<span class="m5-tag" data-sesion="', m.sesion, '">Sesi\u00f3n ', m.sesion, '</span>',
+        '<label class="m5-check">',
+        '<input type="checkbox" data-done="', m.id, '" aria-label="Marcar m\u00f3dulo ', m.num, ' como listo">',
         'Listo</label>',
-        '</div>',
+        '</span>',
+        '<span class="m5-row-arrow" aria-hidden="true">&rarr;</span>',
         '</div>'
       ].join("");
     }).join("");
-    grid.innerHTML = html;
+    list.innerHTML = html;
 
     MODULES.forEach(function (m) {
-      var card = document.getElementById("card-" + m.id);
-      var box = card.querySelector('input[data-done]');
+      var row = document.getElementById("row-" + m.id);
+      var box = row.querySelector('input[data-done]');
       box.checked = !!done[m.id];
-      card.classList.toggle("is-done", !!done[m.id]);
+      row.classList.toggle("is-done", !!done[m.id]);
 
       box.addEventListener("change", function () {
         done[m.id] = box.checked;
         saveSet(STORE_DONE, done);
-        card.classList.toggle("is-done", box.checked);
+        row.classList.toggle("is-done", box.checked);
         renderProgress();
       });
-      // el clic sobre la casilla no debe abrir el módulo
-      card.querySelector(".m5-check").addEventListener("click", function (ev) {
+      // el clic sobre la casilla no debe abrir el m\u00f3dulo
+      row.querySelector(".m5-check").addEventListener("click", function (ev) {
         ev.stopPropagation();
       });
-      card.addEventListener("click", function () { openModule(m.id); });
-      card.addEventListener("keydown", function (ev) {
+      row.addEventListener("click", function () { openModule(m.id); });
+      row.addEventListener("keydown", function (ev) {
         if (ev.key === "Enter" || ev.key === " ") {
           ev.preventDefault();
           openModule(m.id);
@@ -729,7 +726,7 @@
     nextBtn.querySelector("span").textContent = next ? next.num + " · " + next.title : "—";
 
     detail.hidden = false;
-    document.querySelectorAll(".m5-card").forEach(function (c) {
+    document.querySelectorAll(".m5-row").forEach(function (c) {
       var isOpen = c.dataset.id === id;
       c.classList.toggle("is-open", isOpen);
       c.setAttribute("aria-expanded", String(isOpen));
@@ -746,7 +743,7 @@
   function closeModule() {
     detail.hidden = true;
     openId = null;
-    document.querySelectorAll(".m5-card").forEach(function (c) {
+    document.querySelectorAll(".m5-row").forEach(function (c) {
       c.classList.remove("is-open");
       c.setAttribute("aria-expanded", "false");
     });
@@ -756,7 +753,7 @@
   }
 
   /* ---------------------------------------------------------------- eventos */
-  buildCards();
+  buildRows();
   renderScale();
   renderProgress();
 

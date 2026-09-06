@@ -8,17 +8,17 @@
   --site-bg: #ffffff;
   --site-surface: #ffffff;
   --site-surface-2: #f6f6f4;
-  --site-line: rgba(23,20,18,0.10);
-  --site-line-strong: rgba(23,20,18,0.18);
+  --site-line: #e4e1dc;
+  --site-line-strong: #c9c4bd;
   --site-text: #16130f;
   --site-muted: #5b554e;
   --site-subtle: #8b847c;
-  --site-teal: #0f9488;
-  --site-teal-soft: rgba(15,148,136,0.10);
+  --site-teal: #c2410c;
+  --site-teal-soft: rgba(194,65,12,0.09);
   --site-orange: #c2410c;
   --site-coral: #d1495b;
   --site-amber: #b45309;
-  --site-radius: 12px;
+  --site-radius: 0px;
   --site-font-body: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --site-font-display: "Space Grotesk", Inter, system-ui, sans-serif;
 }
